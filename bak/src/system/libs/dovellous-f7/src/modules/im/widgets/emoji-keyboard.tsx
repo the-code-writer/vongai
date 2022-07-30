@@ -1,0 +1,1 @@
+import EmojiDB from '../db/emoji.json';

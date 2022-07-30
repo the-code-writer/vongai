@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Vongai</string>
+    <string name="title_activity_main">Vongai</string>
+    <string name="package_name">vong.ai</string>
+    <string name="custom_url_scheme">vong.ai</string>
+</resources>

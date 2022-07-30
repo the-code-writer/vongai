@@ -1,0 +1,28 @@
+{
+  "cwd": "/var/www/html/dl/capacitor",
+  "type": [
+    "web",
+    "pwa",
+    "capacitor"
+  ],
+  "name": "Vongai",
+  "framework": "react",
+  "template": "tabs",
+  "bundler": "vite",
+  "cssPreProcessor": "scss",
+  "theming": {
+    "customColor": true,
+    "color": "#740eb1",
+    "darkTheme": false,
+    "iconFonts": true,
+    "fillBars": true
+  },
+  "customBuild": false,
+  "pkg": "vong.ai",
+  "capacitor": {
+    "platforms": [
+      "ios",
+      "android"
+    ]
+  }
+}
