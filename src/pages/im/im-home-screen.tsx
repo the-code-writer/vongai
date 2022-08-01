@@ -82,6 +82,8 @@ return(
             tabHide={(e: any)=>imTabInHidden(tabContentItem, tabContentItemIndex)}
             >
 
+            {/*
+
               { tabContentItem.view === "IMTabContentCamera" &&(
 
                 <IMTabContentCamera
@@ -96,6 +98,8 @@ return(
 
               { tabContentItem.view === "IMTabContentChats" &&(
 
+              */}
+
                 <IMTabContentChats
                   key={`im-tab-content-chats-key`}
                   id={`im-tab-content-chats-key`}
@@ -103,6 +107,8 @@ return(
                   slug={tabContentItem.tabClass} 
                   view={tabContentItem.view} 
                 />
+
+              {/*
 
               )}
 
@@ -149,10 +155,12 @@ return(
                   id={`im-tab-content-bots-key`}
                   className={`im-tab-content-bots`}
                   slug={tabContentItem.tabClass} 
-                  view={tabContentItem.view} 
+                  view={tabContentItem.view}
                 />
 
               )}
+
+              */}
 
           </Tab>
 

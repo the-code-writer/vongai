@@ -1,67 +1,41 @@
 import React, { useEffect, useState  } from 'react';
 import {
-    Page,
-    Navbar,
-    NavTitle,
-    NavRight,
-    Link,
-    List,
-    ListItem,
-    Searchbar,
-    SkeletonBlock,
-    theme,
-    useStore,
-    f7, f7ready
+    Page, List, ListItem, SkeletonBlock, f7, f7ready
 } from 'framework7-react';
 
-export default ({ f7route, f7router }): JSX.Element => {
+export default ({ f7route, f7router, userAccountData, slug, view, id, className}): JSX.Element => {
 
-    let imChatsLoading: any;
+        const imChatsLoading = f7.params.data.instantMessengerStore.useStore('imChatsLoading');
 
-    let imChats: any;
+        const imChats = f7.params.data.instantMessengerStore.useStore('imChats');
 
-    let imChatsUnread: any;
+        const imChatsUnread = f7.params.data.instantMessengerStore.useStore('imChatsUnread');
 
-    let imListChatsLoading: any;
+        const imListChatsLoading = f7.params.data.instantMessengerStore.useStore('imListChatsLoading');
 
-    let imListChats: any[];
+        const imListChats = f7.params.data.instantMessengerStore.useStore('imListChats');
 
-    useEffect(() => {
-        // load users when component mounted
-        setTimeout(() => {
-            //f7.store.dispatch('getJobs', -1);
-        },500);
-
-    }, []);
+        const userAccountData = f7.params.data.userAccountData.useStore('userAccountData');
 
     useEffect(() => {
+
         f7ready((f7) => {
           
-            imChatsLoading = f7.params.data.instantMessengerStore.useStore('imChatsLoading');
-
-            imChats = f7.params.data.instantMessengerStore.useStore('imChats');
-
-            imChatsUnread = f7.params.data.instantMessengerStore.useStore('imChatsUnread');
-
-            imListChatsLoading = f7.params.data.instantMessengerStore.useStore('imListChatsLoading');
-
-            imListChats = f7.params.data.instantMessengerStore.useStore('imListChats');
-
         });
+
       }, []);
 
     return (
 
         <Page name='home' className='im-tab-content-chats-page'>
 
-            {/* Page content */}
-            <List className="searchbar-not-found im-tab-content-chats-search">
+            <List className="searchbar-not-found im-tab-content-chats-searchbar-not-found">
                 <div style={{textAlign: "center", marginTop: "64px"}}>
                     No chats found
                 </div>
             </List>
 
-            <List mediaList noChevron className="search-list searchbar-found">
+            <List mediaList noChevron className="search-list searchbar-found im-tab-content-chats-searchbar-found">
 
             {imListChatsLoading ? (
 
@@ -76,7 +50,7 @@ export default ({ f7route, f7router }): JSX.Element => {
                         >
 
                             <SkeletonBlock
-                                style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                style={{ width: '48px', height: '48px', borderRadius: '50%' }}
                                 slot="media" 
                                 tag={''} 
                                 width={''} 
