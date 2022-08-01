@@ -1,0 +1,26 @@
+.tab-im-chats .badge, .tab-im-calls .badge{
+    color: var(--f7-bars-bg-color);
+    background-color: var(--f7-bars-text-color);
+    margin-left: 5px;
+}
+
+.tabbar {
+    .tab-link.tab-im-camera, 
+    .tab-link.tab-im-chats, 
+    .tab-link.tab-im-status, 
+    .tab-link.tab-im-calls{
+        height: 100%;
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+        text-transform: var(--f7-tabbar-link-text-transform);
+        font-weight: var(--f7-tabbar-link-font-weight);
+        letter-spacing: var(--f7-tabbar-link-letter-spacing);
+        overflow: hidden;
+        flex-wrap: nowrap;
+        align-content: center;
+    }
+}

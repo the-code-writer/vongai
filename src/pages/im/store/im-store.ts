@@ -5,7 +5,7 @@ const instantMessengerStore = createStore({
   
   state: {
 
-    /*----- Start Instant Messenger Variables -----*/
+    /*----- Start Instant Messenger State Variables -----*/
 
     //IM Screen Tab Data
 
@@ -124,7 +124,7 @@ const instantMessengerStore = createStore({
 
     imListBots: [],
 
-    /*----- End Instant Messenger Variables -----*/
+    /*----- End Instant Messenger State Variables -----*/
 
   },
   getters: {
@@ -252,7 +252,7 @@ const instantMessengerStore = createStore({
   },
   actions: {
 
-    /*----- Start Instant Messenger Setters -----*/
+    /*----- Start Instant Messenger Setters / Actions -----*/
 
     //IM Screen Tab Data
 
@@ -458,7 +458,7 @@ const instantMessengerStore = createStore({
       state.imListBots = data;
     },
 
-    /*----- End Instant Messenger Setters -----*/
+    /*----- End Instant Messenger Setters Actions -----*/
 
   },
 })

@@ -28,6 +28,10 @@ import capacitorApp from '../js/capacitor-app';
 import routes from '../js/routes';
 import store from '../js/store';
 
+import instantMessengerStore from '../pages/im/store/im-store';
+import userAccountData from '../pages/user/store/user-data-store';
+
+
 const MyApp = () => {
   // Login screen demo data
   const [username, setUsername] = useState('');
@@ -35,13 +39,17 @@ const MyApp = () => {
   const device = getDevice();
   // Framework7 Parameters
   const f7params = {
-    name: 'Vongai', // App name
+      name: 'Vongai', // App name
       theme: 'auto', // Automatic theme detection
 
 
       id: 'vong.ai', // App bundle ID
       // App store
       store: store,
+      data: {
+        instantMessengerStore: instantMessengerStore,
+        userAccountData: userAccountData,
+      }
       // App routes
       routes: routes,
       // Register service worker (only on production build)

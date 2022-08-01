@@ -15,11 +15,11 @@ import NotFoundPage from '../pages/404.jsx';
 
 var routes = [
   {
-    path: '/',
+    path: '/home/',
     component: HomePage,
   },
   {
-    path: '/im/',
+    path: '/',
     component: IMHomeScreen,
   },
   {
