@@ -20,6 +20,7 @@ const instantMessengerStore = createStore({
         iconAurora: "f7:camera_fill",
         iconOnly: true,
         view: "IMTabContentCamera",
+        slug: "im-tab-content-camera",
         highlight: false,
         badge: 0
       },
@@ -33,6 +34,7 @@ const instantMessengerStore = createStore({
         iconAurora: "f7:bubble_left_bubble_right_fill",
         iconOnly: false,
         view: "IMTabContentChats",
+        slug: "im-tab-content-chats",
         highlight: false,
         badge: 53
       },
@@ -46,6 +48,7 @@ const instantMessengerStore = createStore({
         iconAurora: "f7:person_2_square_stack_fill",
         iconOnly: false,
         view: "IMTabContentStories",
+        slug: "im-tab-content-stories",
         highlight: true,
         badge: 0
       },
@@ -59,6 +62,7 @@ const instantMessengerStore = createStore({
         iconAurora: "f7:phone_fill",
         iconOnly: false,
         view: "IMTabContentCalls",
+        slug: "im-tab-content-calls",
         highlight: false,
         badge: 1
       },
