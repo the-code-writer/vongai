@@ -102,10 +102,11 @@ return(
 
                 <IMTabContentChats
                   key={`im-tab-content-chats-key`}
-                  id={`im-tab-content-chats-key`}
+                  id={tabContentItem.tabClass}
+                  slug={tabContentItem.tabClass}
+                  view={tabContentItem.view}
                   className={`im-tab-content-chats`}
-                  slug={tabContentItem.tabClass} 
-                  view={tabContentItem.view} 
+                  skeletonList={tabContentItem.skeletonList} 
                 />
 
               {/*

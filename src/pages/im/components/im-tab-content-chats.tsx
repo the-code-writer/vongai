@@ -3,7 +3,7 @@ import {
     Page, List, ListItem, SkeletonBlock, f7, f7ready
 } from 'framework7-react';
 
-export default ({ f7route, f7router, userAccountData, slug, view, id, className}): JSX.Element => {
+export default ({ id,  slug, view, className, skeletonList}): JSX.Element => {
 
         const imChatsLoading = f7.params.data.instantMessengerStore.useStore('imChatsLoading');
 
@@ -17,36 +17,42 @@ export default ({ f7route, f7router, userAccountData, slug, view, id, className}
 
         const userAccountData = f7.params.data.userAccountData.useStore('userAccountData');
 
+        let componentViewId = '';
+
     useEffect(() => {
 
         f7ready((f7) => {
           
+            componentViewId = view;
+
         });
 
       }, []);
 
     return (
 
-        <Page name='home' className='im-tab-content-chats-page'>
+        <Page id={`${id}`} name={`${slug}`} className={`page ${className}`}>
 
-            <List className="searchbar-not-found im-tab-content-chats-searchbar-not-found">
+            <List 
+                className="searchbar-not-found im-tab-content-chats-searchbar-not-found">
                 <div style={{textAlign: "center", marginTop: "64px"}}>
                     No chats found
                 </div>
             </List>
 
-            <List mediaList noChevron className="search-list searchbar-found im-tab-content-chats-searchbar-found">
+            <List 
+                mediaList noChevron className="search-list searchbar-found im-tab-content-chats-searchbar-found">
 
-            {imListChatsLoading ? (
+                {imListChatsLoading ? (
 
-                    [1, 2, 3, 4, 5, 6, 7].map((n) => (
+                    [...Array(skeletonList.count).keys()].map((n) => (
 
                         <ListItem
                             key={n}
-                            className={`skeleton-text skeleton-effect-wave`}
-                            title="Morbi lobortis et massa"
-                            subtitle="Cras consequat"
-                            text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                            className={"skeleton-text skeleton-effect-${${skeletonList.effect}}"}
+                            title="${skeletonList.title}Morbi lobortis et massa"
+                            subtitle="${skeletonList.subtitle}Cras consequat"
+                            text="${skeletonList.text}Lorem ipsum dolor sit amet, consectetur adipiscing elit."
                         >
 
                             <SkeletonBlock
@@ -63,7 +69,7 @@ export default ({ f7route, f7router, userAccountData, slug, view, id, className}
 
                     ))
 
-                 ) : (
+                ) : (
 
                     imListChats.map((chat: any, index: number) => (
 
@@ -78,7 +84,10 @@ export default ({ f7route, f7router, userAccountData, slug, view, id, className}
                             text={chat.text}
                         >
                             
-                            <div slot="media" className={"andon-status"}/>
+                            <div 
+                                slot="media" 
+                                className={"andon-status"}
+                            />
 
                             <img
                                 slot="media"
@@ -92,7 +101,7 @@ export default ({ f7route, f7router, userAccountData, slug, view, id, className}
 
                     ))
 
-            )}
+                )}
 
             </List>
 
