@@ -13,11 +13,11 @@ export default () => {
 
   const imHomeScreenTabs = useStore('imHomeScreenTabsData');
 
-  const imTabVisible = (tabContentItem: { tabLink: string; tabText: string; tabClass: string; tabActive: boolean; iconIos: string; iconMd: string; iconAurora: string; iconOnly: boolean; view: string; highlight: boolean; badge: number; }, tabContentItemIndex: number) => {
+  const imTabVisible = (e: any, tabContent: { tabLink: any; tabClass: any; tabActive: any; slug?: any; view: any; skeletonList?: any; tabText?: string | undefined; iconIos?: string | undefined; iconMd?: string | undefined; iconAurora?: string | undefined; iconOnly?: boolean | undefined; highlight?: boolean | undefined; badge?: number | undefined; }, tabIndex: number) => {
     throw new Error('Function not implemented.');
   }
 
-  const imTabInHidden = (tabContentItem: { tabLink: string; tabText: string; tabClass: string; tabActive: boolean; iconIos: string; iconMd: string; iconAurora: string; iconOnly: boolean; view: string; highlight: boolean; badge: number; }, tabContentItemIndex: number) => {
+  const imTabInHidden = (e: any, tabContent: { tabLink: any; tabClass: any; tabActive: any; slug?: any; view: any; skeletonList?: any; tabText?: string | undefined; iconIos?: string | undefined; iconMd?: string | undefined; iconAurora?: string | undefined; iconOnly?: boolean | undefined; highlight?: boolean | undefined; badge?: number | undefined; }, tabIndex: number) => {
     throw new Error('Function not implemented.');
   }
 
@@ -75,15 +75,15 @@ export default () => {
 
       <Tabs swipeable>
 
-      { imHomeScreenTabs.map((tabContentItem, tabContentItemIndex) => (
+      { imHomeScreenTabs.map((tabContentItem: { tabLink: any; tabClass: any; tabActive: any; slug?: any; view: any; skeletonList?: any; tabText?: string; iconIos?: string; iconMd?: string; iconAurora?: string; iconOnly?: boolean; highlight?: boolean; badge?: number; }, tabContentItemIndex: number) => (
 
             <Tab
               key={`tab-content-im-key-${tabContentItemIndex}`}
               id={tabContentItem.tabLink}
               className={tabContentItem.tabClass}
               tabActive={tabContentItem.tabActive}
-              tabShow={(e: any)=>imTabVisible(tabContentItem, tabContentItemIndex)}
-              tabHide={(e: any)=>imTabInHidden(tabContentItem, tabContentItemIndex)}
+              onTabShow={(e: any)=>imTabVisible(e, tabContentItem, tabContentItemIndex)}
+              onTabHide={(e: any)=>imTabInHidden(e, tabContentItem, tabContentItemIndex)}
               >
 
               {/*
