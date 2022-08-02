@@ -105,12 +105,12 @@ export default () => {
                 */}
 
                   <IMTabContentChats
+                    className={`im-tab ${tabContentItem.slug}-id`}
+                    skeletonList={tabContentItem.skeletonList} 
                     key={`${tabContentItem.slug}-key`}
                     id={`${tabContentItem.slug}-id`}
-                    className={`im-tab ${tabContentItem.slug}-id`}
                     slug={tabContentItem.slug}
                     view={tabContentItem.view}
-                    skeletonList={tabContentItem.skeletonList} 
                   />
 
                 {/*
