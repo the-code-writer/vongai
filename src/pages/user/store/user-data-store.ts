@@ -1,7 +1,7 @@
 
 import { createStore } from 'framework7/lite';
 
-const IMStore = createStore({
+const userDataStore = createStore({
   
   state: {
 
@@ -9,7 +9,7 @@ const IMStore = createStore({
 
     //IM Screen Tab Data
 
-    imHomeScreenTabsData : [
+    userData : [
       {
         tabLink: "tab-im-camera",
         tabText: "",
@@ -22,14 +22,7 @@ const IMStore = createStore({
         view: "IMTabContentCamera",
         slug: "im-tab-content-camera",
         highlight: false,
-        badge: 0,
-        skeletonList: {
-          count: 5,
-          effect:"wave",
-          title:"Morbi lobortis et massa",
-          subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-        },
+        badge: 0
       },
       {
         tabLink: "tab-im-chats",
@@ -43,14 +36,7 @@ const IMStore = createStore({
         view: "IMTabContentChats",
         slug: "im-tab-content-chats",
         highlight: false,
-        badge: 53,
-        skeletonList: {
-          count: 5,
-          effect:"wave",
-          title:"Morbi lobortis et massa",
-          subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-        },
+        badge: 53
       },
       {
         tabLink: "tab-im-stories",
@@ -64,14 +50,7 @@ const IMStore = createStore({
         view: "IMTabContentStories",
         slug: "im-tab-content-stories",
         highlight: true,
-        badge: 0,
-        skeletonList: {
-          count: 5,
-          effect:"wave",
-          title:"Morbi lobortis et massa",
-          subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-        },
+        badge: 0
       },
       {
         tabLink: "tab-im-calls",
@@ -85,14 +64,7 @@ const IMStore = createStore({
         view: "IMTabContentCalls",
         slug: "im-tab-content-calls",
         highlight: false,
-        badge: 1,
-        skeletonList: {
-          count: 5,
-          effect:"wave",
-          title:"Morbi lobortis et massa",
-          subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
-        },
+        badge: 1
       },
     ],
 
@@ -495,4 +467,4 @@ const IMStore = createStore({
   },
 })
 
-export default IMStore;
+export default userDataStore;

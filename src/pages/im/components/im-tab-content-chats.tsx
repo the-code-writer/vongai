@@ -1,30 +1,43 @@
 import React, { useEffect, useState  } from 'react';
 import {
-    Page, List, ListItem, SkeletonBlock, f7, f7ready
+    Page, List, ListItem, SkeletonBlock, f7, f7ready, useStore,
 } from 'framework7-react';
+
+import IMStore from '../../../pages/im/store/im-store';
+
+import UserDataStore from '../../../pages/user/store/user-data-store';
 
 export default ({ id,  slug, view, className, skeletonList}): JSX.Element => {
 
-        const imChatsLoading = f7.params.data.instantMessengerStore.useStore('imChatsLoading');
-
-        const imChats = f7.params.data.instantMessengerStore.useStore('imChats');
-
-        const imChatsUnread = f7.params.data.instantMessengerStore.useStore('imChatsUnread');
-
-        const imListChatsLoading = f7.params.data.instantMessengerStore.useStore('imListChatsLoading');
-
-        const imListChats = f7.params.data.instantMessengerStore.useStore('imListChats');
-
-        const userAccountData = f7.params.data.userAccountData.useStore('userAccountData');
-
         let componentViewId = '';
+
+        componentViewId = view;
+
+        let imChatsLoading=[];
+        let imChats=[];
+        let imChatsUnread=[];
+        let imListChatsLoading=[];
+        let imListChats=[];
+        let userAccountData=[];
 
     useEffect(() => {
 
-        f7ready((f7) => {
+        f7ready((framework7IO) => {
           
             componentViewId = view;
 
+            imChatsLoading = IMStore.state.imChatsLoading;
+
+            imChats = IMStore.state.imChats;
+    
+            imChatsUnread = IMStore.state.imChatsUnread;
+    
+            imListChatsLoading = IMStore.state.imListChatsLoading;
+    
+            imListChats = IMStore.state.imListChats;
+    
+            userAccountData = UserDataStore.state.userData.userData;
+    
         });
 
       }, []);
@@ -49,21 +62,20 @@ export default ({ id,  slug, view, className, skeletonList}): JSX.Element => {
 
                         <ListItem
                             key={n}
-                            className={"skeleton-text skeleton-effect-${${skeletonList.effect}}"}
-                            title="${skeletonList.title}Morbi lobortis et massa"
-                            subtitle="${skeletonList.subtitle}Cras consequat"
-                            text="${skeletonList.text}Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                            className={`skeleton-text skeleton-effect-${skeletonList.effect}`}
+                            title={`${skeletonList.title}`}
+                            subtitle={`${skeletonList.subtitle}`}
+                            text={`${skeletonList.text}`}
                         >
 
                             <SkeletonBlock
                                 style={{ width: '48px', height: '48px', borderRadius: '50%' }}
-                                slot="media" 
-                                tag={''} 
-                                width={''} 
-                                height={''} 
-                                effect={'blink'} 
-                                borderRadius={''}                            
-                            />
+                                slot="media"
+                                effect={'wave'} 
+                                tag={'div'} 
+                                width={'48'} 
+                                height={'48'} 
+                                borderRadius={'50%'}                            />
 
                         </ListItem>
 

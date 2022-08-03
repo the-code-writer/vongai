@@ -1,17 +1,21 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState  } from 'react';
 import { Page, 
   Navbar, NavTitle, NavRight, 
   Searchbar, theme, 
   Toolbar, Link, Tabs, Tab, 
-  Fab, Icon, useStore } from 'framework7-react';
+  Fab, Icon, f7, f7ready, useStore } from 'framework7-react';
 
 import IMTabContentChats from './components/im-tab-content-chats';
 
 import navBarLogo from '../../assets/images/logo-typographical-white.png';
 
+import store from '../../pages/im/store/im-store';
+
 export default () => {
 
-  const imHomeScreenTabs = useStore('imHomeScreenTabsData');
+  //const imHomeScreenTabs = useState(store.getters.imHomeScreenTabsData.value);
+
+  const imHomeScreenTabs = store.state.imHomeScreenTabsData;
 
   const imTabVisible = (e: any, tabContent: { tabLink: any; tabClass: any; tabActive: any; slug?: any; view: any; skeletonList?: any; tabText?: string | undefined; iconIos?: string | undefined; iconMd?: string | undefined; iconAurora?: string | undefined; iconOnly?: boolean | undefined; highlight?: boolean | undefined; badge?: number | undefined; }, tabIndex: number) => {
     throw new Error('Function not implemented.');
@@ -20,6 +24,16 @@ export default () => {
   const imTabInHidden = (e: any, tabContent: { tabLink: any; tabClass: any; tabActive: any; slug?: any; view: any; skeletonList?: any; tabText?: string | undefined; iconIos?: string | undefined; iconMd?: string | undefined; iconAurora?: string | undefined; iconOnly?: boolean | undefined; highlight?: boolean | undefined; badge?: number | undefined; }, tabIndex: number) => {
     throw new Error('Function not implemented.');
   }
+
+  useEffect(() => {
+
+    f7ready((framework7IO) => {
+      
+      console.warn("::: framework7IO - imHomeScreenTabs :::", imHomeScreenTabs);
+
+    });
+
+  }, []);
 
   return( 
 
