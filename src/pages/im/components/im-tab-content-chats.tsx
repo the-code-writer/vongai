@@ -64,18 +64,16 @@ export default ({ id,  slug, view, className, skeletonList}): JSX.Element => {
                             key={n}
                             className={`skeleton-text skeleton-effect-${skeletonList.effect}`}
                             title={`${skeletonList.title}`}
-                            subtitle={`${skeletonList.subtitle}`}
                             text={`${skeletonList.text}`}
                             after={`00:00`}
                         >
 
                         <SkeletonBlock
                                 slot="media" 
-                                tag={'div'} 
-                                width={'44px'} 
-                                height={'44px'} 
-                                effect={'blink'} 
-                                borderRadius={'50%'}                        />
+                                tag={`div`} 
+                                width={`44px`} 
+                                height={`44px`} 
+                                borderRadius={`50%`}                        />
 
                         </ListItem>
 

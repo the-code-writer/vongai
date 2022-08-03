@@ -24,11 +24,11 @@ const IMStore = createStore({
         highlight: false,
         badge: 0,
         skeletonList: {
-          count: 5,
+          count: 9,
           effect:"wave",
-          title:"Morbi lobortis et massa",
+          title:"Morbi lobortis et",
           subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          text:"Lorem ipsum dolor sit amet"
         },
       },
       {
@@ -45,11 +45,11 @@ const IMStore = createStore({
         highlight: false,
         badge: 53,
         skeletonList: {
-          count: 5,
+          count: 9,
           effect:"wave",
-          title:"Morbi lobortis et massa",
+          title:"Morbi lobortis et",
           subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          text:"Lorem ipsum dolor sit amet"
         },
       },
       {
@@ -66,11 +66,11 @@ const IMStore = createStore({
         highlight: true,
         badge: 0,
         skeletonList: {
-          count: 5,
+          count: 9,
           effect:"wave",
-          title:"Morbi lobortis et massa",
+          title:"Morbi lobortis et",
           subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          text:"Lorem ipsum dolor sit amet"
         },
       },
       {
@@ -87,11 +87,11 @@ const IMStore = createStore({
         highlight: false,
         badge: 1,
         skeletonList: {
-          count: 5,
+          count: 9,
           effect:"wave",
-          title:"Morbi lobortis et massa",
+          title:"Morbi lobortis et",
           subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          text:"Lorem ipsum dolor sit amet"
         },
       },
     ],
