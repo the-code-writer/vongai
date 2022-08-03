@@ -7,7 +7,7 @@ import ProductPage from '../pages/product.jsx';
 import SettingsPage from '../pages/settings.jsx';
 
 
-import IMHomeScreen from '../pages/im/home-screen.tsx';
+import IMHomeScreen from '../pages/im/im-home-screen.tsx';
 
 import DynamicRoutePage from '../pages/dynamic-route.jsx';
 import RequestAndLoad from '../pages/request-and-load.jsx';

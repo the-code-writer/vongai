@@ -1,7 +1,7 @@
 
 import { createStore } from 'framework7/lite';
 
-const instantMessengerStore = createStore({
+const IMStore = createStore({
   
   state: {
 
@@ -20,8 +20,16 @@ const instantMessengerStore = createStore({
         iconAurora: "f7:camera_fill",
         iconOnly: true,
         view: "IMTabContentCamera",
+        slug: "im-tab-content-camera",
         highlight: false,
-        badge: 0
+        badge: 0,
+        skeletonList: {
+          count: 9,
+          effect:"wave",
+          title:"Morbi lobortis et",
+          subtitle:"Cras consequat",
+          text:"Lorem ipsum dolor sit amet"
+        },
       },
       {
         tabLink: "tab-im-chats",
@@ -33,8 +41,16 @@ const instantMessengerStore = createStore({
         iconAurora: "f7:bubble_left_bubble_right_fill",
         iconOnly: false,
         view: "IMTabContentChats",
+        slug: "im-tab-content-chats",
         highlight: false,
-        badge: 53
+        badge: 53,
+        skeletonList: {
+          count: 9,
+          effect:"wave",
+          title:"Morbi lobortis et",
+          subtitle:"Cras consequat",
+          text:"Lorem ipsum dolor sit amet"
+        },
       },
       {
         tabLink: "tab-im-stories",
@@ -46,8 +62,16 @@ const instantMessengerStore = createStore({
         iconAurora: "f7:person_2_square_stack_fill",
         iconOnly: false,
         view: "IMTabContentStories",
+        slug: "im-tab-content-stories",
         highlight: true,
-        badge: 0
+        badge: 0,
+        skeletonList: {
+          count: 9,
+          effect:"wave",
+          title:"Morbi lobortis et",
+          subtitle:"Cras consequat",
+          text:"Lorem ipsum dolor sit amet"
+        },
       },
       {
         tabLink: "tab-im-calls",
@@ -59,8 +83,16 @@ const instantMessengerStore = createStore({
         iconAurora: "f7:phone_fill",
         iconOnly: false,
         view: "IMTabContentCalls",
+        slug: "im-tab-content-calls",
         highlight: false,
-        badge: 1
+        badge: 1,
+        skeletonList: {
+          count: 9,
+          effect:"wave",
+          title:"Morbi lobortis et",
+          subtitle:"Cras consequat",
+          text:"Lorem ipsum dolor sit amet"
+        },
       },
     ],
 
@@ -463,4 +495,4 @@ const instantMessengerStore = createStore({
   },
 })
 
-export default instantMessengerStore;
+export default IMStore;

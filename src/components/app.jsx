@@ -29,7 +29,7 @@ import routes from '../js/routes';
 import store from '../js/store';
 
 import instantMessengerStore from '../pages/im/store/im-store';
-import userAccountData from '../pages/user/store/user-data-store';
+import userData from '../pages/user/store/user-data-store';
 
 
 const MyApp = () => {
@@ -48,8 +48,8 @@ const MyApp = () => {
       store: store,
       data: {
         instantMessengerStore: instantMessengerStore,
-        userAccountData: userAccountData,
-      }
+        userAccountData: userData,
+      },
       // App routes
       routes: routes,
       // Register service worker (only on production build)

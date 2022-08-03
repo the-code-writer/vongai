@@ -3,10 +3,10 @@
 buildscript {
     
     repositories {
-        mavenLocal()
-        google()
         mavenCentral()
+        mavenLocal()
         jcenter()
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.1'
@@ -21,10 +21,10 @@ apply from: "variables.gradle"
 
 allprojects {
     repositories {
-        mavenLocal()
-        google()
         mavenCentral()
+        mavenLocal()
         jcenter()
+        google()
     }
 }
 

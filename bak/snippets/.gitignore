@@ -1,8 +1,0 @@
-package-lock.json
-node_modules
-
-tsconfig.json
-dist/
-.DS_Store
-.idea
-pnpm-lock.yaml

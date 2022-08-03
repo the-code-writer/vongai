@@ -1,69 +1,85 @@
 import React, { useEffect, useState  } from 'react';
 import {
-    Page, List, ListItem, SkeletonBlock, f7, f7ready
+    Page, List, ListItem, SkeletonBlock, f7, f7ready, useStore,
 } from 'framework7-react';
 
-export default ({ f7route, f7router, userAccountData, slug, view, id, className}): JSX.Element => {
+import IMStore from '../../../pages/im/store/im-store';
 
-        const imChatsLoading = f7.params.data.instantMessengerStore.useStore('imChatsLoading');
+import UserDataStore from '../../../pages/user/store/user-data-store';
 
-        const imChats = f7.params.data.instantMessengerStore.useStore('imChats');
+export default ({ id,  slug, view, className, skeletonList}): JSX.Element => {
 
-        const imChatsUnread = f7.params.data.instantMessengerStore.useStore('imChatsUnread');
+        let componentViewId = '';
 
-        const imListChatsLoading = f7.params.data.instantMessengerStore.useStore('imListChatsLoading');
+        componentViewId = view;
 
-        const imListChats = f7.params.data.instantMessengerStore.useStore('imListChats');
-
-        const userAccountData = f7.params.data.userAccountData.useStore('userAccountData');
+        let imChatsLoading=[];
+        let imChats=[];
+        let imChatsUnread=[];
+        let imListChatsLoading=[];
+        let imListChats=[];
+        let userAccountData=[];
 
     useEffect(() => {
 
-        f7ready((f7) => {
+        f7ready((framework7IO) => {
           
+            componentViewId = view;
+
+            imChatsLoading = IMStore.state.imChatsLoading;
+
+            imChats = IMStore.state.imChats;
+    
+            imChatsUnread = IMStore.state.imChatsUnread;
+    
+            imListChatsLoading = IMStore.state.imListChatsLoading;
+    
+            imListChats = IMStore.state.imListChats;
+    
+            userAccountData = UserDataStore.state.userData.userData;
+    
         });
 
       }, []);
 
     return (
 
-        <Page name='home' className='im-tab-content-chats-page'>
+        <Page id={`${id}`} name={`${slug}`} className={`page ${className}`}>
 
-            <List className="searchbar-not-found im-tab-content-chats-searchbar-not-found">
+            <List 
+                className="searchbar-not-found im-tab-content-chats-searchbar-not-found">
                 <div style={{textAlign: "center", marginTop: "64px"}}>
                     No chats found
                 </div>
             </List>
 
-            <List mediaList noChevron className="search-list searchbar-found im-tab-content-chats-searchbar-found">
+            <List 
+                mediaList noChevron className="search-list searchbar-found im-tab-content-chats-searchbar-found">
 
-            {imListChatsLoading ? (
+                {imListChatsLoading ? (
 
-                    [1, 2, 3, 4, 5, 6, 7].map((n) => (
+                    [...Array(skeletonList.count).keys()].map((n) => (
 
                         <ListItem
                             key={n}
-                            className={`skeleton-text skeleton-effect-wave`}
-                            title="Morbi lobortis et massa"
-                            subtitle="Cras consequat"
-                            text="Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+                            className={`skeleton-text skeleton-effect-${skeletonList.effect}`}
+                            title={`${skeletonList.title}`}
+                            text={`${skeletonList.text}`}
+                            after={`00:00`}
                         >
 
-                            <SkeletonBlock
-                                style={{ width: '48px', height: '48px', borderRadius: '50%' }}
+                        <SkeletonBlock
                                 slot="media" 
-                                tag={''} 
-                                width={''} 
-                                height={''} 
-                                effect={'blink'} 
-                                borderRadius={''}                            
-                            />
+                                tag={`div`} 
+                                width={`44px`} 
+                                height={`44px`} 
+                                borderRadius={`50%`}                        />
 
                         </ListItem>
 
                     ))
 
-                 ) : (
+                ) : (
 
                     imListChats.map((chat: any, index: number) => (
 
@@ -78,7 +94,10 @@ export default ({ f7route, f7router, userAccountData, slug, view, id, className}
                             text={chat.text}
                         >
                             
-                            <div slot="media" className={"andon-status"}/>
+                            <div 
+                                slot="media" 
+                                className={"andon-status"}
+                            />
 
                             <img
                                 slot="media"
@@ -92,7 +111,7 @@ export default ({ f7route, f7router, userAccountData, slug, view, id, className}
 
                     ))
 
-            )}
+                )}
 
             </List>
 
