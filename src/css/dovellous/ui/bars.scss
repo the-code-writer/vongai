@@ -5,10 +5,7 @@
 }
 
 .tabbar {
-    .tab-link.tab-im-camera, 
-    .tab-link.tab-im-chats, 
-    .tab-link.tab-im-status, 
-    .tab-link.tab-im-calls{
+    .link.tab-link{
         height: 100%;
         width: 100%;
         box-sizing: border-box;

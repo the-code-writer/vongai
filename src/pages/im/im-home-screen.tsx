@@ -18,11 +18,11 @@ export default () => {
   const imHomeScreenTabs = store.state.imHomeScreenTabsData;
 
   const imTabVisible = (e: any, tabContent: { tabLink: any; tabClass: any; tabActive: any; slug?: any; view: any; skeletonList?: any; tabText?: string | undefined; iconIos?: string | undefined; iconMd?: string | undefined; iconAurora?: string | undefined; iconOnly?: boolean | undefined; highlight?: boolean | undefined; badge?: number | undefined; }, tabIndex: number) => {
-    throw new Error('Function not implemented.');
+    console.log(":: SHOW ::", e, tabContent, tabIndex);
   }
 
   const imTabInHidden = (e: any, tabContent: { tabLink: any; tabClass: any; tabActive: any; slug?: any; view: any; skeletonList?: any; tabText?: string | undefined; iconIos?: string | undefined; iconMd?: string | undefined; iconAurora?: string | undefined; iconOnly?: boolean | undefined; highlight?: boolean | undefined; badge?: number | undefined; }, tabIndex: number) => {
-    throw new Error('Function not implemented.');
+    console.log(":: HIDE ::", e, tabContent, tabIndex);
   }
 
   useEffect(() => {
