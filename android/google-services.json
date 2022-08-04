@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "244888151725",
+    "project_id": "vong-ai",
+    "storage_bucket": "vong-ai.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244888151725:android:211d3514f972b29043c824",
+        "android_client_info": {
+          "package_name": "ai.inbox.communicator.phone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "244888151725-qbtal790m44t67jhvkj4rnk374mnqrs2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDf554Gyif8gMwqj8wSBEvsUBV80J6OvLU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "244888151725-qbtal790m44t67jhvkj4rnk374mnqrs2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244888151725:android:5c281fe6273cae6f43c824",
+        "android_client_info": {
+          "package_name": "vong.ai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "244888151725-qbtal790m44t67jhvkj4rnk374mnqrs2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDf554Gyif8gMwqj8wSBEvsUBV80J6OvLU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "244888151725-qbtal790m44t67jhvkj4rnk374mnqrs2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

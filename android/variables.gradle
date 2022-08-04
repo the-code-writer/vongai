@@ -1,7 +1,7 @@
 ext {
     minSdkVersion = 22
-    compileSdkVersion = 32
-    targetSdkVersion = 32
+    compileSdkVersion = 31
+    targetSdkVersion = 31
     androidxActivityVersion = '1.4.0'
     androidxAppCompatVersion = '1.4.2'
     androidxCoordinatorLayoutVersion = '1.2.0'
@@ -14,4 +14,5 @@ ext {
     androidxEspressoCoreVersion = '3.4.0'
     cordovaAndroidVersion = '10.1.1'    
     rgcfaIncludeGoogle = true
+    rgcfaIncludeFacebook = true
 }

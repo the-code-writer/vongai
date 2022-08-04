@@ -8,6 +8,7 @@
   "keywords": [],
   "dependencies": {
     "@capacitor-community/barcode-scanner": "^2.1.1",
+    "@capacitor-community/contacts": "^1.1.3",
     "@capacitor-community/fcm": "^2.0.2",
     "@capacitor-community/sqlite": "^3.5.1",
     "@capacitor-community/text-to-speech": "^1.1.3",

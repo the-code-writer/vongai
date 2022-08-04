@@ -1,10 +1,13 @@
 import React, { useEffect, useState  } from 'react';
 import { Page, 
   Navbar, NavTitle, NavRight, 
-  Searchbar, theme, 
+  Searchbar, theme, Popover,
+  List, ListItem, Block,
   Toolbar, Link, Tabs, Tab, 
-  Fab, Icon, f7, f7ready, useStore } from 'framework7-react';
-
+  Fab, FabBackdrop, FabButtons, FabButton, Chip, Icon, f7, f7ready, useStore } from 'framework7-react';
+  import { initializeApp } from 'firebase/app';
+  import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
+  import { Contacts } from '@capacitor-community/contacts'
 import IMTabContentChats from './components/im-tab-content-chats';
 
 import navBarLogo from '../../assets/images/logo-typographical-white.png';
@@ -12,19 +15,152 @@ import navBarLogo from '../../assets/images/logo-typographical-white.png';
 import store from '../../pages/im/store/im-store';
 
 export default () => {
+  const firebaseConfig = {
+    apiKey: "AIzaSyCauR1flLkrZUbgx_dQDbBL8Mu_bDEaHJg",
+    authDomain: "vong-ai.firebaseapp.com",
+    projectId: "vong-ai",
+    storageBucket: "vong-ai.appspot.com",
+    messagingSenderId: "244888151725",
+    appId: "1:244888151725:web:b05acaf6f64adc7643c824",
+    measurementId: "G-RL7K8ZLF1L"
+  };
+  const app = initializeApp(firebaseConfig);
+  const fabButtonMeta = [
+    {
+      icons: {
+        ios: '', md: 'photo_camera', aurora: ''
+      },
+      slug: 'sheet-modal-open-contact', title: 'Capture', action: 'openCameraSheetModal'
+    },
+    {
+      icons: {
+        ios: '', md: 'chat', aurora: ''
+      },
+      slug: 'sheet-modal-open-contact', title: 'Chat', action: 'openChatSheetModal'
+    },
+    {
+      icons: {
+        ios: '', md: 'photo_camera', aurora: ''
+      },
+      slug: 'sheet-modal-open-contact', title: 'Create Story', action: 'openStoriesSheetModal'
+    },
+    {
+      icons: {
+        ios: '', md: 'call', aurora: ''
+      },
+      slug: 'sheet-modal-open-contact', title: 'Call', action: 'openCallSheetModal'
+    },
+  ];
 
-  //const imHomeScreenTabs = useState(store.getters.imHomeScreenTabsData.value);
+  const [tabCurrentIndex, setTabCurrentIndex] = useState(1);
+
+  const [fabButton, setFabButton] = useState(fabButtonMeta[tabCurrentIndex]);
 
   const imHomeScreenTabs = store.state.imHomeScreenTabsData;
 
   const imTabVisible = (e: any, tabContent: { tabLink: any; tabClass: any; tabActive: any; slug?: any; view: any; skeletonList?: any; tabText?: string | undefined; iconIos?: string | undefined; iconMd?: string | undefined; iconAurora?: string | undefined; iconOnly?: boolean | undefined; highlight?: boolean | undefined; badge?: number | undefined; }, tabIndex: number) => {
     console.log(":: SHOW ::", e, tabContent, tabIndex);
+    setTabCurrentIndex(tabIndex);
+    setFabButton(fabButtonMeta[tabIndex]);
   }
 
   const imTabInHidden = (e: any, tabContent: { tabLink: any; tabClass: any; tabActive: any; slug?: any; view: any; skeletonList?: any; tabText?: string | undefined; iconIos?: string | undefined; iconMd?: string | undefined; iconAurora?: string | undefined; iconOnly?: boolean | undefined; highlight?: boolean | undefined; badge?: number | undefined; }, tabIndex: number) => {
     console.log(":: HIDE ::", e, tabContent, tabIndex);
   }
 
+  const socialSignIn = async (provider: string) => {
+  
+    let signInResult:any = '';
+  
+    switch(provider) {
+  
+      case 'GOOGLE': {
+  
+        const result = await FirebaseAuthentication.signInWithGoogle();
+        signInResult = result.user;  
+        break;
+  
+      }
+  
+      case 'FACEBOOK': {
+  
+        //const result = await FirebaseAuthentication.signInWithFacebook();
+        //signInResult = result.user;  
+        break;
+  
+      }
+  
+      case 'TWITTER': {
+  
+        const result = await FirebaseAuthentication.signInWithTwitter();
+        signInResult = result.user;  
+        break;
+  
+      }
+  
+      case 'APPLE': {
+  
+        const result = await FirebaseAuthentication.signInWithApple();
+        signInResult = result.user;  
+        break;
+  
+      }
+  
+      case 'PHONE': {
+  
+        const { verificationId } = await FirebaseAuthentication.signInWithPhoneNumber(
+          {
+            phoneNumber: '+263772128622',
+          },
+        );
+        const verificationCode = window.prompt(
+          'Please enter the verification code that was sent to your mobile device.',
+        );
+
+        f7.dialog.prompt('Please enter the verification code that was sent to your mobile device.', async function (verificationCode) {
+          const result = await FirebaseAuthentication.signInWithPhoneNumber({
+            verificationId,
+            verificationCode,
+          });
+          
+          console.warn("::: RESULT :::", result);
+
+          signInResult = result.user; 
+          
+        });
+
+        break;
+  
+      }
+  
+      case 'CONTACTS': {
+  
+        Contacts.getContacts().then(result => {
+          console.log(result);
+          for (const contact of result.contacts) {
+              console.log(contact);
+          }
+      });  
+        break;
+  
+      }
+  
+      default: {
+  
+        const result = await FirebaseAuthentication.signInWithGoogle();
+        signInResult = result.user;  
+        break;
+  
+      }
+  
+    }
+
+    console.warn("::: SIGN IN RESULT :::", signInResult);
+
+    return signInResult;
+  
+  }
+  
   useEffect(() => {
 
     f7ready((framework7IO) => {
@@ -62,7 +198,63 @@ export default () => {
                       searchContainer=".search-list"
                       searchIn=".item-title, .item-subtitle, .item-text"
                       disableButton={!theme.aurora}
-                  />
+                      disableButtonText="Cancel"
+                      placeholder="Search..."
+                      clearButton={true}
+                      >
+                        <div slot="after-inner">
+                        <Block strong>
+                          <Chip text="Photos" mediaBgColor="transparent">
+                            <Icon
+                              slot="media"
+                              ios="f7:plus_circle"
+                              aurora="f7:plus_circle"
+                              md="material:image"
+                            />
+                          </Chip>
+                          <Chip text="Videos" mediaBgColor="transparent">
+                            <Icon
+                              slot="media"
+                              ios="f7:plus_circle"
+                              aurora="f7:plus_circle"
+                              md="material:videocam"
+                            />
+                          </Chip>
+                          <Chip text="Links" mediaBgColor="transparent">
+                            <Icon
+                              slot="media"
+                              ios="f7:plus_circle"
+                              aurora="f7:plus_circle"
+                              md="material:link"
+                            />
+                          </Chip>
+                          <Chip text="GIFs" mediaBgColor="transparent">
+                            <Icon
+                              slot="media"
+                              ios="f7:plus_circle"
+                              aurora="f7:plus_circle"
+                              md="material:gif"
+                            />
+                          </Chip>
+                          <Chip text="Audio" mediaBgColor="transparent">
+                            <Icon
+                              slot="media"
+                              ios="f7:plus_circle"
+                              aurora="f7:plus_circle"
+                              md="material:volume_down"
+                            />
+                          </Chip>
+                          <Chip text="Documents" mediaBgColor="transparent">
+                            <Icon
+                              slot="media"
+                              ios="f7:plus_circle"
+                              aurora="f7:plus_circle"
+                              md="material:article"
+                            />
+                          </Chip>
+                        </Block>
+                        </div>
+                  </Searchbar>
               </Navbar>
 
       <Toolbar tabbar top>
@@ -189,16 +381,58 @@ export default () => {
 
       </Tabs>
 
+      <FabBackdrop slot="fixed" />
+
               <Fab position="right-bottom"
                   className={"m-b-0"}
                   slot="fixed"
-                  color="blue"
                   >
                   <Icon
-                      ios="f7:arrow_up_circle_fill"
-                      aurora="f7:arrow_up_circle_fill"
-                      md="material:send"/>
+                      ios={`f7:${fabButton.icons.md}`}
+                      aurora={`f7:${fabButton.icons.md}`}
+                      md={`material:${fabButton.icons.md}`}/>
+                  <Icon ios="f7:xmark" aurora="f7:xmark" md="material:close"></Icon>
+                    <FabButtons position="top">
+                      <FabButton label="Action 1">1</FabButton>
+                      <FabButton label="Action 2">2</FabButton>
+                    </FabButtons>
               </Fab>
+
+              <Popover className="popover-menu">
+                <List>
+                  <ListItem
+                    onClick={() => socialSignIn('GOOGLE')}
+                    link="#" 
+                    popoverClose 
+                    title="Google Sign In" 
+                  />
+                  <ListItem
+                    onClick={() => socialSignIn('APPLE')}
+                    link="#" 
+                    popoverClose 
+                    title="Apple Sign In" />
+                  <ListItem
+                    onClick={() => socialSignIn('FACEBOOK')}
+                    link="#" 
+                    popoverClose 
+                    title="Facebook Sign In" />
+                  <ListItem
+                    onClick={() => socialSignIn('TWITTER')}
+                    link="#" 
+                    popoverClose 
+                    title="Twitter Sign In" />
+                    <ListItem
+                      onClick={() => socialSignIn('PHONE')}
+                      link="#" 
+                      popoverClose 
+                      title="Phone Number" />
+                  <ListItem
+                    onClick={() => socialSignIn('CONTACTS')}
+                    link="#" 
+                    popoverClose 
+                    title="Contacts" />
+                </List>
+              </Popover>
 
     </Page>
 
