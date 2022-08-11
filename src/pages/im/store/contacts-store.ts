@@ -52,11 +52,13 @@ const StorageContacts = createStore({
       state.imContacts = imContacts;
     },
 
-    syncIMContacts({ state }: any) {      
+    syncIMContacts({ state, dispatch  }: any) {      
       
       workerSyncIMContacts.onmessage = (e) => {
 
         state.imContacts = e.data;
+
+        dispatch('syncPhoneContacts', null);
       
       };
 
@@ -64,7 +66,7 @@ const StorageContacts = createStore({
 
     },
 
-    syncPhoneContacts({ state }: any) {      
+    syncPhoneContacts({ state, dispatch  }: any) {      
       
       workerSyncPhoneContacts.onmessage = (e) => {
 

@@ -84,9 +84,11 @@
     "rehype-raw": "^6.1.1",
     "remark-gfm": "^3.0.1",
     "reshake": "^1.2.4",
+    "sharp": "^0.30.7",
     "skeleton-elements": "^4.0.0",
     "swiper": "^8.3.2",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "web-worker": "^1.2.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.4",
@@ -109,6 +111,7 @@
   "scripts": {
     "add-android": "npx cap add android",
     "add-ios": "npx cap add ios",
+    "pre-android-icons": "npm install --platform=win32 --arch=x64 sharp --force --legacy-peer-deps",
     "gen-android-icons": "cordova-res android --skip-config --copy",
     "gen-ios-icons": "cordova-res ios --skip-config --copy",
     "rstart": "react-scripts start",

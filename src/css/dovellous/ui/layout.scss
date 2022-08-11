@@ -12,5 +12,9 @@ li.list-group-title.media-item, .md .contacts-list .list-group-title {
 }
 
 .md .contacts-list li:not(.list-group-title) {
-    padding-left: 0px;
+    padding-left: 0 !important;
+}
+
+.md .contacts-list .list-group-title + li {
+    margin-top: 0 !important;
 }

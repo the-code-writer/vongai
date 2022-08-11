@@ -4,7 +4,7 @@ import {
   Navbar,
   NavRight,
   NavLeft,
-  Link, List, ListIndex, ListItem, ListGroup,
+  Link, List, ListIndex, ListItem, ListGroup, Searchbar, theme
 } from "framework7-react";
 
 import React from "react";
@@ -23,8 +23,15 @@ export default ({contacts, popupOpened, onPopupClosed, onContactSelected}) => {
                     iconAurora="f7:arrow_left" 
                     iconMd="material:arrow_back" />
             </NavLeft>
-            <Navbar title="Select Contact" subtitle="346 contacts">
+            <Navbar title="Select Contact" subtitle={`${Object.keys(contacts).length} contacts"`}>
+            
             <NavRight>
+                <Link
+                searchbarEnable=".searchbar-demo"
+                iconIos="f7:search"
+                iconAurora="f7:search"
+                iconMd="material:search"
+                ></Link>
                 <Link
                     iconIos="f7:ellipsis_vertical"
                     iconAurora="f7:ellipsis_vertical"
@@ -32,6 +39,13 @@ export default ({contacts, popupOpened, onPopupClosed, onContactSelected}) => {
                     popoverOpen=".popover-menu"
                 />
             </NavRight>
+            <Searchbar
+                className="searchbar-demo"
+                expandable
+                searchContainer=".search-list"
+                searchIn=".item-title"
+                disableButton={!theme.aurora}
+            ></Searchbar>
             </Navbar>
             <ListIndex
                 init
@@ -40,7 +54,10 @@ export default ({contacts, popupOpened, onPopupClosed, onContactSelected}) => {
                 scrollList={true}
                 label={true}
             />
-            <List contactsList mediaList>
+            <List className="searchbar-not-found">
+                <ListItem title="Nothing found"></ListItem>
+            </List>
+            <List className="search-list searchbar-found" contactsList mediaList>
                 {/**/}
                 {Object.keys(contacts).map((key:any, index:number)=>(
                 <ListGroup key={`sheet-modal-open-calls-popup-list-group-${index}`}>

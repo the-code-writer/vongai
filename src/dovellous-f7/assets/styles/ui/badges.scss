@@ -1,0 +1,39 @@
+
+.item-after .badge {
+    display: flex;
+    position: absolute;
+    top: 24px;
+    right: 0;
+    background: var(--f7-theme-color);
+  }
+  
+  .andon-status-navbar {
+    border-radius: 50%;
+    border: 2px solid white;
+    background: #0abf0a;
+    width: 8px;
+    height: 8px;
+    position: absolute;
+    bottom: 2px;
+    right: 12px;
+  }
+  
+  .andon-status {
+    border-radius: 50%;
+    border: 2px solid white;
+    background: #0abf0a;
+    width: 8px;
+    height: 8px;
+    position: relative;
+    top: -30px;
+    left: -30px;
+  }
+  
+  .andon-status.warning {
+    background: #ffb500;
+  }
+  
+  .andon-status.error {
+    background: #ff0000;
+  }
+  

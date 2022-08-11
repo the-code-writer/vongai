@@ -200,7 +200,7 @@ const MyApp = () => {
 
       <IMContactListCalls
         contacts={StorageContacts.getters.imContacts.value}       
-        popupOpened={popupIMContactsListCallsToggleHandler}
+        popupOpened={popupIMContactsListCallsOpened}
         onPopupClosed={popupIMContactsListCallsToggleHandler}
         onContactSelected={onContactSelected}
       />
