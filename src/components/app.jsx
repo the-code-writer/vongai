@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { getDevice }  from 'framework7/lite-bundle';
+import React, { useState, useEffect } from "react";
+import { getDevice } from "framework7/lite-bundle";
 import {
   f7,
   f7ready,
@@ -21,93 +21,116 @@ import {
   ListItem,
   ListInput,
   ListButton,
-  BlockFooter
-} from 'framework7-react';
+  BlockFooter,
+} from "framework7-react";
 
-import capacitorApp from '../js/capacitor-app';
-import routes from '../js/routes';
-import store from '../js/store';
+import capacitorApp from "../js/capacitor-app";
+import routes from "../js/routes";
+import store from "../js/store";
 
-import instantMessengerStore from '../pages/im/store/im-store';
-import userData from '../pages/user/store/user-data-store';
+import { StorageIM } from "../pages/im/store/im-store";
+import { StorageContacts } from "../pages/im/store/contacts-store";
 
+import IMContactListCalls from "../pages/im/components/popups/im-popup-contacts-calls";
 
 const MyApp = () => {
   // Login screen demo data
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const device = getDevice();
   // Framework7 Parameters
   const f7params = {
-      name: 'Vongai', // App name
-      theme: 'auto', // Automatic theme detection
+    name: "Vongai", // App name
+    theme: "auto", // Automatic theme detection
 
-
-      id: 'vong.ai', // App bundle ID
-      // App store
-      store: store,
-      data: {
-        instantMessengerStore: instantMessengerStore,
-        userAccountData: userData,
-      },
-      // App routes
-      routes: routes,
-      // Register service worker (only on production build)
-      serviceWorker: process.env.NODE_ENV ==='production' ? {
-        path: '/service-worker.js',
-      } : {},
-      // Input settings
-      input: {
-        scrollIntoViewOnFocus: device.capacitor,
-        scrollIntoViewCentered: device.capacitor,
-      },
-      // Capacitor Statusbar settings
-      statusbar: {
-        iosOverlaysWebView: true,
-        androidOverlaysWebView: true,
-      },
+    id: "vong.ai", // App bundle ID
+    // App store
+    store: store,
+    data: {
+      IM: { StorageIM: StorageIM },
+    },
+    // App routes
+    routes: routes,
+    // Register service worker (only on production build)
+    serviceWorker:
+      process.env.NODE_ENV === "production"
+        ? {
+            path: "/service-worker.js",
+          }
+        : {},
+    // Input settings
+    input: {
+      scrollIntoViewOnFocus: device.capacitor,
+      scrollIntoViewCentered: device.capacitor,
+    },
+    // Capacitor Statusbar settings
+    statusbar: {
+      iosOverlaysWebView: true,
+      androidOverlaysWebView: true,
+    },
   };
   const alertLoginData = () => {
-    f7.dialog.alert('Username: ' + username + '<br>Password: ' + password, () => {
-      f7.loginScreen.close();
-    });
-  }
-  f7ready(() => {
+    f7.dialog.alert(
+      "Username: " + username + "<br>Password: " + password,
+      () => {
+        f7.loginScreen.close();
+      }
+    );
+  };
 
+  const [popupIMContactsListCallsOpened, setPopupIMContactsListCallsOpened] = useState(false);
+
+  const popupIMContactsListCallsToggleHandler = ()=>{
+
+    setPopupIMContactsListCallsOpened(!popupIMContactsListCallsOpened);
+
+  }
+
+  const onContactSelected = (contact)=>{
+
+    console.log("::: onContactSelected :::", contact);
+
+  }
+
+  f7ready(() => {
     // Init capacitor APIs (see capacitor-app.js)
     if (f7.device.capacitor) {
       capacitorApp.init(f7);
     }
     // Call F7 APIs here
+
+    StorageContacts.dispatch("syncIMContacts", null);
+
+    f7.on('OPEN_CALLS_MODAL', popupIMContactsListCallsToggleHandler);
+
   });
 
+
   return (
-    <App { ...f7params } >
+    <App {...f7params}>
+      {/* Left panel with cover effect*/}
+      <Panel left cover dark>
+        <View>
+          <Page>
+            <Navbar title="Left Panel" />
+            <Block>Left panel content goes here</Block>
+          </Page>
+        </View>
+      </Panel>
 
-        {/* Left panel with cover effect*/}
-        <Panel left cover dark>
-          <View>
-            <Page>
-              <Navbar title="Left Panel"/>
-              <Block>Left panel content goes here</Block>
-            </Page>
-          </View>
-        </Panel>
+      {/* Right panel with reveal effect*/}
+      <Panel right reveal dark>
+        <View>
+          <Page>
+            <Navbar title="Right Panel" />
+            <Block>Right panel content goes here</Block>
+          </Page>
+        </View>
+      </Panel>
 
+      <View id="view-home" main tab tabActive url="/" />
 
-        {/* Right panel with reveal effect*/}
-        <Panel right reveal dark>
-          <View>
-            <Page>
-              <Navbar title="Right Panel"/>
-              <Block>Right panel content goes here</Block>
-            </Page>
-          </View>
-        </Panel>
-
-        <View id="view-home" main tab tabActive url="/" />
-
-        {/* Views/Tabs container 
+      {/* Views/Tabs container 
         <Views tabs className="safe-areas">
           {/* Tabbar for switching views-tabs  
           <Toolbar tabbar labels bottom>
@@ -166,13 +189,23 @@ const MyApp = () => {
             <List>
               <ListButton title="Sign In" onClick={() => alertLoginData()} />
               <BlockFooter>
-                Some text about login information.<br />Click "Sign In" to close Login Screen
+                Some text about login information.
+                <br />
+                Click "Sign In" to close Login Screen
               </BlockFooter>
             </List>
           </Page>
         </View>
       </LoginScreen>
+
+      <IMContactListCalls
+        contacts={StorageContacts.getters.imContacts.value}       
+        popupOpened={popupIMContactsListCallsToggleHandler}
+        onPopupClosed={popupIMContactsListCallsToggleHandler}
+        onContactSelected={onContactSelected}
+      />
+
     </App>
-  )
-}
+  );
+};
 export default MyApp;

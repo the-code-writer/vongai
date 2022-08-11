@@ -1,470 +1,141 @@
+import * as React from 'react';
 
 import { createStore } from 'framework7/lite';
 
-const userDataStore = createStore({
+const StorageUserAccount = createStore({
   
   state: {
 
-    /*----- Start Instant Messenger State Variables -----*/
+    /*----- Start User Account State Variables -----*/
 
-    //IM Screen Tab Data
+    firstName: '',
+    lastName:  '',
+    displayName: '',
+    displayPhoto: '',
+    photoURL: '',
+    phoneNumber: '',
+    email: '',
+    firebaseUID: '',
+    username: '',    
+    userMetadata: {},
 
-    userData : [
-      {
-        tabLink: "tab-im-camera",
-        tabText: "",
-        tabClass: "tab-im-camera",
-        tabActive: false,
-        iconIos: "f7:camera_fill",
-        iconMd: "f7:camera_fill",
-        iconAurora: "f7:camera_fill",
-        iconOnly: true,
-        view: "IMTabContentCamera",
-        slug: "im-tab-content-camera",
-        highlight: false,
-        badge: 0
-      },
-      {
-        tabLink: "tab-im-chats",
-        tabText: "Chats",
-        tabClass: "tab-im-chats",
-        tabActive: true,
-        iconIos: "",
-        iconMd: "",
-        iconAurora: "f7:bubble_left_bubble_right_fill",
-        iconOnly: false,
-        view: "IMTabContentChats",
-        slug: "im-tab-content-chats",
-        highlight: false,
-        badge: 53
-      },
-      {
-        tabLink: "tab-im-stories",
-        tabText: "Status",
-        tabClass: "tab-im-stories",
-        tabActive: false,
-        iconIos: "",
-        iconMd: "",
-        iconAurora: "f7:person_2_square_stack_fill",
-        iconOnly: false,
-        view: "IMTabContentStories",
-        slug: "im-tab-content-stories",
-        highlight: true,
-        badge: 0
-      },
-      {
-        tabLink: "tab-im-calls",
-        tabText: "Calls",
-        tabClass: "tab-im-calls",
-        tabActive: false,
-        iconIos: "",
-        iconMd: "",
-        iconAurora: "f7:phone_fill",
-        iconOnly: false,
-        view: "IMTabContentCalls",
-        slug: "im-tab-content-calls",
-        highlight: false,
-        badge: 1
-      },
-    ],
-
-    // IM Chats
-
-    imChatsLoading: false,
-
-    imChats: {},
-
-    imChatsUnread: 0,
-
-    imListChatsLoading: false,
-
-    imListChats: [],
-
-    // IM Stories
-
-    imStoriesLoading: false,
-
-    imStoriesViewed: [],
-
-    imStoriesNotViewed: [],
-
-    imStoriesMuted: [],
-
-    imMyStories: [],
-
-    // IM Calls
-
-    imCallsLoading: false,
-
-    imCalls: {},
-
-    imCallsUnread: 0,
-
-    imListCallsLoading: false,
-
-    imListCalls: [],
-
-    // IM Channels
-
-    imChannelsLoading: false,
-
-    imChannels: {},
-
-    imChannelsUnread: 0,
-
-    imListChannelsLoading: false,
-
-    imListChannels: [],
-
-    // IM Bots
-
-    imBotsLoading: false,
-
-    imBots: {},
-
-    imBotsUnread: 0,
-
-    imListBotsLoading: false,
-
-    imListBots: [],
-
-    /*----- End Instant Messenger State Variables -----*/
+    /*----- End User Account State Variables -----*/
 
   },
   getters: {
     
-    /*----- Start Instant Messenger Getters -----*/
+    /*----- Start User Account Getters -----*/
 
-    //IM Screen Tab Data
-
-    imHomeScreenTabsData({ state }) {
-      return state.imHomeScreenTabsData;
+    firstName({ state }) {
+      return state.firstName;
     },
 
-    // IM Chats
-
-    imChatsLoading({ state }) {
-      return state.imChatsLoading;
+    lastName({ state }) {
+      return state.lastName;
     },
 
-    imChats({ state }) {
-      return state.imChats;
+    displayName({ state }) {
+      return state.displayName;
     },
 
-    imChatsUnread({ state }) {
-      return state.imChatsUnread;
+    displayPhoto({ state }) {
+      return state.displayPhoto;
     },
 
-    imListChatsLoading({ state }) {
-      return state.imListChatsLoading;
+    photoURL({ state }) {
+      return state.photoURL;
     },
 
-    imListChats({ state }) {
-      return state.imListChats;
+    phoneNumber({ state }) {
+      return state.phoneNumber;
     },
 
-    // IM Stories
-
-    imStoriesLoading({ state }) {
-      return state.imStoriesLoading;
+    email({ state }) {
+      return state.email;
     },
 
-    imStoriesViewed({ state }) {
-      return state.imStoriesViewed;
+    firebaseUID({ state }) {
+      return state.firebaseUID;
     },
 
-    imListStoriesNotViewed({ state }) {
-      return state.imListStoriesNotViewed;
-    },
-
-    imListStoriesMuted({ state }) {
-      return state.imListStoriesMuted;
-    },
-
-    imMyStories({ state }) {
-      return state.imMyStories;
-    },
-
-    // IM Calls
-
-    imCallsLoading({ state }) {
-      return state.imCallsLoading;
-    },
-
-    imCalls({ state }) {
-      return state.imCalls;
-    },
-
-    imCallsUnread({ state }) {
-      return state.imCallsUnread;
-    },
-
-    imListCallsLoading({ state }) {
-      return state.imListCallsLoading;
-    },
-
-    imListCalls({ state }) {
-      return state.imListCalls;
-    },
-
-    // IM Channels
-
-    imChannelsLoading({ state }) {
-      return state.imChannelsLoading;
-    },
-
-    imChannels({ state }) {
-      return state.imChannels;
-    },
-
-    imChannelsUnread({ state }) {
-      return state.imChannelsUnread;
-    },
-
-    imListChannelsLoading({ state }) {
-      return state.imListChannelsLoading;
-    },
-
-    imListChannels({ state }) {
-      return state.imListChannels;
-    },
-
-    // IM Bots
-
-    imBotsLoading({ state }) {
-      return state.imBotsLoading;
-    },
-
-    imBots({ state }) {
-      return state.imBots;
-    },
-
-    imBotsUnread({ state }) {
-      return state.imBotsUnread;
-    },
-
-    imListBotsLoading({ state }) {
-      return state.imListBotsLoading;
-    },
-
-    imListBots({ state }) {
+    username ({ state }) {
       return state.imListBots;
     },
 
-    /*----- End Instant Messenger Getters -----*/
+    userMetadata ({ state }) {
+      return state.userMetadata;
+    },
+
+    /*----- End User Account Getters -----*/
 
   },
   actions: {
 
-    /*----- Start Instant Messenger Setters / Actions -----*/
+    /*----- Start User Account Setters / Actions -----*/
 
-    //IM Screen Tab Data
-
-    imHomeScreenTabsData({ state }, data) {
-      state.imHomeScreenTabsData = data;
+    firstName({ state }: any, firstName: any) {
+      state.firstName = firstName;
     },
 
-    // IM Chats
-
-    setIMChatsLoading({ state }, isLoading) {
-      state.imChatsLoading = isLoading;
+    lastName({ state }: any, lastName: any) {
+      state.lastName = lastName;
     },
 
-    addIMChat({ state }, Chat) {
-      let currentIMChatsState = state.imChats;
-      currentIMChatsState[Chat.id] = Chat;
-      state.imChats = currentIMChatsState;
+    displayName({ state }: any, displayName: any) {
+      state.displayName = displayName;
     },
 
-    setIMChats({ state }, data) {
-      state.imChats = data;
+    displayPhoto({ state }: any, displayPhoto: any) {
+      state.displayPhoto = displayPhoto;
     },
 
-    setIMChatsUnread({ state }, count) {
-      state.imChatsUnread = count;
+    photoURL({ state }: any, photoURL: any) {
+      state.imListChatsLoading = photoURL;
     },
 
-    setIMChatsIncreament({ state }) {
-      state.imChatsUnread = state.imChatsUnread+1;
+    phoneNumber({ state }: any, phoneNumber: any) {
+      state.phoneNumber = phoneNumber;
     },
 
-    setIMChatsDecreament({ state }) {
-      state.imChatsUnread = state.imChatsUnread-1;
+    email({ state }: any, email: any) {
+      state.email = email;
     },
 
-    setIMListChatsLoading({ state }, isLoading) {
-      state.imListChatsLoading = isLoading;
+    firebaseUID({ state }: any, firebaseUID: any) {
+      state.firebaseUID = firebaseUID;
     },
 
-    addIMListChats({ state }, data) {
-      state.imListChats = [...state.imListChats, data];
+    username({ state }: any, username: any) {
+      state.username = username;
     },
 
-    setIMListChats({ state }, data) {
-      state.imListChats = data;
+    userMetadata({ state }: any, userMetadata: any) {
+      state.userMetadata = userMetadata;
     },
 
-    // IM Stories
-
-    setIMStoriesLoading({ state }, isLoading) {
-      state.imStoriesLoading = isLoading;
+    addUserMetadata({ state }: any, userMetadata: any) {
+      const _userMetadata = state.userMetadata;
+      _userMetadata[userMetadata.key] = userMetadata.value;
+      state.userMetadata = _userMetadata;
     },
 
-    setIMStoriesViewed({ state }, data) {
-      state.imStoriesViewed = data;
-    },
-
-    addIMStoriesViewed({ state }, story) {
-      state.imStoriesViewed = [...state.imStoriesViewed, story];
-    },
-
-    setIMStoriesNotViewed({ state }, data) {
-      state.imStoriesNotViewed = data;
-    },
-
-    addIMStoriesNotViewed({ state }, story) {
-      state.imStoriesNotViewed = [...state.imStoriesNotViewed, story];
-    },
-
-    setIMStoriesMuted({ state }, data) {
-      state.imStoriesMuted = data;
-    },
-
-    addIMStoriesMuted({ state }, story) {
-      state.imStoriesMuted = [...state.imStoriesMuted, story];
-    },
-
-    setIMMyStoriesMuted({ state }, data) {
-      state.imMyStories = data;
-    },
-
-    addIMMyStories({ state }, story) {
-      state.imMyStories = [...state.imMyStories, story];
-    },
-
-    // IM Calls
-
-    setIMCallsLoading({ state }, isLoading) {
-      state.imCallsLoading = isLoading;
-    },
-
-    addIMCall({ state }, Call) {
-      let currentIMCallsState = state.imCalls;
-      currentIMCallsState[Call.id] = Call;
-      state.imCalls = currentIMCallsState;
-    },
-
-    setIMCalls({ state }, data) {
-      state.imCalls = data;
-    },
-
-    setIMCallsUnread({ state }, count) {
-      state.imCallsUnread = count;
-    },
-
-    setIMCallsIncreament({ state }) {
-      state.imCallsUnread = state.imCallsUnread+1;
-    },
-
-    setIMCallsDecreament({ state }) {
-      state.imCallsUnread = state.imCallsUnread-1;
-    },
-
-    setIMListCallsLoading({ state }, isLoading) {
-      state.imListCallsLoading = isLoading;
-    },
-
-    addIMListCalls({ state }, data) {
-      state.imListCalls = [...state.imListCalls, data];
-    },
-
-    setIMListCalls({ state }, data) {
-      state.imListCalls = data;
-    },
-
-    // IM Channels
-
-    setIMChannelsLoading({ state }, isLoading) {
-      state.imChannelsLoading = isLoading;
-    },
-
-    addIMChannel({ state }, Channel) {
-      let currentIMChannelsState = state.imChannels;
-      currentIMChannelsState[Channel.id] = Channel;
-      state.imChannels = currentIMChannelsState;
-    },
-
-    setIMChannels({ state }, data) {
-      state.imChannels = data;
-    },
-
-    setIMChannelsUnread({ state }, count) {
-      state.imChannelsUnread = count;
-    },
-
-    setIMChannelsIncreament({ state }) {
-      state.imChannelsUnread = state.imChannelsUnread+1;
-    },
-
-    setIMChannelsDecreament({ state }) {
-      state.imChannelsUnread = state.imChannelsUnread-1;
-    },
-
-    setIMListChannelsLoading({ state }, isLoading) {
-      state.imListChannelsLoading = isLoading;
-    },
-
-    addIMListChannels({ state }, data) {
-      state.imListChannels = [...state.imListChannels, data];
-    },
-
-    setIMListChannels({ state }, data) {
-      state.imListChannels = data;
-    },
-
-    // IM Bots
-
-    setIMBotsLoading({ state }, isLoading) {
-      state.imBotsLoading = isLoading;
-    },
-
-    addIMBot({ state }, Bot) {
-      let currentIMBotsState = state.imBots;
-      currentIMBotsState[Bot.id] = Bot;
-      state.imBots = currentIMBotsState;
-    },
-
-    setIMBots({ state }, data) {
-      state.imBots = data;
-    },
-
-    setIMBotsUnread({ state }, count) {
-      state.imBotsUnread = count;
-    },
-
-    setIMBotsIncreament({ state }) {
-      state.imBotsUnread = state.imBotsUnread+1;
-    },
-
-    setIMBotsDecreament({ state }) {
-      state.imBotsUnread = state.imBotsUnread-1;
-    },
-
-    setIMListBotsLoading({ state }, isLoading) {
-      state.imListBotsLoading = isLoading;
-    },
-
-    addIMListBots({ state }, data) {
-      state.imListBots = [...state.imListBots, data];
-    },
-
-    setIMListBots({ state }, data) {
-      state.imListBots = data;
-    },
-
-    /*----- End Instant Messenger Setters Actions -----*/
+    /*----- End User Account Setters Actions -----*/
 
   },
 })
 
-export default userDataStore;
+const useStorageUserAccount = (storageKey: string, fallbackState: any) => {
+
+  const currentValue = StorageUserAccount.state[storageKey];
+
+  const [value, setValue] = React.useState(currentValue || fallbackState);
+
+  React.useEffect(() => {
+    StorageUserAccount.dispatch(storageKey, value);
+  }, [value, storageKey]);
+
+  return [value, setValue];
+
+};
+
+export {StorageUserAccount, useStorageUserAccount} ;

@@ -1,7 +1,9 @@
 
+import * as React from 'react';
+
 import { createStore } from 'framework7/lite';
 
-const IMStore = createStore({
+const StorageIM = createStore({
   
   state: {
 
@@ -96,6 +98,79 @@ const IMStore = createStore({
       },
     ],
 
+    
+    imFabButtonMeta : [
+    {
+      icons: {
+        ios: "",
+        md: "photo_camera",
+        aurora: "",
+      },
+      slug: "sheet-modal-open-camera",
+      title: "Capture",
+      buttons: []
+    },
+    {
+      icons: {
+        ios: "",
+        md: "chat",
+        aurora: "",
+      },
+      slug: "sheet-modal-open-chats",
+      label: "Chat",
+      buttons: []
+    },
+    {
+      icons: {
+        ios: "plus",
+        md: "add",
+        aurora: "plus",
+      },
+      slug: "sheet-modal-open-stories",
+      label: "Create Story",
+      buttons: [
+        {
+          icons: {
+            ios: "pencil",
+            md: "edit",
+            aurora: "pencil",
+          },
+          label: "Type a status",
+          slug: "sheet-modal-open-stories-composer",
+        },
+        {
+          icons: {
+            ios: "photo_on_rectangle",
+            md: "photo_camera",
+            aurora: "photo_on_rectangle",
+          },
+          label: "Take a photo",
+          slug: "sheet-modal-open-stories-camera",
+        },
+        {
+          icons: {
+            ios: "photo_on_rectangle",
+            md: "collections",
+            aurora: "photo_on_rectangle",
+          },
+          label: "Select from gallery",
+          slug: "sheet-modal-open-stories-gallery",
+        },
+      ],
+    },
+    {
+      icons: {
+        ios: "",
+        md: "add_call",
+        aurora: "",
+      },
+      slug: "sheet-modal-open-calls",
+      label: "Call",
+      buttons: []
+    },
+  ],
+
+
     // IM Chats
 
     imChatsLoading: false,
@@ -162,6 +237,12 @@ const IMStore = createStore({
   getters: {
     
     /*----- Start Instant Messenger Getters -----*/
+
+    //IM Screen Tab Data
+
+    imFabButtonMeta({ state }) {
+      return state.imFabButtonMeta;
+    },
 
     //IM Screen Tab Data
 
@@ -288,13 +369,19 @@ const IMStore = createStore({
 
     //IM Screen Tab Data
 
+    imFabButtonMeta({ state }, data) {
+      state.imFabButtonMeta = data;
+    },
+
+    //IM Screen Tab Data
+
     imHomeScreenTabsData({ state }, data) {
       state.imHomeScreenTabsData = data;
     },
 
     // IM Chats
 
-    setIMChatsLoading({ state }, isLoading) {
+    imChatsLoading({ state }, isLoading) {
       state.imChatsLoading = isLoading;
     },
 
@@ -304,23 +391,23 @@ const IMStore = createStore({
       state.imChats = currentIMChatsState;
     },
 
-    setIMChats({ state }, data) {
+    imChats({ state }, data) {
       state.imChats = data;
     },
 
-    setIMChatsUnread({ state }, count) {
+    imChatsUnread({ state }, count) {
       state.imChatsUnread = count;
     },
 
-    setIMChatsIncreament({ state }) {
+    imChatsIncreament({ state }) {
       state.imChatsUnread = state.imChatsUnread+1;
     },
 
-    setIMChatsDecreament({ state }) {
+    imChatsDecreament({ state }) {
       state.imChatsUnread = state.imChatsUnread-1;
     },
 
-    setIMListChatsLoading({ state }, isLoading) {
+    imListChatsLoading({ state }, isLoading) {
       state.imListChatsLoading = isLoading;
     },
 
@@ -328,17 +415,17 @@ const IMStore = createStore({
       state.imListChats = [...state.imListChats, data];
     },
 
-    setIMListChats({ state }, data) {
+    imListChats({ state }, data) {
       state.imListChats = data;
     },
 
     // IM Stories
 
-    setIMStoriesLoading({ state }, isLoading) {
+    imStoriesLoading({ state }, isLoading) {
       state.imStoriesLoading = isLoading;
     },
 
-    setIMStoriesViewed({ state }, data) {
+    imStoriesViewed({ state }, data) {
       state.imStoriesViewed = data;
     },
 
@@ -346,7 +433,7 @@ const IMStore = createStore({
       state.imStoriesViewed = [...state.imStoriesViewed, story];
     },
 
-    setIMStoriesNotViewed({ state }, data) {
+    imStoriesNotViewed({ state }, data) {
       state.imStoriesNotViewed = data;
     },
 
@@ -354,7 +441,7 @@ const IMStore = createStore({
       state.imStoriesNotViewed = [...state.imStoriesNotViewed, story];
     },
 
-    setIMStoriesMuted({ state }, data) {
+    imStoriesMuted({ state }, data) {
       state.imStoriesMuted = data;
     },
 
@@ -362,7 +449,7 @@ const IMStore = createStore({
       state.imStoriesMuted = [...state.imStoriesMuted, story];
     },
 
-    setIMMyStoriesMuted({ state }, data) {
+    imMyStoriesMuted({ state }, data) {
       state.imMyStories = data;
     },
 
@@ -372,7 +459,7 @@ const IMStore = createStore({
 
     // IM Calls
 
-    setIMCallsLoading({ state }, isLoading) {
+    imCallsLoading({ state }, isLoading) {
       state.imCallsLoading = isLoading;
     },
 
@@ -382,23 +469,23 @@ const IMStore = createStore({
       state.imCalls = currentIMCallsState;
     },
 
-    setIMCalls({ state }, data) {
+    imCalls({ state }, data) {
       state.imCalls = data;
     },
 
-    setIMCallsUnread({ state }, count) {
+    imCallsUnread({ state }, count) {
       state.imCallsUnread = count;
     },
 
-    setIMCallsIncreament({ state }) {
+    imCallsIncreament({ state }) {
       state.imCallsUnread = state.imCallsUnread+1;
     },
 
-    setIMCallsDecreament({ state }) {
+    imCallsDecreament({ state }) {
       state.imCallsUnread = state.imCallsUnread-1;
     },
 
-    setIMListCallsLoading({ state }, isLoading) {
+    imListCallsLoading({ state }, isLoading) {
       state.imListCallsLoading = isLoading;
     },
 
@@ -406,13 +493,13 @@ const IMStore = createStore({
       state.imListCalls = [...state.imListCalls, data];
     },
 
-    setIMListCalls({ state }, data) {
+    imListCalls({ state }, data) {
       state.imListCalls = data;
     },
 
     // IM Channels
 
-    setIMChannelsLoading({ state }, isLoading) {
+    imChannelsLoading({ state }, isLoading) {
       state.imChannelsLoading = isLoading;
     },
 
@@ -422,23 +509,23 @@ const IMStore = createStore({
       state.imChannels = currentIMChannelsState;
     },
 
-    setIMChannels({ state }, data) {
+    imChannels({ state }, data) {
       state.imChannels = data;
     },
 
-    setIMChannelsUnread({ state }, count) {
+    imChannelsUnread({ state }, count) {
       state.imChannelsUnread = count;
     },
 
-    setIMChannelsIncreament({ state }) {
+    imChannelsIncreament({ state }) {
       state.imChannelsUnread = state.imChannelsUnread+1;
     },
 
-    setIMChannelsDecreament({ state }) {
+    imChannelsDecreament({ state }) {
       state.imChannelsUnread = state.imChannelsUnread-1;
     },
 
-    setIMListChannelsLoading({ state }, isLoading) {
+    imListChannelsLoading({ state }, isLoading) {
       state.imListChannelsLoading = isLoading;
     },
 
@@ -446,13 +533,13 @@ const IMStore = createStore({
       state.imListChannels = [...state.imListChannels, data];
     },
 
-    setIMListChannels({ state }, data) {
+    imListChannels({ state }, data) {
       state.imListChannels = data;
     },
 
     // IM Bots
 
-    setIMBotsLoading({ state }, isLoading) {
+    imBotsLoading({ state }, isLoading) {
       state.imBotsLoading = isLoading;
     },
 
@@ -462,23 +549,23 @@ const IMStore = createStore({
       state.imBots = currentIMBotsState;
     },
 
-    setIMBots({ state }, data) {
+    imBots({ state }, data) {
       state.imBots = data;
     },
 
-    setIMBotsUnread({ state }, count) {
+    imBotsUnread({ state }, count) {
       state.imBotsUnread = count;
     },
 
-    setIMBotsIncreament({ state }) {
+    imBotsIncreament({ state }) {
       state.imBotsUnread = state.imBotsUnread+1;
     },
 
-    setIMBotsDecreament({ state }) {
+    imBotsDecreament({ state }) {
       state.imBotsUnread = state.imBotsUnread-1;
     },
 
-    setIMListBotsLoading({ state }, isLoading) {
+    imListBotsLoading({ state }, isLoading) {
       state.imListBotsLoading = isLoading;
     },
 
@@ -486,7 +573,7 @@ const IMStore = createStore({
       state.imListBots = [...state.imListBots, data];
     },
 
-    setIMListBots({ state }, data) {
+    imListBots({ state }, data) {
       state.imListBots = data;
     },
 
@@ -495,4 +582,4 @@ const IMStore = createStore({
   },
 })
 
-export default IMStore;
+export {StorageIM};
