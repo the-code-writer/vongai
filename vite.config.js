@@ -22,6 +22,7 @@ export default {
     emptyOutDir: true,
     rollupOptions: {
       treeshake: false,
+      format: 'umd',
     },
   },
   resolve: {
@@ -32,5 +33,8 @@ export default {
   server: {
     host: true,
   },
-
+  worker: {
+    format: "es",
+    fileName: (filename, format) => `${filename}.worker.${format == "es" ? "mjs" : "js"}`
+  }
 };

@@ -56,7 +56,7 @@ const StorageIM = createStore({
       },
       {
         tabLink: "tab-im-stories",
-        tabText: "Status",
+        tabText: "Status •",
         tabClass: "tab-im-stories",
         tabActive: false,
         iconIos: "",
