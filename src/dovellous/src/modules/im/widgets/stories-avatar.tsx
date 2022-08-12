@@ -25,12 +25,13 @@ export default ({unseenSegments, totalSegments, imageUrl, elementId, canvasDiame
     base_image.src = imageUrl;
     base_image.onload = () => {
       let imgctx = canvas.getContext("2d");
+      let imgOffset = strokeWidth + strokeWidth / 2
       imgctx.drawImage(
         base_image,
-        strokeWidth + strokeWidth / 2,
-        strokeWidth + strokeWidth / 2,
-        canvasDiameter - (strokeWidth + strokeWidth / 2) * 2,
-        canvasDiameter - (strokeWidth + strokeWidth / 2) * 2
+        imgOffset,
+        imgOffset,
+        canvasDiameter - (imgOffset * 2),
+        canvasDiameter - (imgOffset * 2)
       );
       segmentsArray.map((n, i) => {
         let startAngle = originAngle;
