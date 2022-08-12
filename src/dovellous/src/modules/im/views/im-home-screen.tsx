@@ -27,17 +27,15 @@ import {
 import { initializeApp } from "firebase/app";
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 
-import IMTabContentChats from "./components/im-tab-content-chats";
+import IMTabContentChats from "../widgets/im-tab-content-chats";
 
-import navBarLogo from "../../assets/images/logo-typographical-white.png";
+import navBarLogo from "../../../../assets/img/logo-typographical-white.png";
 
-import {StorageIM} from "../../pages/im/store/im-store";
-
-import {StorageContacts} from "../../pages/im/store/contacts-store";
+import {StorageIM} from "../store/im-store";
 
 import Dom7 from "dom7";
 
-export default () => {
+export default () => { 
 
   const firebaseConfig = {
     apiKey: "AIzaSyCauR1flLkrZUbgx_dQDbBL8Mu_bDEaHJg",

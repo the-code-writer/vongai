@@ -7,7 +7,7 @@ import ProductPage from '../pages/product.jsx';
 import SettingsPage from '../pages/settings.jsx';
 
 
-import IMHomeScreen from '../pages/im/im-home-screen.tsx';
+import ViewIM from '../pages/view-im';
 
 import DynamicRoutePage from '../pages/dynamic-route.jsx';
 import RequestAndLoad from '../pages/request-and-load.jsx';
@@ -20,7 +20,7 @@ var routes = [
   },
   {
     path: '/',
-    component: IMHomeScreen,
+    component: ViewIM,
   },
   {
     path: '/about/',

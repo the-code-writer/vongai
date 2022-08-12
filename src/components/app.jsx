@@ -28,10 +28,10 @@ import capacitorApp from "../js/capacitor-app";
 import routes from "../js/routes";
 import store from "../js/store";
 
-import { StorageIM } from "../pages/im/store/im-store";
-import { StorageContacts } from "../pages/im/store/contacts-store";
+import { StorageIM } from "../dovellous/src/modules/im/store/im-store";
+import { StorageContacts } from "../dovellous/src/modules/im/store/contacts-store";
 
-import IMContactListCalls from "../pages/im/components/popups/im-popup-contacts-calls";
+import IMContactListCalls from "../dovellous/src/modules/im/popups/im-popup-contacts-calls";
 
 const MyApp = () => {
   // Login screen demo data

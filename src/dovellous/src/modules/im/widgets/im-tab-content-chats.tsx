@@ -7,7 +7,7 @@ import {
   f7ready,
 } from "framework7-react";
 
-import { StorageIM } from "../../../pages/im/store/im-store";
+import { StorageIM } from "../store/im-store";
 
 export default ({ id, slug, className, skeletonList }): JSX.Element => {
     

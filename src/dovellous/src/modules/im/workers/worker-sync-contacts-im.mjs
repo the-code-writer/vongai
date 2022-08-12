@@ -1,5 +1,5 @@
 import { f7 } from "framework7-react";
-import phoneContactsList from "../../../assets/contacts.json";
+import phoneContactsList from "../db/contacts.json";
 
   // eslint-disable-next-line no-restricted-globals
   onmessage = function(e) {
