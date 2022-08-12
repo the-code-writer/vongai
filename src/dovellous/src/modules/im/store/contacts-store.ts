@@ -1,3 +1,6 @@
+
+
+
 import { createStore } from 'framework7/lite';
 
 import Worker from 'web-worker';
