@@ -1,12 +1,28 @@
 {
   "appId": "vong.ai",
-  "appName": "Vongai",
+  "appName": "V.O.N.G.A.I",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "www",
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 0
+      "launchShowDuration": 3000,
+      "launchAutoHide": true,
+      "backgroundColor": "#ffffffff",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": true,
+      "androidSpinnerStyle": "large",
+      "iosSpinnerStyle": "small",
+      "spinnerColor": "#999999",
+      "splashFullScreen": true,
+      "splashImmersive": true,
+      "layoutName": "launch_screen",
+      "useDialog": true
+    },
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": ["apple.com", "google.com"]
     }
   },
   "cordova": {}

@@ -6,12 +6,12 @@ import { createStore } from 'framework7/lite';
 import Worker from 'web-worker';
 
 const workerSyncIMContacts = new Worker(
-  new URL('../workers/worker-sync-contacts-im.mjs', import.meta.url),
+  new URL('../workers/sync-contacts-im.worker.mjs', import.meta.url),
   { type: 'module' }
 );
 
 const workerSyncPhoneContacts = new Worker(
-  new URL('../workers/worker-sync-contacts-phone.mjs', import.meta.url),
+  new URL('../workers/sync-contacts-phone.worker.mjs', import.meta.url),
   { type: 'module' }
 );
 
