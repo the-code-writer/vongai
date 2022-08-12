@@ -7,6 +7,11 @@
 @import "./animations/shake";
 @import "./views/app-layout";
 @import "./ui/badges";
+@import "./ui/layout.scss";
+@import "./ui/nav.scss";
+@import "./ui/bars.scss";
+@import "./ui/icons.scss";
+@import "./fonts/font-weight.scss";
 @import "../../src/modules/auth/styles/auth";
 @import "../../src/modules/ecommerce/styles/ecommerce";
 @import "../../src/modules/im/styles/im";

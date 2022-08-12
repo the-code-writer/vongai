@@ -6,20 +6,20 @@ Framework7 app created with following options:
 
 ```
 {
-  "cwd": "/var/www/html/dl/capacitor",
+  "cwd": "C:\\apps\\project-vongai-app",
   "type": [
-    "web",
+    "capacitor",
     "pwa",
-    "capacitor"
+    "web"
   ],
   "name": "Vongai",
   "framework": "react",
-  "template": "tabs",
+  "template": "single-view",
   "bundler": "vite",
   "cssPreProcessor": "scss",
   "theming": {
     "customColor": true,
-    "color": "#740eb1",
+    "color": "#7700ff",
     "darkTheme": false,
     "iconFonts": true,
     "fillBars": true

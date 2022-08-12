@@ -13,16 +13,16 @@ const StorageIM = createStore({
 
     imHomeScreenTabsData : [
       {
-        tabLink: "tab-im-camera",
+        tabLink: "tab-im-apps",
         tabText: "",
-        tabClass: "tab-im-camera",
+        tabClass: "tab-im-apps",
         tabActive: false,
-        iconIos: "f7:camera_fill",
-        iconMd: "f7:camera_fill",
-        iconAurora: "f7:camera_fill",
+        iconIos: "f7:rectangle_grid_2x2",
+        iconMd: "material:grid_view",
+        iconAurora: "f7:rectangle_grid_2x2",
         iconOnly: true,
-        view: "IMTabContentCamera",
-        slug: "im-tab-content-camera",
+        view: "IMTabContentApps",
+        slug: "im-tab-content-apps",
         highlight: false,
         badge: 0,
         skeletonList: {
