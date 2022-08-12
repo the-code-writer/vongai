@@ -1,33 +1,17 @@
-import React from "react";
-
-export default ({unseenSegments, totalSegments, imageUrl, elementId, canvasDiameter, segmentColor, addToDOM}) => {
-
-  const StoriesAvatar = (
+import React, {useEffect} from "react";
+export default ({unseenSegments, totalSegments, imageUrl, elementId, canvasDiameter, segmentColorSeen,  segmentColorUnSeen, backgroundColor}) => {
+  const render = (
     unseenSegments: number,
     totalSegments: number,
     imageUrl: string,
     elementId: string,
     canvasDiameter: number,
-    segmentColor: any,
-    addToDOM: any
+    segmentColorSeen: any,
+    segmentColorUnSeen: any
   ) => {
-    let canvas: any;
-    let backgroundColor = "rgb(255,255,255)";
-    let strokeColorSeen = "rgb(180,180,180)";
-    let strokeColorUnSeen = segmentColor;
-    if (elementId) {
-      canvas = document.getElementById(elementId);
-    } else {
-      canvas = document.createElement("canvas");
-      canvas.id = elementId;
-      canvas.width = canvasDiameter;
-      canvas.height = canvasDiameter;
-      canvas.style.zIndex = 8;
-      canvas.style.position = "absolute";
-      canvas.style.backgroundColor = backgroundColor;
-      canvas.style.border = `1px solid ${backgroundColor}`;
-      canvas.style.borderRadius = `${canvasDiameter / 2}px`;
-    }
+    let strokeColorSeen = segmentColorSeen;
+    let strokeColorUnSeen = segmentColorUnSeen;
+    let canvas = document.getElementById(elementId);
     let segmentsArray = Array.from(Array(totalSegments).keys());
     let gapsAngle = totalSegments < 2 ? 0 : 7.5;
     let gapsAngleX = gapsAngle / 180;
@@ -65,24 +49,26 @@ export default ({unseenSegments, totalSegments, imageUrl, elementId, canvasDiame
         ctx.stroke();
         originAngle = endAngle + gapsAngleX;
       });
-    };
-    if (addToDOM) {
-      let body = document.getElementsByTagName("body")[0];
-      body.appendChild(canvas);
-    } else {
-      return canvas;
     }
   };
 
+  useEffect(()=>{
+    render(unseenSegments, totalSegments, imageUrl, elementId, canvasDiameter, segmentColorSeen, segmentColorUnSeen);
+  },[unseenSegments, totalSegments, imageUrl, elementId])
+
   return (  
-    <StoriesAvatar
-        unseenSegments={unseenSegments}
-        totalSegments={totalSegments}
-        imageUrl={imageUrl}
-        elementId={elementId}
-        canvasDiameter={canvasDiameter}
-        segmentColor={segmentColor}
-        addToDOM={addToDOM}
+    <canvas 
+        id={elementId} 
+        width={canvasDiameter} 
+        height={canvasDiameter} 
+        style={
+            {
+                position: `absolute`,
+                backgroundColor: backgroundColor,
+                border: `2px solid ${backgroundColor}`,
+                borderRadius: `${canvasDiameter / 2}px`,
+            }
+        } 
     />
   )
 
