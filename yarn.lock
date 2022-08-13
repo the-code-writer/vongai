@@ -1503,6 +1503,11 @@
     "minimatch" "^3.1.2"
     "strip-json-comments" "^3.1.1"
 
+"@faker-js/faker@^7.4.0":
+  "integrity" "sha512-xDd3Tvkt2jgkx1LkuwwxpNBy/Oe+LkZBTwkgEFTiWpVSZgQ5sc/LenbHKRHbFl0dq/KFeeq/szyyPtpJRKY0fg=="
+  "resolved" "https://registry.npmjs.org/@faker-js/faker/-/faker-7.4.0.tgz"
+  "version" "7.4.0"
+
 "@fastify/busboy@^1.1.0":
   "integrity" "sha512-Fv854f94v0CzIDllbY3i/0NJPNBRNLDawf3BTYVGCe9VrIIs3Wi7AFx24F9NzCxdf0wyx/x0Q9kEVnvDOPnlxA=="
   "resolved" "https://registry.npmjs.org/@fastify/busboy/-/busboy-1.1.0.tgz"

@@ -2,13 +2,16 @@
     --f7-safe-area-top: 36px
 }
 
-li.list-group-title.media-item, .md .contacts-list .list-group-title {
+.md li.list-group-title.item-divider{
     pointer-events: none;
     overflow: visible;
     width: 100% !important;
     background-color: #f1e5ff;
     padding: 0 24px;
     height: calc(var(--f7-list-group-title-height) * 0.7) !important;
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--f7-theme-color);
 }
 
 .md .contacts-list li:not(.list-group-title) {

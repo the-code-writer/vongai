@@ -31,8 +31,6 @@ import store from "../js/store";
 import { StorageIM } from "../dovellous/src/modules/im/store/im-store";
 import { StorageContacts } from "../dovellous/src/modules/im/store/contacts-store";
 
-import IMContactListCalls from "../dovellous/src/modules/im/popups/im-popup-contacts-calls";
-
 const MyApp = () => {
   // Login screen demo data
   const [username, setUsername] = useState("");
@@ -78,30 +76,16 @@ const MyApp = () => {
     );
   };
 
-  const [popupIMContactsListCallsOpened, setPopupIMContactsListCallsOpened] = useState(false);
-
-  const popupIMContactsListCallsToggleHandler = ()=>{
-
-    setPopupIMContactsListCallsOpened(!popupIMContactsListCallsOpened);
-
-  }
-
-  const onContactSelected = (contact)=>{
-
-    console.log("::: onContactSelected :::", contact);
-
-  }
-
-  f7ready(() => {
+  f7ready((F7React) => {
     // Init capacitor APIs (see capacitor-app.js)
     if (f7.device.capacitor) {
       capacitorApp.init(f7);
     }
     // Call F7 APIs here
 
-    StorageContacts.dispatch("syncIMContacts", null);
+    window.F7React = F7React;
 
-    f7.on('OPEN_CALLS_MODAL', popupIMContactsListCallsToggleHandler);
+    StorageContacts.dispatch("syncIMContacts", null);
 
   });
 
@@ -197,13 +181,6 @@ const MyApp = () => {
           </Page>
         </View>
       </LoginScreen>
-
-      <IMContactListCalls
-        contacts={StorageContacts.getters.imContacts.value}       
-        popupOpened={popupIMContactsListCallsOpened}
-        onPopupClosed={popupIMContactsListCallsToggleHandler}
-        onContactSelected={onContactSelected}
-      />
 
     </App>
   );

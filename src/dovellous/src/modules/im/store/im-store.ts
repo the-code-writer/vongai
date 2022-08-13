@@ -1,6 +1,6 @@
 
 import * as React from 'react';
-
+import { faker } from '@faker-js/faker';
 import { createStore } from 'framework7/lite';
 
 const StorageIM = createStore({
@@ -28,9 +28,9 @@ const StorageIM = createStore({
         skeletonList: {
           count: 5,
           effect:"wave",
-          title:"Morbi lobortis et massa",
-          subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          title:faker.lorem.words(4),
+          subtitle:faker.lorem.words(2),
+          text:faker.lorem.words(7)
         },
       },
       {
@@ -49,9 +49,9 @@ const StorageIM = createStore({
         skeletonList: {
           count: 5,
           effect:"wave",
-          title:"Morbi lobortis et massa",
-          subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          title:faker.lorem.words(4),
+          subtitle:faker.lorem.words(2),
+          text:faker.lorem.words(7)
         },
       },
       {
@@ -70,9 +70,9 @@ const StorageIM = createStore({
         skeletonList: {
           count: 5,
           effect:"wave",
-          title:"Morbi lobortis et massa",
-          subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          title:faker.lorem.words(4),
+          subtitle:faker.lorem.words(2),
+          text:faker.lorem.words(7)
         },
       },
       {
@@ -91,9 +91,9 @@ const StorageIM = createStore({
         skeletonList: {
           count: 5,
           effect:"wave",
-          title:"Morbi lobortis et massa",
-          subtitle:"Cras consequat",
-          text:"Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+          title:faker.lorem.words(4),
+          subtitle:faker.lorem.words(2),
+          text:faker.lorem.words(7)
         },
       },
     ],

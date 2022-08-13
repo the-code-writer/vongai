@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   Page,
   Navbar,
@@ -29,29 +29,44 @@ import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 
 import IMTabContentChats from "../widgets/im-tab-content-chats";
 
+import IMContactListCalls from "../popups/im-popup-contacts-calls";
+
 import navBarLogo from "../../../../assets/img/logo-typographical-white.png";
 
 import {StorageIM} from "../store/im-store";
+import {StorageContacts} from "../store/contacts-store";
 
 import Dom7 from "dom7";
 
 export default () => { 
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCauR1flLkrZUbgx_dQDbBL8Mu_bDEaHJg",
-    authDomain: "vong-ai.firebaseapp.com",
-    projectId: "vong-ai",
-    storageBucket: "vong-ai.appspot.com",
-    messagingSenderId: "244888151725",
-    appId: "1:244888151725:web:b05acaf6f64adc7643c824",
-    measurementId: "G-RL7K8ZLF1L",
-  };
-
-  const app = initializeApp(firebaseConfig);
-
   const [tabCurrentIndex, setTabCurrentIndex] = useState(1);
 
   const [fabButton, setFabButton] = useState(StorageIM.getters.imFabButtonMeta.value[tabCurrentIndex]);
+
+  const [popupIMContactsListCallsOpened, setPopupIMContactsListCallsOpened] = useState(false);
+
+  const popupIMContactsListCallsToggleHandler = ()=>{
+
+    setPopupIMContactsListCallsOpened(!popupIMContactsListCallsOpened);
+
+  }
+
+  const onContactSelected = (contact)=>{
+
+    console.log("::: onContactSelected :::", contact);
+
+  }
+
+  const PopupIMContactList = useCallback(() => {
+
+    <IMContactListCalls      
+        popupOpened={popupIMContactsListCallsOpened}
+        onPopupClosed={popupIMContactsListCallsToggleHandler}
+        onContactSelected={onContactSelected}
+      />
+
+  },[]);
 
   const imTabVisible = (
     e: any,
@@ -81,13 +96,6 @@ export default () => {
 
       case 0: {
 
-        const imHomeScreenNavBar  =  Dom7("#im-home-screen-nav");
-        const imHomeScreenToolBar = Dom7("#im-home-screen-toolbar");
-        const offsetHeightNavBar:number  = parseInt(imHomeScreenNavBar.css('height'));
-        const offsetHeightToolBar:number = parseInt(imHomeScreenToolBar.css('height'));
-        const offsetHeight:number = offsetHeightNavBar+offsetHeightToolBar;
-        imHomeScreenNavBar.hide();
-        imHomeScreenToolBar.hide();
         break;
 
       }
@@ -126,11 +134,9 @@ export default () => {
     //console.log(":: HIDE ::", e, tabContent, tabIndex);
   };
 
-  const imFabButtonClickHandler = (data)=>{
+  const imFabButtonClickHandler = (slug)=>{
 
-    console.log(":::imFabButtonClickHandler:::", data);
-
-    switch(data.slug.toString().toLowerCase()){
+    switch(slug.toString().toLowerCase()){
       
       case"sheet-modal-open-camera":  {
 
@@ -157,8 +163,10 @@ export default () => {
         break;
       }
       case"sheet-modal-open-calls":  {
-        f7.emit('OPEN_CALLS_MODAL',null);
+
+        popupIMContactsListCallsToggleHandler();
         break;
+
       }
 
       default: {
@@ -264,7 +272,7 @@ export default () => {
   }, []);
 
   return (
-    <Page pageContent={false}>
+    <Page className="hide-navbar-on-scroll" pageContent={true}>
       <Navbar id="im-home-screen-nav" sliding={false}>
         <NavTitle sliding className={"no-padding-left"}>
           <Link className="no-padding-left">
@@ -453,7 +461,7 @@ export default () => {
         position="right-bottom" 
         className={"m-b-0"} 
         slot="fixed" 
-        onClick={()=>imFabButtonClickHandler(fabButton)} >
+        onClick={()=>imFabButtonClickHandler(fabButton.slug)} >
         <Icon
           ios={`f7:${fabButton.icons.md}`}
           aurora={`f7:${fabButton.icons.md}`}
@@ -481,14 +489,13 @@ export default () => {
             </FabButtons>
         )}
       </Fab>
-{/*
-      <IMContactListCalls
-        contacts={StorageContacts.getters.imContacts.value}       
+      
+      <IMContactListCalls      
         popupOpened={popupIMContactsListCallsOpened}
-        onPopupClosed={imPopupCloseContactsCalls}
+        onPopupClosed={popupIMContactsListCallsToggleHandler}
         onContactSelected={onContactSelected}
       />
-*/}
+
     </Page>
   );
 

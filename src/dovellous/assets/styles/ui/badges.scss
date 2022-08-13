@@ -36,4 +36,12 @@
   .andon-status.error {
     background: #ff0000;
   }
+
+.tab-im-calls .badge {
+    color: var(--f7-bars-bg-color);
+    background-color: var(--f7-bars-text-color);
+    margin-left: 5px;
+    font-size: var(--f7-badge-font-size);
+    line-height: var(--f7-badge-font-size);
+}
   

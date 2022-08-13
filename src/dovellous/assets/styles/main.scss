@@ -1,4 +1,4 @@
-//Load all plugin styles
+//Load Animations, Mixins, Variables & Functions
 
 @import "./variables/colors";
 @import "./functions/mixin";
@@ -6,12 +6,19 @@
 @import "./common/styles";
 @import "./animations/shake";
 @import "./fonts/font-weight.scss";
+
+// Load App Layout
 @import "./views/app-layout";
 @import "./ui/badges";
 @import "./ui/nav.scss";
 @import "./ui/bars.scss";
 @import "./ui/icons.scss";
 @import "./ui/layout.scss";
+
+// Load Component Styles - override defaults
+@import "./ui/list-views.scss";
+
+// Load Module Styles
 @import "../../src/modules/auth/styles/auth";
 @import "../../src/modules/ecommerce/styles/ecommerce";
 @import "../../src/modules/im/styles/im";

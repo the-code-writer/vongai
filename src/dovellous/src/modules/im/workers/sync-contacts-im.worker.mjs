@@ -6,22 +6,37 @@ import phoneContactsList from "../db/contacts.json";
 
     console.log(":: WORKER INIT :: data posted from main thread::", e.data);
 
-    const contactsIndex = {};
+    const contactsIndex = [];
+
+    const contactsArray = [];
+
+    let contactsCount = 0;
 
     phoneContactsList.map((contact) => {
 
       const initial = contact.name[0].toUpperCase();
 
-      if (!contactsIndex.hasOwnProperty(initial)) {
+      let isGroupTitle = false;
 
-        contactsIndex[initial] = [];
-
+      if (!contactsIndex.includes(initial)) {
+        isGroupTitle = true;
+        contactsIndex.push(initial);
+        contactsArray.push({
+          data: initial,
+          isGroupTitle: isGroupTitle
+        });
       }
 
-      contactsIndex[initial].push(contact);
+      if(!isGroupTitle){
+        contactsArray.push({
+          data: contact,
+          isGroupTitle: isGroupTitle
+        });
+        contactsCount++;
+      }
 
     });
 
-    postMessage(contactsIndex);
+    postMessage({contactsIndex: contactsIndex, contactsArray: contactsArray, count: contactsCount});
 
   }

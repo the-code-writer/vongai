@@ -25,6 +25,8 @@ const StorageContacts = createStore({
 
     imContacts: [],
 
+    imContactsCount: 0,
+
     /*----- End User Account State Variables -----*/
 
   },
@@ -38,6 +40,10 @@ const StorageContacts = createStore({
 
     imContacts({ state }) {
       return state.imContacts;
+    },
+
+    imContactsCount({ state }) {
+      return state.imContactsCount;
     },
 
     /*----- End User Account Getters -----*/

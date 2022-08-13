@@ -1,267 +1,264 @@
 import {
-  Page,
-  Popup,
-  Navbar,
-  NavRight,
-  NavLeft,
-  Link, List, ListIndex, ListItem, ListGroup, Searchbar, theme
+    f7,
+    Page,
+    Popup,
+    Navbar,
+    NavRight,
+    NavLeft,
+    Link,
+    List,
+    ListIndex,
+    ListItem,
+    Searchbar,
+    theme,
+    NavTitle
 } from "framework7-react";
 
-import React from "react";
+import React, { useCallback, useState, useRef, useEffect } from "react";
+import InfiniteScroll from "react-infinite-scroller";
+import { StorageContacts } from "../store/contacts-store";
 
-export default ({contacts, popupOpened, onPopupClosed, onContactSelected}) => {
+export default ({
+    popupOpened,
+    onPopupClosed,
+    onContactSelected,
+}) => {
+
+    let contacts = StorageContacts.state.imContacts;
+
+    StorageContacts.getters.imContacts.onUpdated((_newData: any) => {
+        //console.log("::StorageContacts::onUpdated::", _newData);
+        contacts = _newData;
+    })
+
+    const imContactsListIndex = useRef(null);
+
+    const itemsPerPage = 20;
+    const [hasMore, setHasMore] = useState(true);
+    const [records, setrecords] = useState(itemsPerPage);
+
+    const loadMore = () => {
+        if (records === contacts.contactsArray.length) {
+            setHasMore(false);
+        } else {
+            setrecords(records + itemsPerPage);
+        }
+    };
+
+    const onIndexSelect = (itemContent: any) => {
+        console.log("::imContactsListIndex::", imContactsListIndex);
+        if (imContactsListIndex && imContactsListIndex.current !== null && typeof imContactsListIndex.current !== "undefined") {
+            imContactsListIndex.current.scrollListToIndex(itemContent)
+        }
+    };
+
+    const ContactListViewItem = useCallback(({ contact, contactIndex, isGroupTitle, displayPhoneNumber }) => {
+
+        return (
+
+            !isGroupTitle ? (
+
+                <React.Fragment>
+
+                    <li key={`im-calls-list-item-${contactIndex}`}>
+                        <div className="item-content">
+                            <div className="item-media">
+                                <div slot="media" className={"andon-status"}/>
+                                <Link
+                                    onClick={() => onContactSelected(contact, "preview")}
+                                    href="#"  
+                                    className="f7-demo-icon">
+                                    {contact.hasOwnProperty('displayPhoto') && contact.displayPhoto.length > 10 ? (
+                                        <img className="avatar-icon-img" src={contact.displayPhoto} alt={contact.name} />
+                                    ):(
+                                        <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
+                                    )}
+                                </Link>
+                            </div>
+                            <div className="item-inner">
+                            <div className="item-title-row">
+                                <div className="item-title">{contact.name}</div>
+                                <div className="item-after">
+                                    <Link
+                                        onClick={() => onContactSelected(contact, "video")}
+                                        href="#"
+                                        className="f7-demo-icon"
+                                    >
+                                        <i className="icon f7-icons color-custom">videocam_fill</i>
+                                    </Link>
+
+                                    <Link
+                                        onClick={() => onContactSelected(contact, "call")}
+                                        href="#"
+                                        className="f7-demo-icon"
+                                        style={{ marginLeft: "32px", marginRight: "24px" }}
+                                    >
+                                        <i className="icon f7-icons color-custom">phone_fill</i>
+                                    </Link>
+                                </div>
+                            </div>
+                            <div className="item-subtitle">{displayPhoneNumber ? contact.mobile : contact.displayStatus}</div>
+                            {/*<div className="item-text">Additional description text</div>*/}
+                            </div>
+                        </div>
+                    </li>
+
+                </React.Fragment>
+
+            ) : (
+
+                <ListItem
+                    key={`im-calls-popup-list-item-${contactIndex}`}
+                    title={`${contact}`}
+                    divider={true}
+                    groupTitle={true}
+                    className={`list-group-title`} />
+
+            )
+
+        );
+    }, []);
+
+    const renderContactsListView = (contacts: { contactsArray?: any; }): typeof ContactListViewItem => {
+
+        if (Object.keys(contacts).length > 0) {
+
+            var contactsListItems = [];
+
+            contacts.contactsArray.map((contact: any, contactIndex: number) => {
+
+                if (contactIndex < records) {
+
+                    contactsListItems.push(
+                        <ContactListViewItem
+                            key={`im-contact-list-view-item-container-${contactIndex}`}
+                            displayPhoneNumber={true}
+                            isGroupTitle={contact.isGroupTitle}
+                            contact={contact.data}
+                            contactIndex={contactIndex} />
+                    );
+
+                }
+            });
+
+            if (!imContactsListIndex || imContactsListIndex.current === null || typeof imContactsListIndex.current !== "undefined") {
+
+                createIMContactsListIndex();
+
+            } else {
+                console.log("::renderContactsListView::", imContactsListIndex);
+                imContactsListIndex.current.update();
+
+            }
+
+            return contactsListItems;
+
+        } else {
+
+            return <h2>Nothing Found</h2>
+
+        }
+
+
+    };
+
+    const createIMContactsListIndex = () => {
+        if (!imContactsListIndex || imContactsListIndex.current === null || typeof imContactsListIndex.current !== "undefined") {
+
+            imContactsListIndex.current = f7.listIndex.create({
+                // ".list-index" element
+                el: '.im-calls-contacts-list-index',
+                // List el where to look indexes and scroll for
+                listEl: '.im-calls-contacts-list',
+                // Generate indexes automatically based on ".list-group-title" and ".item-divider"
+                indexes: 'auto',
+                // Scroll list on indexes click and touchmove
+                scrollList: true,
+                // Enable bubble label when swiping over indexes
+                label: true,
+                on: {
+                    select: function (e) {
+                        console.log('Index selected', e);
+                    },
+                },
+            });
+            imContactsListIndex.current.update();
+        }
+    }
+
+    useEffect(() => {
+        createIMContactsListIndex();
+    }, [])
+
 
     return (
-        <Popup 
+        <Popup
             className="sheet-modal-open-calls"
             opened={popupOpened}
-            onPopupClosed={() => onPopupClosed(false)} push swipeToClose>
-        <Page>
-            <NavLeft>
-                <Link popupClose
-                    iconIos="f7:arrow_left" 
-                    iconAurora="f7:arrow_left" 
-                    iconMd="material:arrow_back" />
-            </NavLeft>
-            <Navbar title="Select Contact" subtitle={`${Object.keys(contacts).length} contacts"`}>
-            
-            <NavRight>
-                <Link
-                searchbarEnable=".searchbar-demo"
-                iconIos="f7:search"
-                iconAurora="f7:search"
-                iconMd="material:search"
-                ></Link>
-                <Link
-                    iconIos="f7:ellipsis_vertical"
-                    iconAurora="f7:ellipsis_vertical"
-                    iconMd="material:more_vert"
-                    popoverOpen=".popover-menu"
-                />
-            </NavRight>
-            <Searchbar
-                className="searchbar-demo"
-                expandable
-                searchContainer=".search-list"
-                searchIn=".item-title"
-                disableButton={!theme.aurora}
-            ></Searchbar>
-            </Navbar>
-            <ListIndex
-                init
-                indexes="auto"
-                listEl=".list.contacts-list"
-                scrollList={true}
-                label={true}
-            />
-            <List className="searchbar-not-found">
-                <ListItem title="Nothing found"></ListItem>
-            </List>
-            <List className="search-list searchbar-found" contactsList mediaList>
-                {/**/}
-                {Object.keys(contacts).map((key:any, index:number)=>(
-                <ListGroup key={`sheet-modal-open-calls-popup-list-group-${index}`}>
-                    <ListItem 
-                        key={`sheet-modal-open-calls-popup-list-item-group-${index}`}
-                        title={`${key.toUpperCase()}`} groupTitle />
-                    {contacts[key].map((contact:any, contactIndex:number)=>(
-                    <ListItem
-                             
-                            key={`sheet-modal-open-calls-popup-list-item-${contactIndex}`}
-                            title={contact.name} 
-                            subtitle={contact.mobile}
-                            noChevron={true}
-                            className={`f-w-600`}
-                            >
-                                
-                            <div slot="media" className="f7-demo-icon">
-                                <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
-                            </div>
-   
-                            <Link 
-                                
-                            onClick={()=>onContactSelected(contact, 'video')}
-                            href="#" slot="after" className="f7-demo-icon">
-                                <i className="icon f7-icons color-custom">videocam_fill</i>
-                            </Link>
+            onPopupClosed={() => onPopupClosed(false)}
+            push
+        >
+            <Page>
+                <Navbar>
+                    <NavLeft>
+                        <Link
+                            popupClose
+                            iconIos="f7:arrow_left"
+                            iconAurora="f7:arrow_left"
+                            iconMd="material:arrow_back"
+                        />
+                    </NavLeft>
+                    <NavTitle
+                    title="Select Contact"
+                    subtitle={`Showing ${records} of ${contacts.count} contacts`} />
+                    <NavRight>
+                        <Link
+                            searchbarEnable=".searchbar-im-popup-calls"
+                            iconIos="f7:search"
+                            iconAurora="f7:search"
+                            iconMd="material:search"
+                        ></Link>
+                        <Link
+                            iconIos="f7:ellipsis_vertical"
+                            iconAurora="f7:ellipsis_vertical"
+                            iconMd="material:more_vert"
+                            popoverOpen=".popover-menu"
+                        />
+                    </NavRight>
+                    <Searchbar
+                        className="searchbar-im-calls"
+                        expandable
+                        searchContainer=".im-calls-contacts-list"
+                        searchIn=".item-title"
+                        disableButton={!theme.aurora}
+                    ></Searchbar>
+                </Navbar>
+                <List className="searchbar-not-found">
+                    <ListItem title="Nothing found"></ListItem>
+                </List>
 
-                            <Link 
-                            
-                            onClick={()=>onContactSelected(contact, 'call')}
-                            href="#" slot="after" className="f7-demo-icon" style={{marginLeft: "32px", marginRight: "24px"}}>
-                                <i className="icon f7-icons color-custom">phone_fill</i>
-                            </Link>
+                <ListIndex className="im-calls-contacts-list-index"
+                    init={false}
+                    listEl=".im-calls-contacts-list"
+                    label={true}
+                    indexes="auto"
+                    scrollList={true}
+                    onListIndexSelect={onIndexSelect}
+                ></ListIndex>
 
-                        </ListItem>
-                    ))}
-                </ListGroup>
-                ))}
-                {/**/}
-                {/*
-                <ListGroup>
-                    <ListItem title="A" groupTitle />
-                    <ListItem title="Aaron" />
-                    <ListItem title="Adam" />
-                    <ListItem title="Aiden" />
-                    <ListItem title="Albert" />
-                    <ListItem title="Alex" />
-                    <ListItem title="Alexander" />
-                    <ListItem title="Alfie" />
-                    <ListItem title="Archie" />
-                    <ListItem title="Arthur" />
-                    <ListItem title="Austin" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="B" groupTitle />
-                    <ListItem title="Benjamin" />
-                    <ListItem title="Blake" />
-                    <ListItem title="Bobby" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="C" groupTitle />
-                    <ListItem title="Caleb" />
-                    <ListItem title="Callum" />
-                    <ListItem title="Cameron" />
-                    <ListItem title="Charles" />
-                    <ListItem title="Charlie" />
-                    <ListItem title="Connor" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="D" groupTitle />
-                    <ListItem title="Daniel" />
-                    <ListItem title="David" />
-                    <ListItem title="Dexter" />
-                    <ListItem title="Dylan" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="E" groupTitle />
-                    <ListItem title="Edward" />
-                    <ListItem title="Elijah" />
-                    <ListItem title="Elliot" />
-                    <ListItem title="Elliott" />
-                    <ListItem title="Ethan" />
-                    <ListItem title="Evan" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="F" groupTitle />
-                    <ListItem title="Felix" />
-                    <ListItem title="Finlay" />
-                    <ListItem title="Finley" />
-                    <ListItem title="Frankie" />
-                    <ListItem title="Freddie" />
-                    <ListItem title="Frederick" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="G" groupTitle />
-                    <ListItem title="Gabriel" />
-                    <ListItem title="George" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="H" groupTitle />
-                    <ListItem title="Harley" />
-                    <ListItem title="Harrison" />
-                    <ListItem title="Harry" />
-                    <ListItem title="Harvey" />
-                    <ListItem title="Henry" />
-                    <ListItem title="Hugo" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="I" groupTitle />
-                    <ListItem title="Ibrahim" />
-                    <ListItem title="Isaac" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="J" groupTitle />
-                    <ListItem title="Jack" />
-                    <ListItem title="Jacob" />
-                    <ListItem title="Jake" />
-                    <ListItem title="James" />
-                    <ListItem title="Jamie" />
-                    <ListItem title="Jayden" />
-                    <ListItem title="Jenson" />
-                    <ListItem title="Joseph" />
-                    <ListItem title="Joshua" />
-                    <ListItem title="Jude" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="K" groupTitle />
-                    <ListItem title="Kai" />
-                    <ListItem title="Kian" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="L" groupTitle />
-                    <ListItem title="Leo" />
-                    <ListItem title="Leon" />
-                    <ListItem title="Lewis" />
-                    <ListItem title="Liam" />
-                    <ListItem title="Logan" />
-                    <ListItem title="Louie" />
-                    <ListItem title="Louis" />
-                    <ListItem title="Luca" />
-                    <ListItem title="Lucas" />
-                    <ListItem title="Luke" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="M" groupTitle />
-                    <ListItem title="Mason" />
-                    <ListItem title="Matthew" />
-                    <ListItem title="Max" />
-                    <ListItem title="Michael" />
-                    <ListItem title="Mohammad" />
-                    <ListItem title="Mohammed" />
-                    <ListItem title="Muhammad" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="N" groupTitle />
-                    <ListItem title="Nathan" />
-                    <ListItem title="Noah" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="O" groupTitle />
-                    <ListItem title="Oliver" />
-                    <ListItem title="Ollie" />
-                    <ListItem title="Oscar" />
-                    <ListItem title="Owen" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="R" groupTitle />
-                    <ListItem title="Reuben" />
-                    <ListItem title="Riley" />
-                    <ListItem title="Robert" />
-                    <ListItem title="Ronnie" />
-                    <ListItem title="Rory" />
-                    <ListItem title="Ryan" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="S" groupTitle />
-                    <ListItem title="Samuel" />
-                    <ListItem title="Sebastian" />
-                    <ListItem title="Seth" />
-                    <ListItem title="Sonny" />
-                    <ListItem title="Stanley" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="T" groupTitle />
-                    <ListItem title="Teddy" />
-                    <ListItem title="Theo" />
-                    <ListItem title="Theodore" />
-                    <ListItem title="Thomas" />
-                    <ListItem title="Toby" />
-                    <ListItem title="Tommy" />
-                    <ListItem title="Tyler" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="W" groupTitle />
-                    <ListItem title="William" />
-                    </ListGroup>
-                    <ListGroup>
-                    <ListItem title="Z" groupTitle />
-                    <ListItem title="Zachary" />
-                    </ListGroup>
-                */}
-            </List>
-        </Page>
+                <InfiniteScroll
+                    className="im-calls-contacts-list contacts-list searchbar-found list media-list no-chevron no-hairlines no-hairlines-between"
+                    pageStart={0}
+                    loadMore={loadMore}
+                    hasMore={hasMore}
+                    loader={<div>Loading...</div>}
+                    useWindow={false}
+                >
+                    <ul>
+                        {renderContactsListView(contacts)}
+                    </ul>
+                </InfiniteScroll>
+            </Page>
         </Popup>
     );
-
 };
