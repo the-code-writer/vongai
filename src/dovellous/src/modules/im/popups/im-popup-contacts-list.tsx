@@ -40,6 +40,7 @@ export default ({
     }
 
     const [hasMore, setHasMore] = useState(true);
+
     const [records, setrecords] = useState(itemsPerPage);
 
     const loadMore = () => {
@@ -68,9 +69,13 @@ export default ({
                     {currentTabIndex === 3 ? (
 
                         <li key={`im-list-item-${contactIndex}`}>
+
                             <div className="item-content">
+
                                 <div className="item-media">
+
                                     <div slot="media" className={"andon-status"} />
+
                                     <Link
                                         onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
                                         href="#"
@@ -81,10 +86,15 @@ export default ({
                                             <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
                                         )}
                                     </Link>
+
                                 </div>
+
                                 <div className="item-inner">
+
                                     <div className="item-title-row">
+
                                         <div className="item-title">{contact.name}</div>
+
                                         <div className="item-after">
                                             <Link
                                                 onClick={() => onContactSelected(contact, "video", currentTabIndex)}
@@ -102,26 +112,36 @@ export default ({
                                             >
                                                 <i className="icon f7-icons color-custom">phone_fill</i>
                                             </Link>
+
                                         </div>
+
                                     </div>
+
                                     <div className="item-subtitle">{contact.mobile}</div>
+
                                     {contact.hasOwnProperty('text') && contact.text.length > 10 && (
                                         <div className="item-text">{contact.text}</div>
                                     )}
+
                                 </div>
+
                             </div>
+
                         </li>
 
                     ) : (
 
                         <li key={`im-list-item-${contactIndex}`}>
+
                             <Link
                                 className="item-content"
                                 onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
                                 href="#"
                             >
                                 <div className="item-media">
+
                                     <div slot="media" className={"andon-status"} />
+
                                     <div
                                         className="f7-demo-icon">
                                         {contact.hasOwnProperty('displayPhoto') && contact.displayPhoto.length > 10 ? (
@@ -130,17 +150,25 @@ export default ({
                                             <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
                                         )}
                                     </div>
+
                                 </div>
+
                                 <div className="item-inner">
+
                                     <div className="item-title-row">
                                         <div className="item-title">{contact.name}</div>
                                     </div>
+
                                     <div className="item-subtitle">{contact.displayStatus}</div>
+
                                     {contact.hasOwnProperty('text') && contact.text.length > 10 && (
                                         <div className="item-text">{contact.text}</div>
                                     )}
+
                                 </div>
+
                             </Link>
+
                         </li>
 
                     )}
@@ -243,32 +271,41 @@ export default ({
             push
         >
             <Page>
+
                 <Navbar >
+
                     <NavLeft>
+
                         <Link
                             popupClose
                             iconIos="f7:arrow_left"
                             iconAurora="f7:arrow_left"
                             iconMd="material:arrow_back"
                         />
+
                     </NavLeft>
+
                     <NavTitle
                         title="Select Contact"
                         subtitle={`Showing ${records}/${contacts.count} contacts`} />
                     <NavRight>
+
                         <Link
                             searchbarEnable=".searchbar-im-contacts"
                             iconIos="f7:search"
                             iconAurora="f7:search"
                             iconMd="material:search"
                         ></Link>
+
                         <Link
                             iconIos="f7:ellipsis_vertical"
                             iconAurora="f7:ellipsis_vertical"
                             iconMd="material:more_vert"
                             popoverOpen=".popover-menu"
                         />
+
                     </NavRight>
+
                     <Searchbar
                         className="searchbar-im-contacts"
                         expandable
@@ -276,7 +313,9 @@ export default ({
                         searchIn=".item-title, item-subtitle"
                         disableButton={!theme.aurora}
                     />
+
                 </Navbar>
+
                 <List className="searchbar-not-found">
                     <ListItem title="Nothing found"></ListItem>
                 </List>
