@@ -35,7 +35,7 @@ export default ({
 
     const imContactsListIndex = useRef(null);
 
-    if(!itemsPerPage){
+    if (!itemsPerPage) {
         itemsPerPage = 20;
     }
 
@@ -65,83 +65,83 @@ export default ({
 
                 <React.Fragment>
 
-                    {currentTabIndex===3 ? (
+                    {currentTabIndex === 3 ? (
 
-                    <li key={`im-list-item-${contactIndex}`}>
-                        <div className="item-content">
-                            <div className="item-media">
-                                <div slot="media" className={"andon-status"}/>
-                                <Link
-                                    onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
-                                    href="#"  
-                                    className="f7-demo-icon">
-                                    {contact.hasOwnProperty('displayPhoto') && contact.displayPhoto.length > 10 ? (
-                                        <img className="avatar-icon-img" src={contact.displayPhoto} alt={contact.name} />
-                                    ):(
-                                        <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
-                                    )}
-                                </Link>
-                            </div>
-                            <div className="item-inner">
-                            <div className="item-title-row">
-                                <div className="item-title">{contact.name}</div>
-                                <div className="item-after">
+                        <li key={`im-list-item-${contactIndex}`}>
+                            <div className="item-content">
+                                <div className="item-media">
+                                    <div slot="media" className={"andon-status"} />
                                     <Link
-                                        onClick={() => onContactSelected(contact, "video", currentTabIndex)}
+                                        onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
                                         href="#"
-                                        className="f7-demo-icon"
-                                    >
-                                        <i className="icon f7-icons color-custom">videocam_fill</i>
-                                    </Link>
-
-                                    <Link
-                                        onClick={() => onContactSelected(contact, "call", currentTabIndex)}
-                                        href="#"
-                                        className="f7-demo-icon"
-                                        style={{ marginLeft: "32px", marginRight: "24px" }}
-                                    >
-                                        <i className="icon f7-icons color-custom">phone_fill</i>
+                                        className="f7-demo-icon">
+                                        {contact.hasOwnProperty('displayPhoto') && contact.displayPhoto.length > 10 ? (
+                                            <img className="avatar-icon-img" src={contact.displayPhoto} alt={contact.name} />
+                                        ) : (
+                                            <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
+                                        )}
                                     </Link>
                                 </div>
-                            </div>
-                            <div className="item-subtitle">{contact.mobile}</div>
-                            {contact.hasOwnProperty('text') && contact.text.length > 10 && (
-                                <div className="item-text">{contact.text}</div>
-                            )}
-                            </div>
-                        </div>
-                    </li>
+                                <div className="item-inner">
+                                    <div className="item-title-row">
+                                        <div className="item-title">{contact.name}</div>
+                                        <div className="item-after">
+                                            <Link
+                                                onClick={() => onContactSelected(contact, "video", currentTabIndex)}
+                                                href="#"
+                                                className="f7-demo-icon"
+                                            >
+                                                <i className="icon f7-icons color-custom">videocam_fill</i>
+                                            </Link>
 
-                    ):(
-                      
-                    <li key={`im-list-item-${contactIndex}`}>
-                        <Link 
-                            className="item-content"
-                            onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
-                            href="#"                                      
+                                            <Link
+                                                onClick={() => onContactSelected(contact, "call", currentTabIndex)}
+                                                href="#"
+                                                className="f7-demo-icon"
+                                                style={{ marginLeft: "32px", marginRight: "24px" }}
+                                            >
+                                                <i className="icon f7-icons color-custom">phone_fill</i>
+                                            </Link>
+                                        </div>
+                                    </div>
+                                    <div className="item-subtitle">{contact.mobile}</div>
+                                    {contact.hasOwnProperty('text') && contact.text.length > 10 && (
+                                        <div className="item-text">{contact.text}</div>
+                                    )}
+                                </div>
+                            </div>
+                        </li>
+
+                    ) : (
+
+                        <li key={`im-list-item-${contactIndex}`}>
+                            <Link
+                                className="item-content"
+                                onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
+                                href="#"
                             >
-                            <div className="item-media">
-                                <div slot="media" className={"andon-status"}/>
-                                <div
-                                    className="f7-demo-icon">
-                                    {contact.hasOwnProperty('displayPhoto') && contact.displayPhoto.length > 10 ? (
-                                        <img className="avatar-icon-img" src={contact.displayPhoto} alt={contact.name} />
-                                    ):(
-                                        <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
+                                <div className="item-media">
+                                    <div slot="media" className={"andon-status"} />
+                                    <div
+                                        className="f7-demo-icon">
+                                        {contact.hasOwnProperty('displayPhoto') && contact.displayPhoto.length > 10 ? (
+                                            <img className="avatar-icon-img" src={contact.displayPhoto} alt={contact.name} />
+                                        ) : (
+                                            <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="item-inner">
+                                    <div className="item-title-row">
+                                        <div className="item-title">{contact.name}</div>
+                                    </div>
+                                    <div className="item-subtitle">{contact.displayStatus}</div>
+                                    {contact.hasOwnProperty('text') && contact.text.length > 10 && (
+                                        <div className="item-text">{contact.text}</div>
                                     )}
                                 </div>
-                            </div>
-                            <div className="item-inner">
-                            <div className="item-title-row">
-                                <div className="item-title">{contact.name}</div>
-                            </div>
-                            <div className="item-subtitle">{ contact.displayStatus}</div>
-                            {contact.hasOwnProperty('text') && contact.text.length > 10 && (
-                                <div className="item-text">{contact.text}</div>
-                            )}
-                            </div>
-                        </Link>
-                    </li>
+                            </Link>
+                        </li>
 
                     )}
 
@@ -304,7 +304,7 @@ export default ({
                 </InfiniteScroll>
 
             </Page>
-            
+
         </Popup>
 
     );
