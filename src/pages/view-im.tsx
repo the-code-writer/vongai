@@ -26,21 +26,25 @@ export default () => {
 
   }
 
-  <React.Fragment>
+  return(
 
-    <IMHomeScreen
-      onOpenIMPopupContactsList={openIMPopupContactsListHandler}
-      onTabIndexChanged={tabIndexChangedHandler}
-    />
+    <React.Fragment>
 
-    <IMPopupContactsList
-      currentTabIndex={currentIMTab}
-      popupOpened={popupIMContactsListOpened}
-      onPopupClosed={openIMPopupContactsListHandler}
-      onContactSelected={onContactSelected}
-      itemsPerPage={10}
-    />
+      <IMHomeScreen
+        onOpenIMPopupContactsList={openIMPopupContactsListHandler}
+        onTabIndexChanged={tabIndexChangedHandler}
+      />
 
-  </React.Fragment>
+      <IMPopupContactsList
+        currentTabIndex={currentIMTab}
+        popupOpened={popupIMContactsListOpened}
+        onPopupClosed={openIMPopupContactsListHandler}
+        onContactSelected={onContactSelected}
+        itemsPerPage={10}
+      />
+
+    </React.Fragment>
+
+  )
 
 };
