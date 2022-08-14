@@ -1,5 +1,5 @@
-import React, {useEffect} from "react";
-export default ({unseenSegments, totalSegments, imageUrl, elementId, canvasDiameter, segmentColorSeen,  segmentColorUnSeen, backgroundColor}) => {
+import React, { useEffect } from "react";
+export default ({ unseenSegments, totalSegments, imageUrl, elementId, canvasDiameter, segmentColorSeen, segmentColorUnSeen, backgroundColor }) => {
   const render = (
     unseenSegments: number,
     totalSegments: number,
@@ -53,23 +53,23 @@ export default ({unseenSegments, totalSegments, imageUrl, elementId, canvasDiame
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     render(unseenSegments, totalSegments, imageUrl, elementId, canvasDiameter, segmentColorSeen, segmentColorUnSeen);
-  },[unseenSegments, totalSegments, imageUrl, elementId])
+  }, [unseenSegments, totalSegments, imageUrl, elementId])
 
-  return (  
-    <canvas 
-        id={elementId} 
-        width={canvasDiameter} 
-        height={canvasDiameter} 
-        style={
-            {
-                position: `absolute`,
-                backgroundColor: backgroundColor,
-                border: `2px solid ${backgroundColor}`,
-                borderRadius: `${canvasDiameter / 2}px`,
-            }
-        } 
+  return (
+    <canvas
+      id={elementId}
+      width={canvasDiameter}
+      height={canvasDiameter}
+      style={
+        {
+          position: `absolute`,
+          backgroundColor: backgroundColor,
+          border: `2px solid ${backgroundColor}`,
+          borderRadius: `${canvasDiameter / 2}px`,
+        }
+      }
     />
   )
 
