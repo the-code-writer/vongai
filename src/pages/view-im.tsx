@@ -40,7 +40,7 @@ export default () => {
         popupOpened={popupIMContactsListOpened}
         onPopupClosed={openIMPopupContactsListHandler}
         onContactSelected={onContactSelected}
-        itemsPerPage={10}
+        itemsPerPage={16}
       />
 
     </React.Fragment>
