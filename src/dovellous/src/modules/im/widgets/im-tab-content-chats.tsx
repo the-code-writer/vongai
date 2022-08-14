@@ -63,10 +63,10 @@ export default ({ id, slug, className, skeletonList }): JSX.Element => {
               <ListItem
                 key={`im-chat-list-item-key-${index}`}
                 id={`im-chat-list-item-key-${index}`}
-                link={`/im/chat/${chat.uuid}/`}
-                title={chat.username}
+                link={`/im/chat/${chat.uuid}/0/`}
+                title={chat.title}
                 after={chat.timestamp}
-                badge={chat.unread}
+                badge={chat.badge}
                 subtitle={chat.subTitle}
                 text={chat.text}
               >

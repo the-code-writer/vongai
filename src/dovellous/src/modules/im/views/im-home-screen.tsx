@@ -29,44 +29,17 @@ import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 
 import IMTabContentChats from "../widgets/im-tab-content-chats";
 
-import IMContactListCalls from "../popups/im-popup-contacts-calls";
-
 import navBarLogo from "../../../../assets/img/logo-typographical-white.png";
 
 import {StorageIM} from "../store/im-store";
-import {StorageContacts} from "../store/contacts-store";
 
 import Dom7 from "dom7";
 
-export default () => { 
+export default ({onTabIndexChanged, onOpenIMPopupContactsList}) => { 
 
-  const [tabCurrentIndex, setTabCurrentIndex] = useState(1);
+  const [currentTabIndex, setCurrentTabIndex] = useState(1);
 
-  const [fabButton, setFabButton] = useState(StorageIM.getters.imFabButtonMeta.value[tabCurrentIndex]);
-
-  const [popupIMContactsListCallsOpened, setPopupIMContactsListCallsOpened] = useState(false);
-
-  const popupIMContactsListCallsToggleHandler = ()=>{
-
-    setPopupIMContactsListCallsOpened(!popupIMContactsListCallsOpened);
-
-  }
-
-  const onContactSelected = (contact)=>{
-
-    console.log("::: onContactSelected :::", contact);
-
-  }
-
-  const PopupIMContactList = useCallback(() => {
-
-    <IMContactListCalls      
-        popupOpened={popupIMContactsListCallsOpened}
-        onPopupClosed={popupIMContactsListCallsToggleHandler}
-        onContactSelected={onContactSelected}
-      />
-
-  },[]);
+  const [fabButton, setFabButton] = useState(StorageIM.getters.imFabButtonMeta.value[currentTabIndex]);
 
   const imTabVisible = (
     e: any,
@@ -88,7 +61,9 @@ export default () => {
     tabIndex: number
   ) => {
 
-    setTabCurrentIndex(tabIndex);
+    onTabIndexChanged(tabIndex);
+
+    setCurrentTabIndex(tabIndex);
 
     setFabButton(StorageIM.getters.imFabButtonMeta.value[tabIndex]);
 
@@ -100,12 +75,28 @@ export default () => {
 
       }
 
-      default: {
+      case 1: {
 
+        break;
+
+      }
+
+      case 2: {
+
+        break;
+
+      }
+
+      case 3: {
+
+        break;
+
+      }
+
+      default: {
         Dom7("#im-home-screen-nav").show();
         Dom7("#im-home-screen-toolbar").show();
-        break;
-        
+        break;        
       }
 
     }
@@ -163,8 +154,7 @@ export default () => {
         break;
       }
       case"sheet-modal-open-calls":  {
-
-        popupIMContactsListCallsToggleHandler();
+        onOpenIMPopupContactsList(slug, currentTabIndex);
         break;
 
       }
@@ -490,12 +480,6 @@ export default () => {
         )}
       </Fab>
       
-      <IMContactListCalls      
-        popupOpened={popupIMContactsListCallsOpened}
-        onPopupClosed={popupIMContactsListCallsToggleHandler}
-        onContactSelected={onContactSelected}
-      />
-
     </Page>
   );
 

@@ -19,9 +19,11 @@ import InfiniteScroll from "react-infinite-scroller";
 import { StorageContacts } from "../store/contacts-store";
 
 export default ({
+    currentTabIndex,
     popupOpened,
     onPopupClosed,
     onContactSelected,
+    itemsPerPage,
 }) => {
 
     let contacts = StorageContacts.state.imContacts;
@@ -33,7 +35,10 @@ export default ({
 
     const imContactsListIndex = useRef(null);
 
-    const itemsPerPage = 20;
+    if(!itemsPerPage){
+        itemsPerPage = 20;
+    }
+
     const [hasMore, setHasMore] = useState(true);
     const [records, setrecords] = useState(itemsPerPage);
 
@@ -52,7 +57,7 @@ export default ({
         }
     };
 
-    const ContactListViewItem = useCallback(({ contact, contactIndex, isGroupTitle, displayPhoneNumber }) => {
+    const ContactListViewItem = useCallback(({ contact, contactIndex, isGroupTitle }) => {
 
         return (
 
@@ -60,12 +65,14 @@ export default ({
 
                 <React.Fragment>
 
-                    <li key={`im-calls-list-item-${contactIndex}`}>
+                    {currentTabIndex===3 ? (
+
+                    <li key={`im-list-item-${contactIndex}`}>
                         <div className="item-content">
                             <div className="item-media">
                                 <div slot="media" className={"andon-status"}/>
                                 <Link
-                                    onClick={() => onContactSelected(contact, "preview")}
+                                    onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
                                     href="#"  
                                     className="f7-demo-icon">
                                     {contact.hasOwnProperty('displayPhoto') && contact.displayPhoto.length > 10 ? (
@@ -80,7 +87,7 @@ export default ({
                                 <div className="item-title">{contact.name}</div>
                                 <div className="item-after">
                                     <Link
-                                        onClick={() => onContactSelected(contact, "video")}
+                                        onClick={() => onContactSelected(contact, "video", currentTabIndex)}
                                         href="#"
                                         className="f7-demo-icon"
                                     >
@@ -88,7 +95,7 @@ export default ({
                                     </Link>
 
                                     <Link
-                                        onClick={() => onContactSelected(contact, "call")}
+                                        onClick={() => onContactSelected(contact, "call", currentTabIndex)}
                                         href="#"
                                         className="f7-demo-icon"
                                         style={{ marginLeft: "32px", marginRight: "24px" }}
@@ -97,18 +104,53 @@ export default ({
                                     </Link>
                                 </div>
                             </div>
-                            <div className="item-subtitle">{displayPhoneNumber ? contact.mobile : contact.displayStatus}</div>
-                            {/*<div className="item-text">Additional description text</div>*/}
+                            <div className="item-subtitle">{contact.mobile}</div>
+                            {contact.hasOwnProperty('text') && contact.text.length > 10 && (
+                                <div className="item-text">{contact.text}</div>
+                            )}
                             </div>
                         </div>
                     </li>
+
+                    ):(
+                      
+                    <li key={`im-list-item-${contactIndex}`}>
+                        <Link 
+                            className="item-content"
+                            onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
+                            href="#"                                      
+                            >
+                            <div className="item-media">
+                                <div slot="media" className={"andon-status"}/>
+                                <div
+                                    className="f7-demo-icon">
+                                    {contact.hasOwnProperty('displayPhoto') && contact.displayPhoto.length > 10 ? (
+                                        <img className="avatar-icon-img" src={contact.displayPhoto} alt={contact.name} />
+                                    ):(
+                                        <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="item-inner">
+                            <div className="item-title-row">
+                                <div className="item-title">{contact.name}</div>
+                            </div>
+                            <div className="item-subtitle">{ contact.displayStatus}</div>
+                            {contact.hasOwnProperty('text') && contact.text.length > 10 && (
+                                <div className="item-text">{contact.text}</div>
+                            )}
+                            </div>
+                        </Link>
+                    </li>
+
+                    )}
 
                 </React.Fragment>
 
             ) : (
 
                 <ListItem
-                    key={`im-calls-popup-list-item-${contactIndex}`}
+                    key={`im-popup-list-item-${contactIndex}`}
                     title={`${contact}`}
                     divider={true}
                     groupTitle={true}
@@ -117,6 +159,7 @@ export default ({
             )
 
         );
+
     }, []);
 
     const renderContactsListView = (contacts: { contactsArray?: any; }): typeof ContactListViewItem => {
@@ -132,13 +175,13 @@ export default ({
                     contactsListItems.push(
                         <ContactListViewItem
                             key={`im-contact-list-view-item-container-${contactIndex}`}
-                            displayPhoneNumber={true}
                             isGroupTitle={contact.isGroupTitle}
                             contact={contact.data}
                             contactIndex={contactIndex} />
                     );
 
                 }
+
             });
 
             if (!imContactsListIndex || imContactsListIndex.current === null || typeof imContactsListIndex.current !== "undefined") {
@@ -146,7 +189,7 @@ export default ({
                 createIMContactsListIndex();
 
             } else {
-                console.log("::renderContactsListView::", imContactsListIndex);
+
                 imContactsListIndex.current.update();
 
             }
@@ -159,22 +202,17 @@ export default ({
 
         }
 
-
     };
 
     const createIMContactsListIndex = () => {
+
         if (!imContactsListIndex || imContactsListIndex.current === null || typeof imContactsListIndex.current !== "undefined") {
 
             imContactsListIndex.current = f7.listIndex.create({
-                // ".list-index" element
-                el: '.im-calls-contacts-list-index',
-                // List el where to look indexes and scroll for
-                listEl: '.im-calls-contacts-list',
-                // Generate indexes automatically based on ".list-group-title" and ".item-divider"
+                el: '.im-contacts-list-index',
+                listEl: '.im-contacts-list',
                 indexes: 'auto',
-                // Scroll list on indexes click and touchmove
                 scrollList: true,
-                // Enable bubble label when swiping over indexes
                 label: true,
                 on: {
                     select: function (e) {
@@ -182,24 +220,30 @@ export default ({
                     },
                 },
             });
+
             imContactsListIndex.current.update();
+
         }
+
     }
 
     useEffect(() => {
+
         createIMContactsListIndex();
+
     }, [])
 
 
     return (
+
         <Popup
-            className="sheet-modal-open-calls"
+            className="im-popup-contacts-list"
             opened={popupOpened}
             onPopupClosed={() => onPopupClosed(false)}
             push
         >
             <Page>
-                <Navbar>
+                <Navbar >
                     <NavLeft>
                         <Link
                             popupClose
@@ -209,11 +253,11 @@ export default ({
                         />
                     </NavLeft>
                     <NavTitle
-                    title="Select Contact"
-                    subtitle={`Showing ${records} of ${contacts.count} contacts`} />
+                        title="Select Contact"
+                        subtitle={`Showing ${records}/${contacts.count} contacts`} />
                     <NavRight>
                         <Link
-                            searchbarEnable=".searchbar-im-popup-calls"
+                            searchbarEnable=".searchbar-im-contacts"
                             iconIos="f7:search"
                             iconAurora="f7:search"
                             iconMd="material:search"
@@ -226,20 +270,20 @@ export default ({
                         />
                     </NavRight>
                     <Searchbar
-                        className="searchbar-im-calls"
+                        className="searchbar-im-contacts"
                         expandable
-                        searchContainer=".im-calls-contacts-list"
-                        searchIn=".item-title"
+                        searchContainer=".im-contacts-list"
+                        searchIn=".item-title, item-subtitle"
                         disableButton={!theme.aurora}
-                    ></Searchbar>
+                    />
                 </Navbar>
                 <List className="searchbar-not-found">
                     <ListItem title="Nothing found"></ListItem>
                 </List>
 
-                <ListIndex className="im-calls-contacts-list-index"
+                <ListIndex className="im-contacts-list-index"
                     init={false}
-                    listEl=".im-calls-contacts-list"
+                    listEl=".im-contacts-list"
                     label={true}
                     indexes="auto"
                     scrollList={true}
@@ -247,7 +291,7 @@ export default ({
                 ></ListIndex>
 
                 <InfiniteScroll
-                    className="im-calls-contacts-list contacts-list searchbar-found list media-list no-chevron no-hairlines no-hairlines-between"
+                    className="im-contacts-list contacts-list searchbar-found list media-list no-chevron no-hairlines no-hairlines-between"
                     pageStart={0}
                     loadMore={loadMore}
                     hasMore={hasMore}
@@ -258,7 +302,11 @@ export default ({
                         {renderContactsListView(contacts)}
                     </ul>
                 </InfiniteScroll>
+
             </Page>
+            
         </Popup>
+
     );
+
 };
