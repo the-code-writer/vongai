@@ -4,14 +4,14 @@ import { faker } from '@faker-js/faker';
 import { createStore } from 'framework7/lite';
 
 const StorageIM = createStore({
-  
+
   state: {
 
     /*----- Start Instant Messenger State Variables -----*/
 
     //IM Screen Tab Data
 
-    imHomeScreenTabsData : [
+    imHomeScreenTabsData: [
       {
         tabLink: "tab-im-apps",
         tabText: "",
@@ -27,10 +27,10 @@ const StorageIM = createStore({
         badge: 0,
         skeletonList: {
           count: 5,
-          effect:"wave",
-          title:faker.lorem.words(4),
-          subtitle:faker.lorem.words(2),
-          text:faker.lorem.words(7)
+          effect: "wave",
+          title: faker.lorem.words(4),
+          subtitle: faker.lorem.words(2),
+          text: faker.lorem.words(7)
         },
       },
       {
@@ -48,10 +48,10 @@ const StorageIM = createStore({
         badge: 53,
         skeletonList: {
           count: 5,
-          effect:"wave",
-          title:faker.lorem.words(4),
-          subtitle:faker.lorem.words(2),
-          text:faker.lorem.words(7)
+          effect: "wave",
+          title: faker.lorem.words(4),
+          subtitle: faker.lorem.words(2),
+          text: faker.lorem.words(7)
         },
       },
       {
@@ -69,10 +69,10 @@ const StorageIM = createStore({
         badge: 0,
         skeletonList: {
           count: 5,
-          effect:"wave",
-          title:faker.lorem.words(4),
-          subtitle:faker.lorem.words(2),
-          text:faker.lorem.words(7)
+          effect: "wave",
+          title: faker.lorem.words(4),
+          subtitle: faker.lorem.words(2),
+          text: faker.lorem.words(7)
         },
       },
       {
@@ -90,85 +90,85 @@ const StorageIM = createStore({
         badge: 1,
         skeletonList: {
           count: 5,
-          effect:"wave",
-          title:faker.lorem.words(4),
-          subtitle:faker.lorem.words(2),
-          text:faker.lorem.words(7)
+          effect: "wave",
+          title: faker.lorem.words(4),
+          subtitle: faker.lorem.words(2),
+          text: faker.lorem.words(7)
         },
       },
     ],
 
-    
-    imFabButtonMeta : [
-    {
-      icons: {
-        ios: "",
-        md: "photo_camera",
-        aurora: "",
-      },
-      slug: "sheet-modal-open-camera",
-      title: "Capture",
-      buttons: []
-    },
-    {
-      icons: {
-        ios: "",
-        md: "chat",
-        aurora: "",
-      },
-      slug: "sheet-modal-open-chats",
-      label: "Chat",
-      buttons: []
-    },
-    {
-      icons: {
-        ios: "plus",
-        md: "add",
-        aurora: "plus",
-      },
-      slug: "sheet-modal-open-stories",
-      label: "Create Story",
-      buttons: [
-        {
-          icons: {
-            ios: "pencil",
-            md: "edit",
-            aurora: "pencil",
-          },
-          label: "Type a status",
-          slug: "sheet-modal-open-stories-composer",
+
+    imFabButtonMeta: [
+      {
+        icons: {
+          ios: "",
+          md: "photo_camera",
+          aurora: "",
         },
-        {
-          icons: {
-            ios: "photo_on_rectangle",
-            md: "photo_camera",
-            aurora: "photo_on_rectangle",
-          },
-          label: "Take a photo",
-          slug: "sheet-modal-open-stories-camera",
-        },
-        {
-          icons: {
-            ios: "photo_on_rectangle",
-            md: "collections",
-            aurora: "photo_on_rectangle",
-          },
-          label: "Select from gallery",
-          slug: "sheet-modal-open-stories-gallery",
-        },
-      ],
-    },
-    {
-      icons: {
-        ios: "",
-        md: "add_call",
-        aurora: "",
+        slug: "sheet-modal-open-camera",
+        title: "Capture",
+        buttons: []
       },
-      slug: "sheet-modal-open-calls",
-      label: "Call",
-      buttons: []
-    },
-  ],
+      {
+        icons: {
+          ios: "",
+          md: "chat",
+          aurora: "",
+        },
+        slug: "sheet-modal-open-chats",
+        label: "Chat",
+        buttons: []
+      },
+      {
+        icons: {
+          ios: "plus",
+          md: "add",
+          aurora: "plus",
+        },
+        slug: "sheet-modal-open-stories",
+        label: "Create Story",
+        buttons: [
+          {
+            icons: {
+              ios: "pencil",
+              md: "edit",
+              aurora: "pencil",
+            },
+            label: "Type a status",
+            slug: "sheet-modal-open-stories-composer",
+          },
+          {
+            icons: {
+              ios: "photo_on_rectangle",
+              md: "photo_camera",
+              aurora: "photo_on_rectangle",
+            },
+            label: "Take a photo",
+            slug: "sheet-modal-open-stories-camera",
+          },
+          {
+            icons: {
+              ios: "photo_on_rectangle",
+              md: "collections",
+              aurora: "photo_on_rectangle",
+            },
+            label: "Select from gallery",
+            slug: "sheet-modal-open-stories-gallery",
+          },
+        ],
+      },
+      {
+        icons: {
+          ios: "",
+          md: "add_call",
+          aurora: "",
+        },
+        slug: "sheet-modal-open-calls",
+        label: "Call",
+        buttons: []
+      },
+    ],
 
 
     // IM Chats
@@ -235,7 +235,7 @@ const StorageIM = createStore({
 
   },
   getters: {
-    
+
     /*----- Start Instant Messenger Getters -----*/
 
     //IM Screen Tab Data
@@ -400,11 +400,11 @@ const StorageIM = createStore({
     },
 
     imChatsIncreament({ state }) {
-      state.imChatsUnread = state.imChatsUnread+1;
+      state.imChatsUnread = state.imChatsUnread + 1;
     },
 
     imChatsDecreament({ state }) {
-      state.imChatsUnread = state.imChatsUnread-1;
+      state.imChatsUnread = state.imChatsUnread - 1;
     },
 
     imListChatsLoading({ state }, isLoading) {
@@ -478,11 +478,11 @@ const StorageIM = createStore({
     },
 
     imCallsIncreament({ state }) {
-      state.imCallsUnread = state.imCallsUnread+1;
+      state.imCallsUnread = state.imCallsUnread + 1;
     },
 
     imCallsDecreament({ state }) {
-      state.imCallsUnread = state.imCallsUnread-1;
+      state.imCallsUnread = state.imCallsUnread - 1;
     },
 
     imListCallsLoading({ state }, isLoading) {
@@ -518,11 +518,11 @@ const StorageIM = createStore({
     },
 
     imChannelsIncreament({ state }) {
-      state.imChannelsUnread = state.imChannelsUnread+1;
+      state.imChannelsUnread = state.imChannelsUnread + 1;
     },
 
     imChannelsDecreament({ state }) {
-      state.imChannelsUnread = state.imChannelsUnread-1;
+      state.imChannelsUnread = state.imChannelsUnread - 1;
     },
 
     imListChannelsLoading({ state }, isLoading) {
@@ -558,11 +558,11 @@ const StorageIM = createStore({
     },
 
     imBotsIncreament({ state }) {
-      state.imBotsUnread = state.imBotsUnread+1;
+      state.imBotsUnread = state.imBotsUnread + 1;
     },
 
     imBotsDecreament({ state }) {
-      state.imBotsUnread = state.imBotsUnread-1;
+      state.imBotsUnread = state.imBotsUnread - 1;
     },
 
     imListBotsLoading({ state }, isLoading) {
@@ -582,4 +582,4 @@ const StorageIM = createStore({
   },
 })
 
-export {StorageIM};
+export { StorageIM };
