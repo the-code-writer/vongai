@@ -10,7 +10,7 @@ import {
 import { StorageIM } from "../store/im-store";
 
 export default ({ id, slug, className, skeletonList }): JSX.Element => {
-    
+
   useEffect(() => {
 
     f7ready((framework7IO) => {
@@ -24,7 +24,7 @@ export default ({ id, slug, className, skeletonList }): JSX.Element => {
   return (
 
     <Page id={`${id}`} name={`${slug}`} className={`page ${className}`}>
-      
+
       <List className="searchbar-not-found im-tab-content-chats-searchbar-not-found">
         <div style={{ textAlign: "center", marginTop: "64px" }}>
           No chats found
@@ -37,52 +37,52 @@ export default ({ id, slug, className, skeletonList }): JSX.Element => {
         className="search-list searchbar-found im-tab-content-chats-searchbar-found"
       >
         {StorageIM.getters.imListChats.value.length === 0 ? [...Array(skeletonList.count).keys()].map((n) => (
-              
-              <ListItem
-                key={n}
-                className={`skeleton-text skeleton-effect-${skeletonList.effect}`}
-                title={`${skeletonList.title}`}
-                subtitle={`${skeletonList.subtitle}`}
-                text={`${skeletonList.text}`}
-                after={`00:00`}
-              >
 
-              <SkeletonBlock
-                slot="media"
-                tag={"div"}
-                width={"44px"}
-                height={"44px"}
-                borderRadius={"50%"} 
-                effect={`wave`}
-              />
+          <ListItem
+            key={n}
+            className={`skeleton-text skeleton-effect-${skeletonList.effect}`}
+            title={`${skeletonList.title}`}
+            subtitle={`${skeletonList.subtitle}`}
+            text={`${skeletonList.text}`}
+            after={`00:00`}
+          >
 
-              </ListItem>
-            ))
+            <SkeletonBlock
+              slot="media"
+              tag={"div"}
+              width={"44px"}
+              height={"44px"}
+              borderRadius={"50%"}
+              effect={`wave`}
+            />
+
+          </ListItem>
+        ))
           : StorageIM.getters.imListChats.value.map((chat: any, index: number) => (
 
-              <ListItem
-                key={`im-chat-list-item-key-${index}`}
-                id={`im-chat-list-item-key-${index}`}
-                link={`/im/chat/${chat.uuid}/0/`}
-                title={chat.title}
-                after={chat.timestamp}
-                badge={chat.badge}
-                subtitle={chat.subTitle}
-                text={chat.text}
-              >
-                
-                <div slot="media" className={"user-online-status"} />
+            <ListItem
+              key={`im-chat-list-item-key-${index}`}
+              id={`im-chat-list-item-key-${index}`}
+              link={`/im/chat/${chat.uuid}/0/`}
+              title={chat.title}
+              after={chat.timestamp}
+              badge={chat.badge}
+              subtitle={chat.subTitle}
+              text={chat.text}
+            >
 
-                <img
-                  slot="media"
-                  src={chat.avatar}
-                  width="48"
-                  className="rounded"
-                  alt=""
-                />
+              <div slot="media" className={"user-online-status"} />
 
-              </ListItem>
-            ))}
+              <img
+                slot="media"
+                src={chat.avatar}
+                width="48"
+                className="rounded"
+                alt=""
+              />
+
+            </ListItem>
+          ))}
       </List>
     </Page>
   );
