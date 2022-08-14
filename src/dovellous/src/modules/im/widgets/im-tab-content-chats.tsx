@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+
 import {
   Page,
   List,
@@ -57,6 +58,7 @@ export default ({ id, slug, className, skeletonList }): JSX.Element => {
             />
 
           </ListItem>
+
         ))
           : StorageIM.getters.imListChats.value.map((chat: any, index: number) => (
 
@@ -82,8 +84,13 @@ export default ({ id, slug, className, skeletonList }): JSX.Element => {
               />
 
             </ListItem>
+
           ))}
+
       </List>
+
     </Page>
+
   );
+
 };
