@@ -125,44 +125,39 @@ export default ({onTabIndexChanged, onOpenIMPopupContactsList}) => {
     //console.log(":: HIDE ::", e, tabContent, tabIndex);
   };
 
-  const imFabButtonClickHandler = (slug)=>{
+  const imFabButtonClickHandler = (payload:any, tabIndex:number)=>{
 
-    switch(slug.toString().toLowerCase()){
-      
+    switch(payload.slug.toString().toLowerCase()){      
       case"sheet-modal-open-camera":  {
-
+        onOpenIMPopupContactsList(payload, tabIndex);
         break;
       }
       case"sheet-modal-open-chats":  {
-
+        onOpenIMPopupContactsList(payload, tabIndex);
         break;
       }
       case"sheet-modal-open-stories":  {
-
         break;
       }
       case"sheet-modal-open-stories-composer":  {
-
+        onOpenIMPopupContactsList(payload, tabIndex);
         break;
       }
       case"sheet-modal-open-stories-camera":  {
-
+        onOpenIMPopupContactsList(payload, tabIndex);
         break;
       }
       case"sheet-modal-open-stories-gallery":  {
-
+        onOpenIMPopupContactsList(payload, tabIndex);
         break;
       }
       case"sheet-modal-open-calls":  {
-        onOpenIMPopupContactsList(slug, currentTabIndex);
+        onOpenIMPopupContactsList(payload, tabIndex);
         break;
-
       }
-
       default: {
         break;
       }
-
     }
 
   }
@@ -451,7 +446,7 @@ export default ({onTabIndexChanged, onOpenIMPopupContactsList}) => {
         position="right-bottom" 
         className={"m-b-0"} 
         slot="fixed" 
-        onClick={()=>imFabButtonClickHandler(fabButton.slug)} >
+        onClick={()=>imFabButtonClickHandler(fabButton, currentTabIndex)} >
         <Icon
           ios={`f7:${fabButton.icons.md}`}
           aurora={`f7:${fabButton.icons.md}`}
@@ -464,7 +459,7 @@ export default ({onTabIndexChanged, onOpenIMPopupContactsList}) => {
             <FabButtons position="top" className="fab-button-popup">
               {fabButton.buttons.map((button: any, buttonIndex: number) => (
                 <FabButton
-                  onClick={()=>imFabButtonClickHandler(button)}
+                  onClick={()=>imFabButtonClickHandler(button, currentTabIndex)}
                   fabClose={true}
                   key={`fab-button-${buttonIndex}`}
                   label={`${button.label}`}
