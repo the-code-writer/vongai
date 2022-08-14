@@ -4,33 +4,33 @@ import IMHomeScreen from '../dovellous/src/modules/im/views/im-home-screen';
 
 import IMPopupContactsList from "../dovellous/src/modules/im/popups/im-popup-contacts-list";
 
-const [currentIMTab, setCurrentIMTab] = useState(1);
+export default () => {
 
-const tabIndexChangedHandler = (currentTab:number) => {
-  setCurrentIMTab(currentTab);
-}
+  const [currentIMTab, setCurrentIMTab] = useState(1);
 
-const [popupIMContactsListOpened, setPopupIMContactsListOpened] = useState(false);
+  const tabIndexChangedHandler = (currentTab: number) => {
+    setCurrentIMTab(currentTab);
+  }
 
-const openIMPopupContactsListHandler = ()=>{
+  const [popupIMContactsListOpened, setPopupIMContactsListOpened] = useState(false);
 
-  setPopupIMContactsListOpened(!popupIMContactsListOpened);
+  const openIMPopupContactsListHandler = () => {
 
-}
+    setPopupIMContactsListOpened(!popupIMContactsListOpened);
 
-const onContactSelected = (contact, action, tabIndex)=>{
+  }
 
-  console.log("::: onContactSelected :::", contact, action, tabIndex);
+  const onContactSelected = (contact, action, tabIndex) => {
 
-}
+    console.log("::: onContactSelected :::", contact, action, tabIndex);
 
-export default () => (
+  }
 
   <React.Fragment>
 
-    <IMHomeScreen 
-      onOpenIMPopupContactsList={openIMPopupContactsListHandler} 
-      onTabIndexChanged={tabIndexChangedHandler} 
+    <IMHomeScreen
+      onOpenIMPopupContactsList={openIMPopupContactsListHandler}
+      onTabIndexChanged={tabIndexChangedHandler}
     />
 
     <IMPopupContactsList
@@ -43,4 +43,4 @@ export default () => (
 
   </React.Fragment>
 
-);
+};
