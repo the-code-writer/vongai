@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import IMHomeScreen from '../dovellous/src/modules/im/views/im-home-screen';
 
@@ -45,23 +45,41 @@ export default () => {
     console.log("::: VIEW IM :::", currentIMTab);
 
   },[]);
-
+ 
+  const IMHomeScreenComponent = useCallback(
+    () => {
+      return (
+        <IMHomeScreen
+          onOpenIMPopupContactsList={openIMPopupContactsListHandler}
+          onTabIndexChanged={tabIndexChangedHandler}
+        />
+      )
+    },
+    [currentIMTab],
+  )
+  
+  const IMPopupContactsListComponent = useCallback(
+    () => {
+      return (
+        <IMPopupContactsList
+          currentTabIndex={currentIMTab}
+          popupOpened={popupIMContactsListOpened}
+          onPopupClosed={openIMPopupContactsListHandler}
+          onContactSelected={onContactSelectedHandler}
+          itemsPerPage={16}
+        />
+      )
+    },
+    [currentIMTab],
+  )
+  
   return(
 
     <React.Fragment>
 
-      <IMHomeScreen
-        onOpenIMPopupContactsList={openIMPopupContactsListHandler}
-        onTabIndexChanged={tabIndexChangedHandler}
-      />
+      <IMHomeScreenComponent />
 
-      <IMPopupContactsList
-        currentTabIndex={currentIMTab}
-        popupOpened={popupIMContactsListOpened}
-        onPopupClosed={openIMPopupContactsListHandler}
-        onContactSelected={onContactSelectedHandler}
-        itemsPerPage={16}
-      />
+      <IMPopupContactsListComponent/>
 
       <IMPanelLeft />      
 
