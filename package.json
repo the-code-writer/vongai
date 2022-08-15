@@ -85,6 +85,7 @@
     "react-native": "^0.69.4",
     "react-native-agora": "^3.7.1",
     "react-scripts": "^5.0.1",
+    "react-usestateref": "^1.0.8",
     "react-web-workers": "^1.0.1",
     "reactjs-localstorage": "^1.0.1",
     "realm": "^10.19.5",

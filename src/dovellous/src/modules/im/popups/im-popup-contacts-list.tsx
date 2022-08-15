@@ -135,7 +135,7 @@ export default ({
 
                             <Link
                                 className="item-content"
-                                onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
+                                onClick={() => onContactSelected(contact, "default", currentTabIndex)}
                                 href="#"
                             >
                                 <div className="item-media">
@@ -259,6 +259,14 @@ export default ({
 
         createIMContactsListIndex();
 
+        console.log(
+            "::POPUP IM::",
+            currentTabIndex,
+            popupOpened,
+            onPopupClosed,
+            onContactSelected,
+            itemsPerPage);
+
     }, [])
 
 
@@ -330,7 +338,7 @@ export default ({
                 ></ListIndex>
 
                 <InfiniteScroll
-                    className="im-contacts-list contacts-list searchbar-found list media-list no-chevron no-hairlines no-hairlines-between"
+                    className={`im-contacts-list contacts-list searchbar-found list ${true?'links-list':''} media-list  no-chevron no-hairlines no-hairlines-between`}
                     pageStart={0}
                     loadMore={loadMore}
                     hasMore={hasMore}

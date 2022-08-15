@@ -1,17 +1,14 @@
-
-
-
+import * as React from 'react';
 import { createStore } from 'framework7/lite';
-
 import Worker from 'web-worker';
 
 const workerSyncIMContacts = new Worker(
-  new URL('../workers/sync-contacts-im.worker.mjs', import.meta.url),
+  new URL('../workers/sync-contacts-im-worker.mjs', import.meta.url),
   { type: 'module' }
 );
 
 const workerSyncPhoneContacts = new Worker(
-  new URL('../workers/sync-contacts-phone.worker.mjs', import.meta.url),
+  new URL('../workers/sync-contacts-phone-worker.mjs', import.meta.url),
   { type: 'module' }
 );
 
@@ -19,7 +16,7 @@ const StorageContacts = createStore({
   
   state: {
 
-    /*----- Start User Account State Variables -----*/
+    /*----- Start Contacts State Variables -----*/
 
     phoneContacts: [],
 
@@ -27,12 +24,12 @@ const StorageContacts = createStore({
 
     imContactsCount: 0,
 
-    /*----- End User Account State Variables -----*/
+    /*----- End Contacts State Variables -----*/
 
   },
   getters: {
     
-    /*----- Start User Account Getters -----*/
+    /*----- Start Contacts Getters -----*/
 
     phoneContacts({ state }) {
       return state.phoneContacts;
@@ -46,12 +43,12 @@ const StorageContacts = createStore({
       return state.imContactsCount;
     },
 
-    /*----- End User Account Getters -----*/
+    /*----- End Contacts Getters -----*/
 
   },
   actions: {
 
-    /*----- Start User Account Setters / Actions -----*/
+    /*----- Start Contacts Setters / Actions -----*/
 
     phoneContacts({ state }: any, phoneContacts: any) {
       state.phoneContacts = phoneContacts;
@@ -61,21 +58,19 @@ const StorageContacts = createStore({
       state.imContacts = imContacts;
     },
 
-    syncIMContacts({ state, dispatch  }: any) {      
+    syncIMContacts({ state }: any) {      
       
       workerSyncIMContacts.onmessage = (e) => {
 
         state.imContacts = e.data;
 
-        dispatch('syncPhoneContacts', null);
-      
       };
 
-      workerSyncIMContacts.postMessage({ msg: "sync" }); //Send data to the worker at worker.js
+      workerSyncIMContacts.postMessage({ msg: "sync" });
 
     },
 
-    syncPhoneContacts({ state, dispatch  }: any) {      
+    syncPhoneContacts({ state }: any) {      
       
       workerSyncPhoneContacts.onmessage = (e) => {
 
@@ -83,7 +78,7 @@ const StorageContacts = createStore({
       
       };
 
-      workerSyncPhoneContacts.postMessage({ msg: "sync" }); //Send data to the worker at worker.js
+      workerSyncPhoneContacts.postMessage({ msg: "sync" });
 
     },
 
@@ -91,9 +86,24 @@ const StorageContacts = createStore({
       //
     },
 
-    /*----- End User Account Setters Actions -----*/
+    /*----- End Contacts Setters Actions -----*/
 
   },
+
 })
 
-export {StorageContacts} ;
+const useStorageContacts = (storageKey: string, fallbackState: any) => {
+
+  const [storageContactsValue, setStorageContactsValue] = React.useState<any>(StorageContacts.getters[storageKey].value??fallbackState);
+   
+  StorageContacts.getters[storageKey].onUpdated((newValue: any)=>{
+    
+    setStorageContactsValue(newValue);
+
+  });
+
+  return [storageContactsValue, setStorageContactsValue];
+
+};
+
+export {StorageContacts, useStorageContacts} ;

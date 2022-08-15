@@ -35,6 +35,6 @@ export default {
   },
   worker: {
     format: "es",
-    fileName: (filename, format) => `${filename}.worker.${format == "es" ? "mjs" : "js"}`
+    fileName: (filename, format) => `${filename}-worker.${format == "es" ? "mjs" : "js"}`
   }
 };

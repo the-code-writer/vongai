@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import { faker } from '@faker-js/faker';
 import { createStore } from 'framework7/lite';
@@ -582,4 +581,24 @@ const StorageIM = createStore({
   },
 })
 
-export { StorageIM };
+const useStorageIM = (storageKey: string, fallbackState: any) => {
+
+  const [value, setValue] = React.useState(
+    StorageIM.getters[storageKey]["value"] ?? fallbackState
+  );
+
+  React.useEffect(() => {
+    StorageIM.getters[storageKey]["onUpdated"]((newValue: any)=>{
+      setValue(newValue);
+    });
+  }, []);
+
+  React.useEffect(() => {
+    StorageIM.dispatch(storageKey, value);
+  }, [value, storageKey]);
+
+  return [value, setValue];
+
+};
+
+export { StorageIM, useStorageIM };

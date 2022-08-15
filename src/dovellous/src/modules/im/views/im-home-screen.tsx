@@ -260,7 +260,7 @@ export default ({onTabIndexChanged, onOpenIMPopupContactsList}) => {
     <Page className="hide-navbar-on-scroll" pageContent={true}>
       <Navbar id="im-home-screen-nav" sliding={false}>
         <NavTitle sliding className={"no-padding-left"}>
-          <Link className="no-padding-left">
+          <Link className="no-padding-left" panelOpen="left" >
             <img className="nav-bar-logo" src={navBarLogo} alt="Logo" />
           </Link>
         </NavTitle>

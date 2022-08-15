@@ -28,8 +28,8 @@ import capacitorApp from "../js/capacitor-app";
 import routes from "../js/routes";
 import store from "../js/store";
 
-import { StorageIM } from "../dovellous/src/modules/im/store/im-store";
-import { StorageContacts } from "../dovellous/src/modules/im/store/contacts-store";
+import { StorageIM, useStorageIM } from "../dovellous/src/modules/im/store/im-store";
+import { StorageContacts, useStorageContacts } from "../dovellous/src/modules/im/store/contacts-store";
 
 const MyApp = () => {
   // Login screen demo data
@@ -76,31 +76,37 @@ const MyApp = () => {
     );
   };
 
-  f7ready((F7React) => {
-    // Init capacitor APIs (see capacitor-app.js)
-    if (f7.device.capacitor) {
-      capacitorApp.init(f7);
-    }
-    // Call F7 APIs here
+  const [_imContacts, set_imContacts] = useStorageContacts('imContacts');
 
-    window.F7React = F7React;
+  
+  useEffect(()=>{
 
-    StorageContacts.dispatch("syncIMContacts", null);
+    f7ready((F7React) => {
+      // Init capacitor APIs (see capacitor-app.js)
+      if (f7.device.capacitor) {
+        capacitorApp.init(f7);
+      }
+      // Call F7 APIs here
 
-  });
+      window.F7React = F7React;
+
+      StorageContacts.dispatch("syncIMContacts", null);
+
+    });
+
+  },[]);
+
+  useEffect(() => {
+ 
+    console.log('::: VALUE OF :::_imContacts:::', _imContacts);
+
+  }, [_imContacts]); 
 
 
   return (
     <App {...f7params}>
       {/* Left panel with cover effect*/}
-      <Panel left cover dark>
-        <View>
-          <Page>
-            <Navbar title="Left Panel" />
-            <Block>Left panel content goes here</Block>
-          </Page>
-        </View>
-      </Panel>
+      
 
       {/* Right panel with reveal effect*/}
       <Panel right reveal dark>

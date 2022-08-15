@@ -196,3 +196,7 @@
     --f7-list-link-hover-bg-color: rgba(255, 255, 255, 0.03);
     --f7-list-button-hover-bg-color: rgba(255, 255, 255, 0.03);
   }
+
+  .im-contacts-list .item-content {
+    min-height: calc(var(--f7-list-item-min-height) * 1.5);
+}
