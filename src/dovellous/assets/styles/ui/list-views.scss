@@ -253,21 +253,78 @@
 
   }
 
-  .im-list-view-subtitle-icon, .im-list-view-subtitle-icon-delivery-status{
+  .im-list-view-subtitle-icon{
     font-size: 14px;
   }
   
+  .im-list-view-user-online-status{
+    border-radius: 50%;
+    border: 2px solid white;
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    top: 50px;
+    left: 50px;
+  }
+  .dark{
+    .im-list-view-user-online-status{
+      border: 2px solid #333333;
+    }
+  }
+
+  .im-list-view-user-online-status.offline{
+    background-color: #9e9e9e;
+  }
+
+  .im-list-view-user-online-status.online{
+    background-color: #4caf50;
+  }
+
+  .im-list-view-user-online-status.away{
+    background-color: #ffc107;
+  }
+
+  .im-list-view-user-online-status.private{
+    background-color: #03a9f4;
+  }
+
+  .im-list-view-user-online-status.default{
+    background-color: #9e9e9e;
+  }
+
+  .im-list-view-user-online-status.busy{
+    background-color: #f44336;
+  }
+
   .im-list-view-subtitle-icon-delivery-status{
-    color: #3366ff;
+    font-size: 14px;
+  }
+  
+  .im-list-view-subtitle-icon-delivery-status.default{
+    color: #9e9e9e;
+  }
+
+  .im-list-view-subtitle-icon-delivery-status.info{
+    color: #03a9f4;
+  }
+
+  .im-list-view-subtitle-icon-delivery-status.error{
+    color: #f44336;
   }
 
   .color-red{
-    color: #ff3333;
+    color: #f44336;
   }
   .color-green{
-    color: #33cc33;
+    color: #4caf50;
   }
   .color-blue{
-    color: #3366ff;
+    color: #03a9f4;
+  }
+  .color-orange{
+    color: #ffc107;
+  }
+  .color-grey{
+    color: #9e9e9e;
   }
   

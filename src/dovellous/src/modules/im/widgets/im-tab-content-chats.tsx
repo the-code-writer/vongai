@@ -11,6 +11,8 @@ import {
 
 import { StorageIM, useStorageIM } from "../store/im-store";
 
+import IMListViewAvatar from "../../user/components/im-list-view-avatar";
+
 interface DF7Icon {
   ios: string;
   md: string;
@@ -31,16 +33,19 @@ interface MessageType {
 interface ListViewMessage { 
   isTyping: any; 
   isDeleted: any; 
-  hasOwnProperty: (arg0: string) => DeliveryStatus; 
-  deliveryStatus: any; 
+  hasOwnProperty: (
+    arg0: string
+    ) => DeliveryStatus; 
+  messageType: MessageType;
+  userOnlineStatus: number; 
+  deliveryStatus: any;
+  senderName: any;  
   isGroup: any; 
   isSent: any; 
-  senderName: any; 
-  messageType: MessageType; 
   text: string; 
 }
 
-export default ({ id, slug, className, skeletonList }): JSX.Element => {
+export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfile }): JSX.Element => {
 
   const [listViewLoading, setListViewLoading] = useState(true);
 
@@ -52,65 +57,112 @@ export default ({ id, slug, className, skeletonList }): JSX.Element => {
       icon: {
         ios: '',md: '', aurora: ''
       },
-      class: 'delivery-icon-default'
+      class: 'default'
     };
     
-    switch(status){
+    switch(parseInt(status)){
 
-      case 'DF7_DS_X' : { //Failed
+      case 0 : { //Failed
         _status.icon = {
-          ios: '',
+          ios: 'exclamationmark_circle_fill',
           md: '',
-          aurora: ''
+          aurora: 'exclamationmark_circle_fill'
         };
-        _status.class = 'delivery-icon-error';
+        _status.class = 'error';
         break;
       }
 
-      case 'DF7_DS_0' : { //Pending
+      case 1 : { //Pending
         _status.icon = {
-          ios: '',
+          ios: 'timelapse',
           md: '',
-          aurora: ''
-        };
-        break;
-      }
-
-      case 'DF7_DS_1' : { //Sent
-        _status.icon = {
-          ios: '',
-          md: '',
-          aurora: ''
+          aurora: 'timelapse'
         };
         break;
       }
 
-      case 'DF7_DS_2' : { //Delivered
+      case 2 : { //Sent
         _status.icon = {
-          ios: '',
+          ios: 'checkmark',
           md: '',
-          aurora: ''
+          aurora: 'checkmark'
         };
         break;
       }
 
-      case 'DF7_DS_3' : { //READ
+      case 3 : { //Delivered
         _status.icon = {
-          ios: '',
+          ios: 'checkmark_2',
           md: '',
-          aurora: ''
+          aurora: 'checkmark_2'
         };
-        _status.class = 'delivery-icon-info';
+        break;
+      }
+
+      case 4 : { //READ
+        _status.icon = {
+          ios: 'checkmark_2',
+          md: '',
+          aurora: 'checkmark_2'
+        };
+        _status.class = 'info';
+        break;
+      }
+
+      case 5 : { //Failed
+        _status.icon = {
+          ios: 'exclamationmark_circle_fill',
+          md: '',
+          aurora: 'exclamationmark_circle_fill'
+        };
+        _status.class = 'error';
+        break;
+      }
+
+      case 6 : { //Pending
+        _status.icon = {
+          ios: 'timelapse',
+          md: '',
+          aurora: 'timelapse'
+        };
+        break;
+      }
+
+      case 7 : { //Sent
+        _status.icon = {
+          ios: 'checkmark',
+          md: '',
+          aurora: 'checkmark'
+        };
+        break;
+      }
+
+      case 8 : { //Delivered
+        _status.icon = {
+          ios: 'checkmark_2',
+          md: '',
+          aurora: 'checkmark_2'
+        };
+        break;
+      }
+
+      case 9 : { //READ
+        _status.icon = {
+          ios: 'checkmark_2',
+          md: '',
+          aurora: 'checkmark_2'
+        };
+        _status.class = 'info';
         break;
       }
 
       default: { //PENDING
         _status.icon = {
-          ios: '',
+          ios: 'timelapse',
           md: '',
-          aurora: ''
+          aurora: 'timelapse'
         };
-        _status.class = 'delivery-icon-default';
+        _status.class = 'default';
         break;
       }
 
@@ -133,7 +185,7 @@ export default ({ id, slug, className, skeletonList }): JSX.Element => {
     }
 
     if(chat.hasOwnProperty('deliveryStatus')){
-      textHtml += `<i class="f7-icons im-list-view-subtitle-icon-delivery-status ${getDeliveryStatus(chat.deliveryStatus).class} ">${getDeliveryStatus(chat.deliveryStatus).icon}</i> `;
+      textHtml += `<i class="f7-icons im-list-view-subtitle-icon-delivery-status ${getDeliveryStatus(chat.deliveryStatus).class} ">${getDeliveryStatus(chat.deliveryStatus).icon.ios}</i> `;
     }
 
     if(chat.isGroup){
@@ -150,6 +202,73 @@ export default ({ id, slug, className, skeletonList }): JSX.Element => {
     }
 
     return textHtml;
+
+  };
+
+  const getListViewUserOnlineStatus = (onlineStatus: any) : string =>{
+
+    let _status: string = '';
+
+    switch(parseInt(onlineStatus)){
+
+      case 0:{
+        _status = 'offline';
+        break;
+      }
+
+      case 1:{
+        _status = 'online';
+        break;
+      }
+
+      case 2:{
+        _status = 'away';
+        break;
+      }
+
+      case 3:{
+        _status = 'busy';
+        break;
+      }
+
+      case 4:{
+        _status = 'private';
+        break;
+      }
+
+      case 5:{
+        _status = 'offline';
+        break;
+      }
+
+      case 6:{
+        _status = 'online';
+        break;
+      }
+
+      case 7:{
+        _status = 'away';
+        break;
+      }
+
+      case 8:{
+        _status = 'busy';
+        break;
+      }
+
+      case 9:{
+        _status = 'private';
+        break;
+      }
+
+      default:{
+        _status = 'unavailable';
+        break;
+      }
+
+    }
+
+    return _status;
 
   };
 
@@ -203,27 +322,28 @@ export default ({ id, slug, className, skeletonList }): JSX.Element => {
           
           imListChats.length > 0 ? (
           
-            imListChats.reverse().map((chat: any, index: number) => (
+            imListChats.reverse().map((chat: ListViewMessage, index: number) => (
 
               <ListItem
                 key={`im-chat-list-item-key-${index}`}
                 id={`im-chat-list-item-key-${index}`}
-                link={`/im/chat/${chat.uuid}/0/`}
+                link="#"
+                onClick={()=>onOpenMessage(chat)}
                 title={chat.title}
                 after={chat.after}
                 className={`${chat.badge > 5 ? 'has-badge':''} ${chat.isMute ? 'is-mute':''}`}
               >
 
-                <div slot="media" className={"user-online-status"} />
+                <div className="im-list-view-avatar-wrapper" slot="media" onTouchStart={()=>onOpenProfile(chat)}>
 
-                <img
-                  slot="media"
-                  src={chat.avatar}
-                  width="48"
-                  height="48"
-                  className="rounded"
-                  alt=""
-                />
+                  <IMListViewAvatar 
+                    userOnlineStatus={getListViewUserOnlineStatus(chat.userOnlineStatus)}
+                    avatarSrc={chat.avatar} 
+                    canvasDiameter={48} 
+                    elementId={index}
+                    />
+
+                </div>
 
                 <span className="im-list-view-subtitle" slot="subtitle" dangerouslySetInnerHTML={{ __html: getListViewSubTitle(chat) }} />
 

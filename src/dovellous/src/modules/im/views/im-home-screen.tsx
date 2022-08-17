@@ -35,7 +35,7 @@ import {StorageIM} from "../store/im-store";
 
 import Dom7 from "dom7";
 
-export default ({onTabIndexChanged, onOpenIMPopupContactsList}) => { 
+export default ({onTabIndexChanged, onOpenIMPopupContactsList, onOpenMessage, onOpenProfile}) => { 
 
   const [currentTabIndex, setCurrentTabIndex] = useState(1);
 
@@ -380,6 +380,8 @@ export default ({onTabIndexChanged, onOpenIMPopupContactsList}) => {
                 key={`${tabContentItem.slug}-key`}
                 id={`${tabContentItem.slug}-id`}
                 slug={tabContentItem.slug}
+                onOpenMessage={onOpenMessage}
+                onOpenProfile={onOpenProfile}
               />
 
               {/*

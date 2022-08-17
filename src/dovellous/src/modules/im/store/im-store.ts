@@ -579,11 +579,19 @@ const StorageIM = createStore({
     insertFakeMessages({ state, dispatch }) {
 
       const messageTypes = [
+        
+        {
+          type: 'Call', 
+          iconClass: 'color-green',
+          icon: {
+            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
+          }
+        },
         {
           type: 'Location', 
           iconClass: 'color-default', 
           icon: {
-            ios: 'placemark', md: 'material:', aurora: 'f7:'
+            ios: 'placemark_fill', md: 'material:', aurora: 'f7:'
           }
         },
         {
@@ -594,13 +602,6 @@ const StorageIM = createStore({
           }
         },
         {
-          type: 'Incoming Call', 
-          iconClass: 'color-green',
-          icon: {
-            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
           type: 'Missed Call ', 
           iconClass: 'color-red',
           icon: {
@@ -608,7 +609,7 @@ const StorageIM = createStore({
           }
         },
         {
-          type: 'Recording',
+          type: '00:54',
           iconClass: 'color-default', 
           icon: {
             ios: 'mic_fill', md: 'material:', aurora: 'f7:'
@@ -628,21 +629,21 @@ const StorageIM = createStore({
           }
         },
         {
-          type: 'Video', 
+          type: 'Video (1:35:47)', 
           iconClass: 'color-blue', 
           icon: {
             ios: 'videocam_fill', md: 'material:', aurora: 'f7:'
           }
         },
         {
-          type: 'Audio', 
+          type: 'Audio (4:57)', 
           iconClass: 'color-blue', 
           icon: {
             ios: 'music_note_2', md: 'material:', aurora: 'f7:'
           }
         },
         {
-          type: 'Attachment', 
+          type: 'Attachment (PDF)', 
           iconClass: 'color-default', 
           icon: {
             ios: 'paperclip', md: 'material:', aurora: 'f7:'
@@ -656,7 +657,7 @@ const StorageIM = createStore({
           }
         },
         {
-          type: 'Incoming Call', 
+          type: 'Call', 
           iconClass: 'color-green',
           icon: {
             ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
@@ -670,7 +671,7 @@ const StorageIM = createStore({
           }
         },
         {
-          type: 'Recording',
+          type: 'Recording (00:54)',
           iconClass: 'color-default', 
           icon: {
             ios: 'mic_fill', md: 'material:', aurora: 'f7:'
@@ -718,6 +719,8 @@ const StorageIM = createStore({
 
         message.title = `${faker.name.firstName()} ${faker.name.lastName()}`;
         message.senderName = `${faker.name.firstName()} ${faker.name.lastName()}`;
+        message.senderNumber = `${faker.phone.number()}`;
+        message.uuid = faker.unique;
         message.text = faker.lorem.words(7);
         message.badge =  parseInt(faker.random.numeric(1));
         message.after =  '06:53';
@@ -727,6 +730,8 @@ const StorageIM = createStore({
         message.isGroup = faker.random.numeric(1)==='7'?true:false;
         message.isTyping = faker.random.numeric(1)==='8'?true:false;
         message.isDeleted = faker.random.numeric(1)==='9'?true:false;
+        message.deliveryStatus = faker.random.numeric(1);
+        message.userOnlineStatus = faker.random.numeric(1);
         message.messageType = messageTypes[faker.random.numeric(1)];
 
         console.log(":::-MESSAGE-:::", message);
