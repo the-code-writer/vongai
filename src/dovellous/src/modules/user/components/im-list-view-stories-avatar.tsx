@@ -9,7 +9,14 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
         src: string,
         canvasWidth: number
     ) => {
-        load(src, canvasWidth);
+        const baseImage = new Image();
+        contextRef.current = canvasRef.current.getContext("2d");
+        baseImage.onload = () => {
+            contextRef.current.drawImage(
+                baseImage, 0, 0, canvasWidth, canvasWidth
+            );
+        };
+        baseImage.src = src;
     };
 
     const load = (
