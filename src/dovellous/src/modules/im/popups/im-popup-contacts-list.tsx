@@ -11,10 +11,10 @@ import {
     ListItem,
     Searchbar,
     theme,
-    NavTitle
+    NavTitle, SwipeoutActions, SwipeoutButton, Preloader
 } from "framework7-react";
 
-import React, { useCallback, useState, useRef, useEffect } from "react";
+import React, { useCallback, useState, useRef, useMemo, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroller";
 import { StorageContacts } from "../store/contacts-store";
 
@@ -58,7 +58,15 @@ export default ({
         }
     };
 
-    const ContactListViewItem = useCallback(({ contact, contactIndex, isGroupTitle }) => {
+    const onDeleted = () => {
+        f7.dialog.alert('Thanks, item removed!');
+      };
+
+    const more = () => {
+        actions.current.open();
+      };
+
+    const ContactListViewItem = ({ contact, contactIndex, isGroupTitle }) => {
 
         return (
 
@@ -68,60 +76,73 @@ export default ({
 
                     {currentTabIndex === 3 ? (
 
-                        <li key={`im-list-item-${contactIndex}`}>
+                        <li key={`im-list-item-${contactIndex}`} className="swipeout">
 
-                            <div className="item-content">
+                            <SwipeoutActions right>
+                                <SwipeoutButton color="blue" onClick={more}>
+                                    More
+                                </SwipeoutButton>
+                                <SwipeoutButton color='red' delete confirmText="Are you sure you want to delete this item?">
+                                    Delete
+                                </SwipeoutButton>
+                            </SwipeoutActions>
 
-                                <div className="item-media">
+                            <div className="swipeout-content">
 
-                                    <div slot="media" className={"andon-status"} />
+                                <div className="item-content">
 
-                                    <Link
-                                        onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
-                                        href="#"
-                                        className="f7-demo-icon">
-                                        {contact.hasOwnProperty('displayPhoto') && contact.displayPhoto.length > 10 ? (
-                                            <img className="avatar-icon-img" src={contact.displayPhoto} alt={contact.name} />
-                                        ) : (
-                                            <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
-                                        )}
-                                    </Link>
+                                    <div className="item-media">
 
-                                </div>
+                                        <div slot="media" className={"andon-status"} />
 
-                                <div className="item-inner">
-
-                                    <div className="item-title-row">
-
-                                        <div className="item-title">{contact.name}</div>
-
-                                        <div className="item-after">
-                                            <Link
-                                                onClick={() => onContactSelected(contact, "video", currentTabIndex)}
-                                                href="#"
-                                                className="f7-demo-icon"
-                                            >
-                                                <i className="icon f7-icons color-custom">videocam_fill</i>
-                                            </Link>
-
-                                            <Link
-                                                onClick={() => onContactSelected(contact, "call", currentTabIndex)}
-                                                href="#"
-                                                className="f7-demo-icon"
-                                                style={{ marginLeft: "32px", marginRight: "24px" }}
-                                            >
-                                                <i className="icon f7-icons color-custom">phone_fill</i>
-                                            </Link>
-
-                                        </div>
+                                        <Link
+                                            onClick={() => onContactSelected(contact, "preview", currentTabIndex)}
+                                            href="#"
+                                            className="f7-demo-icon">
+                                            {contact.hasOwnProperty('displayPhoto') && contact.displayPhoto.length > 10 ? (
+                                                <img className="avatar-icon-img" src={contact.displayPhoto} alt={contact.name} />
+                                            ) : (
+                                                <i className="f7-icons avatar-icon">person_alt_circle_fill</i>
+                                            )}
+                                        </Link>
 
                                     </div>
 
-                                    <div className="item-subtitle">{contact.mobile}</div>
+                                    <div className="item-inner">
 
-                                    {contact.hasOwnProperty('text') && contact.text.length > 10 && (
-                                        <div className="item-text">{contact.text}</div>
-                                    )}
+                                        <div className="item-title-row">
+
+                                            <div className="item-title">{contact.name}</div>
+
+                                            <div className="item-after">
+                                                <Link
+                                                    onClick={() => onContactSelected(contact, "video", currentTabIndex)}
+                                                    href="#"
+                                                    className="f7-demo-icon"
+                                                >
+                                                    <i className="icon f7-icons color-custom">videocam_fill</i>
+                                                </Link>
+
+                                                <Link
+                                                    onClick={() => onContactSelected(contact, "call", currentTabIndex)}
+                                                    href="#"
+                                                    className="f7-demo-icon"
+                                                    style={{ marginLeft: "5px", marginRight: "5px" }}
+                                                >
+                                                    <i className="icon f7-icons color-custom">phone_fill</i>
+                                                </Link>
+
+                                            </div>
+
+                                        </div>
+
+                                        <div className="item-subtitle">{contact.mobile}</div>
+
+                                        {contact.hasOwnProperty('text') && contact.text.length > 10 && (
+                                            <div className="item-text">{contact.text}</div>
+                                        )}
+
+                                    </div>
 
                                 </div>
 
@@ -188,7 +209,7 @@ export default ({
 
         );
 
-    }, []);
+    };
 
     const renderContactsListView = (contacts: { contactsArray?: any; }): typeof ContactListViewItem => {
 
@@ -253,7 +274,7 @@ export default ({
 
         }
 
-    }
+    };
 
     useEffect(() => {
 
@@ -267,7 +288,7 @@ export default ({
             onContactSelected,
             itemsPerPage);
 
-    }, [])
+    }, []);
 
 
     return (
@@ -342,7 +363,7 @@ export default ({
                     pageStart={0}
                     loadMore={loadMore}
                     hasMore={hasMore}
-                    loader={<div>Loading...</div>}
+                    loader={<Preloader color="white" />}
                     useWindow={false}
                 >
                     <ul>

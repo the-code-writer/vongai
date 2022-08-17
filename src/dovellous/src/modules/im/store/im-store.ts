@@ -25,7 +25,7 @@ const StorageIM = createStore({
         highlight: false,
         badge: 0,
         skeletonList: {
-          count: 5,
+          count: 9,
           effect: "wave",
           title: faker.lorem.words(4),
           subtitle: faker.lorem.words(2),
@@ -46,7 +46,7 @@ const StorageIM = createStore({
         highlight: false,
         badge: 53,
         skeletonList: {
-          count: 5,
+          count: 9,
           effect: "wave",
           title: faker.lorem.words(4),
           subtitle: faker.lorem.words(2),
@@ -67,7 +67,7 @@ const StorageIM = createStore({
         highlight: true,
         badge: 0,
         skeletonList: {
-          count: 5,
+          count: 9,
           effect: "wave",
           title: faker.lorem.words(4),
           subtitle: faker.lorem.words(2),
@@ -88,7 +88,7 @@ const StorageIM = createStore({
         highlight: false,
         badge: 1,
         skeletonList: {
-          count: 5,
+          count: 9,
           effect: "wave",
           title: faker.lorem.words(4),
           subtitle: faker.lorem.words(2),
@@ -576,6 +576,167 @@ const StorageIM = createStore({
       state.imListBots = data;
     },
 
+    insertFakeMessages({ state, dispatch }) {
+
+      const messageTypes = [
+        {
+          type: 'Location', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'placemark', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Contact', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'person_crop_rectangle', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Incoming Call', 
+          iconClass: 'color-green',
+          icon: {
+            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Missed Call ', 
+          iconClass: 'color-red',
+          icon: {
+            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Recording',
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'mic_fill', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Text', 
+          icon: {
+            ios: ',', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Photo', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'photo', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Video', 
+          iconClass: 'color-blue', 
+          icon: {
+            ios: 'videocam_fill', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Audio', 
+          iconClass: 'color-blue', 
+          icon: {
+            ios: 'music_note_2', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Attachment', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'paperclip', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Contact', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'person_crop_rectangle', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Incoming Call', 
+          iconClass: 'color-green',
+          icon: {
+            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Missed Call ', 
+          iconClass: 'color-red',
+          icon: {
+            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Recording',
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'mic_fill', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Text', 
+          icon: {
+            ios: ',', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Photo', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'photo', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Video', 
+          iconClass: 'color-blue', 
+          icon: {
+            ios: 'videocam_fill', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Audio', 
+          iconClass: 'color-blue', 
+          icon: {
+            ios: 'music_note_2', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Attachment', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'paperclip', md: 'material:', aurora: 'f7:'
+          }
+        },
+      ];
+
+      setInterval(()=>{
+
+        const message = {};
+
+        message.title = `${faker.name.firstName()} ${faker.name.lastName()}`;
+        message.senderName = `${faker.name.firstName()} ${faker.name.lastName()}`;
+        message.text = faker.lorem.words(7);
+        message.badge =  parseInt(faker.random.numeric(1));
+        message.after =  '06:53';
+        message.avatar = `http://localhost/pix/${faker.random.numeric(1)}.jpg`;
+        message.isMute = faker.random.numeric(1)==='5'?true:false;
+        message.isSent = faker.random.numeric(1)==='6'?true:false;
+        message.isGroup = faker.random.numeric(1)==='7'?true:false;
+        message.isTyping = faker.random.numeric(1)==='8'?true:false;
+        message.isDeleted = faker.random.numeric(1)==='9'?true:false;
+        message.messageType = messageTypes[faker.random.numeric(1)];
+
+        console.log(":::-MESSAGE-:::", message);
+
+        dispatch('addIMListChats', message)
+
+      },5000);
+
+    }
+
     /*----- End Instant Messenger Setters Actions -----*/
 
   },
@@ -583,21 +744,15 @@ const StorageIM = createStore({
 
 const useStorageIM = (storageKey: string, fallbackState: any) => {
 
-  const [value, setValue] = React.useState(
-    StorageIM.getters[storageKey]["value"] ?? fallbackState
-  );
+  const [storageContactsValue, setStorageIMValue] = React.useState<any>(StorageIM.getters[storageKey].value??fallbackState);
+   
+  StorageIM.getters[storageKey].onUpdated((newValue: any)=>{
+    
+    setStorageIMValue(newValue);
 
-  React.useEffect(() => {
-    StorageIM.getters[storageKey]["onUpdated"]((newValue: any)=>{
-      setValue(newValue);
-    });
-  }, []);
+  });
 
-  React.useEffect(() => {
-    StorageIM.dispatch(storageKey, value);
-  }, [value, storageKey]);
-
-  return [value, setValue];
+  return [storageContactsValue, setStorageIMValue];
 
 };
 

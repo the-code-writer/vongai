@@ -4,6 +4,7 @@
 @import "./functions/mixin";
 @import "./functions/adhoc";
 @import "./common/styles";
+@import "./common/colors";
 @import "./animations/shake";
 @import "./fonts/font-weight.scss";
 
@@ -24,3 +25,19 @@
 @import "../../src/modules/im/styles/im";
 @import "../../src/modules/wallet/styles/wallet";
 @import "../../src/modules/settings/styles/settings";
+
+.links-list a {
+    height: auto;
+}
+
+.preloader{
+        margin: auto;
+        width: 20px;
+        display: block;
+        height: auto;
+        color: var(--f7-theme-color);
+}
+
+.page.im-tab .page-content{
+    padding-top: 0;
+}

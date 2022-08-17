@@ -1,10 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useEffect, useRef, useState } from 'react';
 
 import IMHomeScreen from '../dovellous/src/modules/im/views/im-home-screen';
 
 import IMPopupContactsList from "../dovellous/src/modules/im/popups/im-popup-contacts-list";
 
 import IMPanelLeft from "../dovellous/src/modules/im/panels/im-panel-left";
+
+import { StorageIM, useStorageIM } from "../dovellous/src/modules/im/store/im-store";
+import { f7ready } from 'framework7-react';
 
 export default () => {
 
@@ -46,40 +49,32 @@ export default () => {
 
   },[]);
  
-  const IMHomeScreenComponent = useCallback(
-    () => {
-      return (
-        <IMHomeScreen
+  useEffect(() => {
+
+    f7ready((framework7IO) => {
+
+      StorageIM.dispatch('insertFakeMessages', null);
+
+    });
+
+  }, []);
+
+  return(
+
+    <React.Fragment>
+
+      <IMHomeScreen
           onOpenIMPopupContactsList={openIMPopupContactsListHandler}
           onTabIndexChanged={tabIndexChangedHandler}
         />
-      )
-    },
-    [currentIMTab],
-  )
-  
-  const IMPopupContactsListComponent = useCallback(
-    () => {
-      return (
-        <IMPopupContactsList
+
+      <IMPopupContactsList
           currentTabIndex={currentIMTab}
           popupOpened={popupIMContactsListOpened}
           onPopupClosed={openIMPopupContactsListHandler}
           onContactSelected={onContactSelectedHandler}
           itemsPerPage={16}
         />
-      )
-    },
-    [currentIMTab],
-  )
-  
-  return(
-
-    <React.Fragment>
-
-      <IMHomeScreenComponent />
-
-      <IMPopupContactsListComponent/>
 
       <IMPanelLeft />      
 
