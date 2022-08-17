@@ -14,12 +14,6 @@ const FileSystem = {
         FileSystem.platform = platform;
 
     },
-    read: (path, callbackFunctionSuccess, callbackFunctionError) => {
-        if(FileSystem.platform==="web"){
-            return FileSystem.readFileWeb(path, callbackFunctionSuccess, callbackFunctionError);
-        }
-        return FileSystem.readFile(path, callbackFunctionSuccess, callbackFunctionError);
-    },
     readFile: async (path, callbackFunctionSuccess, callbackFunctionError) => {
         try{
             const fileObject = {
@@ -41,33 +35,6 @@ const FileSystem = {
             }
         }
     },
-    readFileWeb: async (path, callbackFunctionSuccess, callbackFunctionError) => {
-        try{
-            const fileObject = {
-                path: path,
-                directory: Directory.Documents,
-                encoding: Encoding.UTF8,
-            };
-            const data = await Filesystem.readFile(fileObject);
-            if((typeof callbackFunctionSuccess).toString().toLowerCase() === "function"){
-                callbackFunctionSuccess(data);
-            }else{
-                return data;
-            }
-        }catch(error){
-            if((typeof callbackFunctionError).toString().toLowerCase() === "function"){
-                callbackFunctionError(error);
-            }else{
-                return;
-            }
-        }
-    },
-    save: (path, data, callbackFunctionSuccess, callbackFunctionError) => {
-        if(FileSystem.platform==="web"){
-            return FileSystem.saveFileWeb(path, data, callbackFunctionSuccess, callbackFunctionError);
-        }
-        return FileSystem.saveFile(path, data, callbackFunctionSuccess, callbackFunctionError);
-    }, 
     saveFile: async (path, data, callbackFunctionSuccess, callbackFunctionError) => {
         try{
             const fileObject = {
@@ -86,30 +53,6 @@ const FileSystem = {
             }
         }
     }, 
-    saveFileWeb: async (path, data, callbackFunctionSuccess, callbackFunctionError) => {
-        try{
-            const fileObject = {
-                path: path,
-                data: data,
-                directory: Directory.Documents,
-                encoding: Encoding.UTF8,
-            };
-            await Filesystem.writeFile(fileObject);
-            if((typeof callbackFunctionSuccess).toString().toLowerCase() === "function"){
-                callbackFunctionSuccess(fileObject);
-            }
-        }catch(error){
-            if((typeof callbackFunctionError).toString().toLowerCase() === "function"){
-                callbackFunctionError(error);
-            }
-        }
-    }, 
-    del: (path, callbackFunctionSuccess, callbackFunctionError) => {
-        if(FileSystem.platform==="web"){
-            return FileSystem.deleteFileWeb(path, callbackFunctionSuccess, callbackFunctionError);
-        }
-        return FileSystem.deleteFile(path, callbackFunctionSuccess, callbackFunctionError);
-    }, 
     deleteFile: async (path, callbackFunctionSuccess, callbackFunctionError) => {
         try{
             const fileObject = {
@@ -125,22 +68,35 @@ const FileSystem = {
                 callbackFunctionError(error);
             }
         }
-    }, 
-    deleteFileWeb: async (path, callbackFunctionSuccess, callbackFunctionError) => {
-        try{
-            const fileObject = {
-                path: path,
-                directory: Directory.Documents,
-            };
-            await Filesystem.deleteFile(fileObject);
-            if((typeof callbackFunctionSuccess).toString().toLowerCase() === "function"){
-                callbackFunctionSuccess(fileObject);
+    },
+    pathExist: async (path: any, filename: any, callBack: (arg0: boolean) => void)=>{
+
+        const verifyIfExists = (item, list)=> {
+            let verification = false;
+            for (let i = 0; i < list.length; i++) {
+                if (list[i] === item) {
+                    verification = true;
+                    break;
+                }
             }
-        }catch(error){
-            if((typeof callbackFunctionError).toString().toLowerCase() === "function"){
-                callbackFunctionError(error);
-            }
+            return verification;
         }
+
+        try {
+            let ret = await Filesystem.readdir({
+              path: path,
+              directory: Directory.Documents
+            });
+            if (verifyIfExists(filename, ret.files)) {
+                callBack(true);
+            }
+            else {
+                callBack(false);
+            }
+          } 
+          catch(e) {
+            callBack(false);
+          }
     }
 }
 

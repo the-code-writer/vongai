@@ -74,9 +74,9 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
 
       case 1 : { //Pending
         _status.icon = {
-          ios: 'timelapse',
+          ios: 'timer',
           md: '',
-          aurora: 'timelapse'
+          aurora: 'timer'
         };
         break;
       }
@@ -121,7 +121,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
 
       case 6 : { //Pending
         _status.icon = {
-          ios: 'timelapse',
+          ios: 'timer',
           md: '',
           aurora: 'timelapse'
         };
@@ -158,9 +158,9 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
 
       default: { //PENDING
         _status.icon = {
-          ios: 'timelapse',
+          ios: 'timer',
           md: '',
-          aurora: 'timelapse'
+          aurora: 'timer'
         };
         _status.class = 'default';
         break;
@@ -339,7 +339,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
                   <IMListViewAvatar 
                     userOnlineStatus={getListViewUserOnlineStatus(chat.userOnlineStatus)}
                     avatarSrc={chat.avatar} 
-                    canvasDiameter={48} 
+                    canvasWidth={48} 
                     elementId={index}
                     />
 

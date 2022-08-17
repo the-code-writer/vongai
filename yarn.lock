@@ -11755,6 +11755,18 @@
   dependencies:
     "minimist" "^1.2.6"
 
+"moment-es6@^1.0.0":
+  "integrity" "sha512-DeFuL4VMEGDSRyuhwPEFrIy0BxlRGk3yaEkJYnHKY50dLg+u5llQwK5Bjk/Rm5iSf8BuatnI0nODjHXhLzcKBw=="
+  "resolved" "https://registry.npmjs.org/moment-es6/-/moment-es6-1.0.0.tgz"
+  "version" "1.0.0"
+  dependencies:
+    "moment" "*"
+
+"moment@*", "moment@^2.29.4":
+  "integrity" "sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w=="
+  "resolved" "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz"
+  "version" "2.29.4"
+
 "mri@^1.1.0":
   "integrity" "sha512-tzzskb3bG8LvYGFF/mDTpq3jpI6Q9wc3LEmBaghu+DdCssd1FakN7Bc0hVNmEyGq1bq3RgfkCb3cmQLpNPOroA=="
   "resolved" "https://registry.npmjs.org/mri/-/mri-1.2.0.tgz"
