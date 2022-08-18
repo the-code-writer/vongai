@@ -733,6 +733,8 @@ const StorageIM = createStore({
         message.deliveryStatus = faker.random.numeric(1);
         message.userOnlineStatus = faker.random.numeric(1);
         message.messageType = messageTypes[faker.random.numeric(1)];
+        
+        message.unseen = faker.random.numeric(1);
 
         console.log(":::-MESSAGE-:::", message);
 
