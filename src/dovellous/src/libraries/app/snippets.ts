@@ -1,21 +1,4 @@
-String.prototype.formatVars = String.prototype.formatVars ||
-function () {
-    "use strict";
-    var str = this.toString();
-    if (arguments.length) {
-        var t = typeof arguments[0];
-        var key;
-        var args = ("string" === t || "number" === t) ?
-            Array.prototype.slice.call(arguments)
-            : arguments[0];
-
-        for (key in args) {
-            str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
-        }
-    }
-
-    return str;
-};
+import Encryption from '../cryptography/encryption';
 
 const Snippets = {
 
@@ -34,6 +17,25 @@ const Snippets = {
             }    
             };
             return str
+        },
+
+        fornartMoney: (amount, decimalCount = 2, currency="$", decimal = ".", thousands = ",") => {
+            try {
+                decimalCount = Math.abs(decimalCount);
+                decimalCount = isNaN(decimalCount) ? 2 : decimalCount;
+        
+                const negativeSign = amount < 0 ? "-" : "";
+        
+                let i = parseInt(amount = Math.abs(Number(amount) || 0).toFixed(decimalCount)).toString();
+                let j = (i.length > 3) ? i.length % 3 : 0;
+        
+                return currency + " " + negativeSign +
+                    (j ? i.substr(0, j) + thousands : '') +
+                    i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + thousands) +
+                    (decimalCount ? decimal + Math.abs(amount - i).toFixed(decimalCount).slice(2) : "");
+            } catch (e) {
+                console.log(e)
+            }
         },
 
     },
@@ -87,6 +89,18 @@ const Snippets = {
         }
 
     },
+
+    urls: {
+
+        url3hash: (url)=>{
+            
+            return Encryption.md5(url);
+
+        }
+
+    },
+
+    encryption: Encryption,
 
     json: {
 

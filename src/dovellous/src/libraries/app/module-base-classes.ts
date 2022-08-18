@@ -3,19 +3,19 @@
  * MIT Licensed.
  */
 // Inspired by base2 and Prototype
-(function() {
-	let initializing = false,
-		fnTest = /vaida/.test(function() {
-			vaida;
-		}) ?
-		/\b_super\b/ :
-		/.*/;
 
-	// The base Class implementation (does nothing)
-	this.Class = function() {};
+// The base Class implementation (does nothing)
+const Class = function() {};
+
+(function() {
+
+	let initializing = false;
+	
+	const fnTest = /xyz/.test(()=>{ xyz; }) ? /\b_super\b/ : /.*/;
 
 	// Create a new Class that inherits from this class
-	Class.extend = function(prop) {
+	Class["extend"] = function(prop: any) {
+
 		let _super = this.prototype;
 
 		// Instantiate a base class (but only create the instance,
@@ -69,21 +69,23 @@
 
 		return Class;
 	};
+
 })();
 
 // Class Library Events
 
 // Parent constructor
 class DovellousEvent {
-	constructor(name) {
-		this.name = name;
+	eventName: any;
+	constructor(_eventName: any) {
+		this.eventName = _eventName;
 	}
 	/**
 	 * Event dispatcher template:
 	 * param object data
 	 * return null
 	 */
-	dispatch(name, data) {
+	dispatch(name: string, data: any) {
 		// Dispatch the event
 		window.dispatchEvent(new CustomEvent(name, {
 			detail: data
@@ -94,16 +96,18 @@ class DovellousEvent {
 
 // Child constructor
 class DovellousLibraryEvent {
-	constructor(name) {
+	constructor(eventName: any) {
 		// Call parent constructor with proper arguments
-		new DovellousEvent(this, name);
+		new DovellousEvent(eventName);
 	}
 }
 
 // Inheritance
-DovellousLibraryEvent.prototype = Object.create(DovellousEvent.prototype);
+//DovellousLibraryEvent.prototype = Object.create(DovellousEvent.prototype);
 
-function DovellousEventDispatcher(DovellousEventItems){
+Object.setPrototypeOf(DovellousLibraryEvent.prototype, DovellousEvent);
+
+function DovellousEventDispatcher(DovellousEventItems: { [x: string]: { [x: string]: any; }; }){
 
 	Object.keys(DovellousEventItems).map((objKey, objIndex) => {
 
@@ -113,7 +117,10 @@ function DovellousEventDispatcher(DovellousEventItems){
 			 * @returns {*}
 			 * @constructor
 			 */
-			DovellousLibraryEvent.prototype[DovellousEventItems[objKey][key]] = (data, f7) => {
+			DovellousLibraryEvent.prototype[DovellousEventItems[objKey][key]] = (
+				data: any, 
+				f7: { emit: (arg0: any, arg1: any) => void; }
+			) => {
 
 				if(f7){
 
@@ -122,7 +129,12 @@ function DovellousEventDispatcher(DovellousEventItems){
 				}
 				
 				// Call parent method
-				return DovellousEvent.prototype.dispatch.call(this, DovellousEventItems[objKey][key], data);
+				return DovellousEvent.prototype.dispatch.call(
+					this, 
+					DovellousEventItems[objKey][key], 
+					data
+				);
+
 			};
 
 		});

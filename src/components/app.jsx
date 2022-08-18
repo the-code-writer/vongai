@@ -49,13 +49,14 @@ const MyApp = () => {
     },
     // App routes
     routes: routes,
+    autoDarkTheme: true,
+
+    language: navigator.language,
     // Register service worker (only on production build)
-    serviceWorker:
-      process.env.NODE_ENV === "production"
-        ? {
-            path: "/service-worker.js",
-          }
-        : {},
+    serviceWorker: process.env.NODE_ENV === 'production' ? {
+      path: '/service-worker.js',
+    } : {},
+    // Input settings
     // Input settings
     input: {
       scrollIntoViewOnFocus: device.capacitor,
@@ -63,8 +64,34 @@ const MyApp = () => {
     },
     // Capacitor Statusbar settings
     statusbar: {
+      enabled: true,
+      scrollTopOnClick: true,
       iosOverlaysWebView: true,
       androidOverlaysWebView: true,
+    },
+    view: {
+      iosDynamicNavbar: false,
+    },
+    on: {
+      init: function () {
+        const f7 = this;
+        if (f7.device.capacitor) {
+          // Init capacitor APIs (see capacitor-app.js)
+          capacitorApp.init(f7);
+        }
+      },
+      darkThemeChange: function (e) {
+        console.log(":: APP THEME CHANGED ::", e);
+      },
+      connection: function (isOnline) {
+        console.log(":: APP CXN STATE CHANGED ::", isOnline);
+      },
+      online: function () {
+        console.log(":: APP CXN STATE CHANGED :: ONLINE ::");
+      },
+      offline: function () {
+        console.log(":: APP CXN STATE CHANGED :: OFFLINE ::");
+      },
     },
   };
   const alertLoginData = () => {
@@ -78,8 +105,8 @@ const MyApp = () => {
 
   const [_imContacts, set_imContacts] = useStorageContacts('imContacts');
 
-  
-  useEffect(()=>{
+
+  useEffect(() => {
 
     f7ready((F7React) => {
       // Init capacitor APIs (see capacitor-app.js)
@@ -94,19 +121,19 @@ const MyApp = () => {
 
     });
 
-  },[]);
+  }, []);
 
   useEffect(() => {
- 
+
     console.log('::: VALUE OF :::_imContacts:::', _imContacts);
 
-  }, [_imContacts]); 
+  }, [_imContacts]);
 
 
   return (
     <App {...f7params}>
       {/* Left panel with cover effect*/}
-      
+
 
       {/* Right panel with reveal effect*/}
       <Panel right reveal dark>

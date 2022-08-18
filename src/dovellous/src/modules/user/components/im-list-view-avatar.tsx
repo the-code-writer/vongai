@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import {Snippets, ModuleBaseClasses, K} from "../../../libraries/app/helpers";
 export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
 
     const canvasRef = useRef(null);
@@ -120,9 +121,17 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
 
     useEffect(() => {
 
-        setImageLocalFilename(btoa((avatarSrc.split('').reverse().join('')), 'base64'));
+        const filename = Snippets.urls.url3hash(avatarSrc);
 
-        render(avatarSrc, canvasWidth);
+        setImageLocalFilename(filename);
+
+        setTimeout(()=>{
+
+            console.log("::: IMAGE FILE NAME :::", (filename===imageLocalFilename), imageLocalFilename, filename);
+
+            render(avatarSrc, canvasWidth);
+
+        },50);
 
     }, [imageLocalFilename])
 
