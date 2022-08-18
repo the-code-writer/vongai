@@ -1,4 +1,5 @@
 import Encryption from '../cryptography/encryption';
+import FileSystem from '../filesystem';
 
 const Snippets = {
 
@@ -162,6 +163,9 @@ const Snippets = {
 
     },
     files: {
+
+
+        lib: FileSystem,
         /**
          * Format bytes as human-readable text.
          *

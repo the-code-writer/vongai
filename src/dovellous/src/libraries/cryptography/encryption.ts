@@ -3,11 +3,12 @@ import JSEncrypt from 'jsencrypt';
 
 const Encryption = {
 
-    md5: (deviceString: any) => {
-
-        const hash = CryptoJS.MD5(deviceString.toString());
-
-        return CryptoJS.enc.Hex.stringify(hash);
+    md5: (str: any) => {
+        //console.log("::HASH::", str)
+        const hash = CryptoJS.MD5(str.toString());
+        const hashed = CryptoJS.enc.Hex.stringify(hash);
+        //console.log("::HASHED::", hashed)
+        return hashed;
 
     },
     sha1: (deviceString: any) => {

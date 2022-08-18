@@ -40,6 +40,47 @@ const K = {
 		TOGGLE: "toggle",
 		SLIDER: "slider",
 	},
+	Files: {
+		MimeTypes: {
+			Images: {
+				PNG: 'image/png',
+				GIF: 'image/gif',
+				JPG: 'image/jpg',
+				JPEG: 'image/jpeg',
+			},
+			Documents: {
+				DOC: '',
+				DOCX: '',
+				XLS: '',
+				XLSX: '',
+				PPT: '',
+				PPTX: '',
+				RTF: '',
+				PDF: ''
+			}
+		},
+		Paths: {
+			IM_DISPLAY_PROFILE_IMAGE:  'media/images/display-profile',
+			IM_ATTACHMENT_PREVIEW:     'media/images/attachment-previews',
+			IM_MEDIA_ATTACHMENT_PHOTO: 'media/attachments/photos',
+			IM_MEDIA_ATTACHMENT_AUDIO: 'media/attachments/audios',
+			IM_MEDIA_ATTACHMENT_VIDEO: 'media/attachments/videos',
+			IM_MEDIA_ATTACHMENT_FILES: 'media/attachments/files',
+			IM_MEDIA_ATTACHMENT_DOCS:  'media/attachments/docs',
+			IM_MEDIA_ATTACHMENT_PDF:   'media/attachments/pdf',
+			IM_SENT_DISPLAY_PROFILE_IMAGE:  'media/sent/images/display-images',
+			IM_SENT_ATTACHMENT_PREVIEW:     'media/sent/images/attachment-previews',
+			IM_SENT_MEDIA_ATTACHMENT_PHOTO: 'media/sent/attachments/photos',
+			IM_SENT_MEDIA_ATTACHMENT_AUDIO: 'media/sent/attachments/audios',
+			IM_SENT_MEDIA_ATTACHMENT_VIDEO: 'media/sent/attachments/videos',
+			IM_SENT_MEDIA_ATTACHMENT_FILES: 'media/sent/attachments/files',
+			IM_SENT_MEDIA_ATTACHMENT_DOCS:  'media/sent/attachments/docs',
+			IM_SENT_MEDIA_ATTACHMENT_PDF:   'media/sent/attachments/pdf',
+			IM_DATABASE_FIREBASE:   'databases/firebase',
+			IM_DATABASE_JSONDB:   'databases/jsondb',
+			IM_DATABASE_SQLITE:   'databases/sqlite',
+		}
+	},
 	Events: {
 		Auth: {
 			LOGIN_SUCCESS: "auth_login_success",

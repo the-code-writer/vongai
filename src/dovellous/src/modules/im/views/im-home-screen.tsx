@@ -370,23 +370,23 @@ export default ({onTabIndexChanged, onOpenIMPopupContactsList, onOpenMessage, on
 
                 )}
 
-                { tabContentItem.view === "IMTabContentChats" &&(
-
                 */}
 
-              <IMTabContentChats
-                className={`im-tab ${tabContentItem.slug}-id`}
-                skeletonList={tabContentItem.skeletonList}
-                key={`${tabContentItem.slug}-key`}
-                id={`${tabContentItem.slug}-id`}
-                slug={tabContentItem.slug}
-                onOpenMessage={onOpenMessage}
-                onOpenProfile={onOpenProfile}
-              />
+              { tabContentItem.view === "IMTabContentChats" &&(
+
+                <IMTabContentChats
+                  className={`im-tab im-tab-content-chats ${tabContentItem.slug}-id`}
+                  skeletonList={tabContentItem.skeletonList}
+                  key={`${tabContentItem.slug}-key`}
+                  id={`${tabContentItem.slug}-id`}
+                  slug={tabContentItem.slug}
+                  onOpenMessage={onOpenMessage}
+                  onOpenProfile={onOpenProfile}
+                />
+
+              )}
 
               {/*
-
-                )}
 
                 { tabContentItem.view === "IMTabContentStories" &&(
 

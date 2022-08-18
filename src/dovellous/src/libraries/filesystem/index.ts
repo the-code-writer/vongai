@@ -7,13 +7,6 @@ import { Filesystem, Directory, Encoding } from '@capacitor/Filesystem';
 // The last argument is the separator. By default it's slash (/)
 const FileSystem = {
 
-    platform: "web",
-
-    init: (platform: any = "web") => {
-
-        FileSystem.platform = platform;
-
-    },
     readFile: async (path, callbackFunctionSuccess, callbackFunctionError) => {
         try{
             const fileObject = {
@@ -69,7 +62,7 @@ const FileSystem = {
             }
         }
     },
-    pathExist: async (path: any, filename: any, callBack: (arg0: boolean) => void)=>{
+    pathExist: async (path: any, filename: any, callBack: any, createIfNotExist: boolean)=>{
 
         const verifyIfExists = (item, list)=> {
             let verification = false;
@@ -83,16 +76,53 @@ const FileSystem = {
         }
 
         try {
+            
             let ret = await Filesystem.readdir({
               path: path,
               directory: Directory.Documents
             });
+
             if (verifyIfExists(filename, ret.files)) {
+
                 callBack(true);
+                
+            }else {
+
+                if(createIfNotExist){
+
+                    FileSystem.mkdir(path, (res)=>{
+
+                        callBack(res);
+
+                        return;
+
+                    });
+
+                }else{
+
+                    callBack(false);
+
+                }
+
             }
-            else {
-                callBack(false);
-            }
+
+          } 
+          catch(e) {
+
+            callBack(false);
+
+          }
+
+    },
+    mkdir: async (path: any, callBack: (arg0: boolean) => void)=>{
+
+        try {
+            await Filesystem.mkdir({
+              path: path,
+              directory: Directory.Documents,
+              recursive: true,
+            });
+            callBack(path);
           } 
           catch(e) {
             callBack(false);

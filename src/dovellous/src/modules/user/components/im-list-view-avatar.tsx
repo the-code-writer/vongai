@@ -1,144 +1,187 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
-import {Snippets, ModuleBaseClasses, K} from "../../../libraries/app/helpers";
+import React, { useEffect, useRef, useMemo, useState } from "react";
+import { Snippets, K } from "../../../libraries/app/helpers";
+
 export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
+    const canvasRef = useRef({});
 
-    const canvasRef = useRef(null);
-    const contextRef = useRef(null);
+    const contextRef = useRef({});
 
-    const[imageLocalFilename, setImageLocalFilename] = useState(avatarSrc);
+    const imageLocalFilename = useMemo(
+        () => `${Snippets.urls.url3hash(avatarSrc)}.png`,
+        [avatarSrc]
+    );
 
-    const saveImageToLocalFileSystem = async (path: any, fileName: any, imageData: any) => {
-
-        try{
-
-            await Filesystem.writeFile({
-            path: `${path}/${fileName}`,
-            data: imageData,
-            directory: Directory.External,
-            encoding: Encoding.UTF8,
-            recursive: true,
-            });
-
-        }catch(e){
-            
-        }
-        
-      };
-      
-      const loadImageToLocalFileSystem = async (path: any, fileName: any, callBack: any) => {
-
-        try{
-
-            const contents = await Filesystem.readFile({
-            path: `${path}/${fileName}`,
-            directory: Directory.External,
-            encoding: Encoding.UTF8,
-            });
-            callBack(contents);
-
-        }catch(e){
-            
-        }
-
-      };
-
-    const render = (
-        src: string,
-        canvasWidth: number
+    const saveImageToLocalFileSystem = async (
+        path: any,
+        fileName: any,
+        imageData: any
     ) => {
+        Snippets.files.lib.pathExist(
+            path,
+            fileName,
+            (fileExists: boolean) => {
+                console.log(
+                    "::: saveImageToLocalFileSystem ::: PATH EXIST :::",
+                    fileExists
+                );
+
+                if (fileExists) {
+                    Snippets.files.lib.saveFile(
+                        `${path}/${fileName}`,
+                        imageData,
+                        (fileObject: any): void => {
+                            console.log(
+                                "::SAVED FILE::",
+                                `${path}/${fileName}`,
+                                imageData,
+                                fileObject
+                            );
+                        },
+                        (error: any) => {
+                            console.log(
+                                "::SAVE ERROR::",
+                                `${path}/${fileName}`,
+                                imageData,
+                                error
+                            );
+                        }
+                    );
+                }
+            },
+            true
+        );
+    };
+
+    const loadImageFromLocalFileSystem = async (
+        path: any,
+        fileName: any,
+        callBack: any
+    ) => {
+        Snippets.files.lib.pathExist(
+            path,
+            fileName,
+            (fileExists: boolean) => {
+                if (fileExists) {
+                    Snippets.files.lib.readFile(
+                        `${path}/${fileName}`,
+                        (imageData: any) => {
+                            console.log("::READ FILE::", `${path}/${fileName}`, imageData);
+                            callBack(imageData);
+                        },
+                        (error: any) => {
+                            console.log("::READ ERROR::", `${path}/${fileName}`, error);
+                        }
+                    );
+                }
+            },
+            true
+        );
+    };
+
+    const render = (src: string, canvasWidth: number) => {
         load(src, canvasWidth, true);
     };
 
     const load = (
         src: string,
         canvasWidth: number,
-        loadLocal: boolean,
+        saveAndLoadLocal: boolean
     ) => {
         const baseImage = new Image();
+
         baseImage.crossOrigin = "Anonymous";
+
         contextRef.current = canvasRef.current.getContext("2d");
-        if(loadLocal){
 
-            try{
+        let locallyLoaded = false;
 
-                loadImageToLocalFileSystem(
-                    'media/images/display-images/',
+        if (saveAndLoadLocal) {
+            try {
+                loadImageFromLocalFileSystem(
+                    K.Files.Paths.IM_DISPLAY_PROFILE_IMAGE,
                     imageLocalFilename,
-                    (imageData: any)=>{
-                        if(imageData){
+                    (imageData: any) => {
+                        if (imageData) {
+                            console.log(
+                                "::IMAGE DATA  :: loadImageFromLocalFileSystem ::",
+                                imageData.data
+                            );
 
-                            console.log("::IMAGE DATA  :: loadImageToLocalFileSystem ::", imageData.data);
-
-                            contextRef.current.putImageData(imageData.data, 0, 0, canvasWidth, canvasWidth);
+                            contextRef.current.putImageData(
+                                imageData.data,
+                                0,
+                                0,
+                                canvasWidth,
+                                canvasWidth
+                            );
 
                             locallyLoaded = true;
-
                         }
                     }
                 );
-
-            }catch(e){
-
-                console.warn("::IMAGE DATA ERROR :: loadImageToLocalFileSystem ::", e);
-
+            } catch (e) {
+                console.warn(
+                    "::IMAGE DATA ERROR :: loadImageFromLocalFileSystem ::",
+                    e
+                );
             }
 
-        }
-        baseImage.onload = () => {
-
-            contextRef.current.drawImage(
-                baseImage, 0, 0, canvasWidth, canvasWidth
-            );
-
-            if(loadLocal){
-
-                try{
-
-                    console.log("::IMAGE DATA :: saveImageToLocalFileSystem ::", canvasRef.current.toDataURL("image/png"));
-
-                    saveImageToLocalFileSystem(
-                        'media/images/display-images/',
-                        imageLocalFilename, 
-                        canvasRef.current.toDataURL("image/png")
+            if (!locallyLoaded) {
+                baseImage.onload = () => {
+                    contextRef.current.drawImage(
+                        baseImage,
+                        0,
+                        0,
+                        canvasWidth,
+                        canvasWidth
                     );
 
-                }catch(e){
+                    if (saveAndLoadLocal) {
+                        try {
+                            const imageData = canvasRef.current.toDataURL(
+                                K.Files.MimeTypes.Images.PNG
+                            );
 
-                    
-                    console.log("::IMAGE DATA ERROR :: saveImageToLocalFileSystem ::", e);
+                            console.log(
+                                "::IMAGE DATA :: saveImageToLocalFileSystem ::",
+                                imageData
+                            );
 
-                }
-            
+                            saveImageToLocalFileSystem(
+                                K.Files.Paths.IM_DISPLAY_PROFILE_IMAGE,
+                                imageLocalFilename,
+                                imageData
+                            );
+                        } catch (e) {
+                            console.log(
+                                "::IMAGE DATA ERROR :: saveImageToLocalFileSystem ::",
+                                e
+                            );
+                        }
+                    }
+                };
+
+                baseImage.onerror = (error) => {
+                    console.log("::IMAGE LOAD ERROR ::", error);
+                };
+
+                baseImage.src = src;
             }
-
-
-        };
-
-        baseImage.src = src;
-
+        }
     };
 
     useEffect(() => {
+        //const filename = `${Snippets.urls.url3hash(avatarSrc)}.png`;
 
-        const filename = Snippets.urls.url3hash(avatarSrc);
+        //setImageLocalFilename(filename);
 
-        setImageLocalFilename(filename);
-
-        setTimeout(()=>{
-
-            console.log("::: IMAGE FILE NAME :::", (filename===imageLocalFilename), imageLocalFilename, filename);
-
+        setTimeout(() => {
             render(avatarSrc, canvasWidth);
-
-        },50);
-
-    }, [imageLocalFilename])
+        }, 100);
+    }, [imageLocalFilename]);
 
     return (
-
         <React.Fragment>
-
             <div className={`im-list-view-user-online-status ${userOnlineStatus}`} />
 
             <canvas
@@ -149,9 +192,6 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                 height={canvasWidth}
                 className="im-list-view-user-avatar-canvas rounded"
             />
-
         </React.Fragment>
-
-    )
-
+    );
 };
