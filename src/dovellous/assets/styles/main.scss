@@ -10,11 +10,13 @@
 
 // Load App Layout
 @import "./views/app-layout";
-@import "./ui/badges";
 @import "./ui/nav.scss";
 @import "./ui/bars.scss";
+@import "./ui/tabs.scss";
 @import "./ui/icons.scss";
 @import "./ui/layout.scss";
+
+@import "./ui/badges.scss";
 
 // Load Component Styles - override defaults
 @import "./ui/list-views.scss";

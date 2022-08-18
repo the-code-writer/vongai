@@ -173,11 +173,14 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
     useEffect(() => {
         //const filename = `${Snippets.urls.url3hash(avatarSrc)}.png`;
 
-        //setImageLocalFilename(filename);
+        //setImageLocalFilename(filename); 
 
         setTimeout(() => {
+            
             render(avatarSrc, canvasWidth);
-        }, 100);
+
+        });
+
     }, [imageLocalFilename]);
 
     return (
