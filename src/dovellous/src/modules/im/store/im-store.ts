@@ -741,7 +741,7 @@ const StorageIM = createStore({
 
       },5000);
 
-    }
+    },
 
     insertFakeStories({ state, dispatch }) {
 
