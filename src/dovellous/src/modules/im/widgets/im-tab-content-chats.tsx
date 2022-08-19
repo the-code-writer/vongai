@@ -14,7 +14,8 @@ import { StorageIM, useStorageIM } from "../store/im-store";
 import IMListViewAvatar from "../../user/components/im-list-view-avatar";
 
 import IMListViewStoriesAvatar from "../../user/components/im-list-view-stories-avatar";
-
+import Dom7 from "dom7";
+ 
 interface DF7Icon {
   ios: string;
   md: string;
@@ -344,16 +345,16 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
                     canvasWidth={48} 
                     elementId={index}
                     />
-*/}
+*/} 
                 <IMListViewStoriesAvatar
                   avatarSrc={chat.avatar}
                   elementId={index}
                   canvasWidth={48}
                   unseenSegments={chat.unseen}
                   totalSegments={10}
-                  segmentColorSeen={`rgb(200,200,200)`}
-                  segmentColorUnSeen={`rgb(76,175,80)`}
-                  backgroundColor={`rgb(28,28,29)`}
+                  segmentColorSeen={Dom7('html').hasClass('dark')?`rgb(119,136,119)`:`rgb(200,200,200)`}
+                  segmentColorUnSeen={Dom7('html').hasClass('dark')?`rgb(76,255,80)`:`rgb(76,255,80)`}
+                  backgroundColor={Dom7('html').hasClass('dark')?`rgb(28,28,29)`:`rgb(255,255,255)`}
                   />
 
                 </div>

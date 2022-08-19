@@ -724,7 +724,7 @@ const StorageIM = createStore({
         message.text = faker.lorem.words(7);
         message.badge =  parseInt(faker.random.numeric(1));
         message.after =  '06:53';
-        message.avatar = `http://localhost/pix/${faker.random.numeric(1)}.jpg`;
+        message.avatar = `http://34.134.134.114/dev/pix/people/${faker.random.numeric(2)}.png`;
         message.isMute = faker.random.numeric(1)==='5'?true:false;
         message.isSent = faker.random.numeric(1)==='6'?true:false;
         message.isGroup = faker.random.numeric(1)==='7'?true:false;
@@ -740,6 +740,173 @@ const StorageIM = createStore({
         dispatch('addIMListChats', message)
 
       },5000);
+
+    }
+
+    insertFakeStories({ state, dispatch }) {
+
+      const messageTypes = [
+        
+        {
+          type: 'Call', 
+          iconClass: 'color-green',
+          icon: {
+            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Location', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'placemark_fill', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Contact', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'person_crop_rectangle', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Missed Call ', 
+          iconClass: 'color-red',
+          icon: {
+            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: '00:54',
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'mic_fill', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Text', 
+          icon: {
+            ios: ',', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Photo', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'photo', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Video (1:35:47)', 
+          iconClass: 'color-blue', 
+          icon: {
+            ios: 'videocam_fill', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Audio (4:57)', 
+          iconClass: 'color-blue', 
+          icon: {
+            ios: 'music_note_2', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Attachment (PDF)', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'paperclip', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Contact', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'person_crop_rectangle', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Call', 
+          iconClass: 'color-green',
+          icon: {
+            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Missed Call ', 
+          iconClass: 'color-red',
+          icon: {
+            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Recording (00:54)',
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'mic_fill', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Text', 
+          icon: {
+            ios: ',', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Photo', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'photo', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Video', 
+          iconClass: 'color-blue', 
+          icon: {
+            ios: 'videocam_fill', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Audio', 
+          iconClass: 'color-blue', 
+          icon: {
+            ios: 'music_note_2', md: 'material:', aurora: 'f7:'
+          }
+        },
+        {
+          type: 'Attachment', 
+          iconClass: 'color-default', 
+          icon: {
+            ios: 'paperclip', md: 'material:', aurora: 'f7:'
+          }
+        },
+      ];
+
+      setInterval(()=>{
+
+        const message = {};
+
+        message.title = `${faker.name.firstName()} ${faker.name.lastName()}`;
+        message.senderName = `${faker.name.firstName()} ${faker.name.lastName()}`;
+        message.senderNumber = `${faker.phone.number()}`;
+        message.uuid = faker.unique;
+        message.text = faker.lorem.words(7);
+        message.badge =  parseInt(faker.random.numeric(1));
+        message.after =  '06:53';
+        message.avatar = `http://34.134.134.114/dev/pix/people/${faker.random.numeric(2)}.png`;
+        message.isMute = faker.random.numeric(1)==='5'?true:false;
+        message.isSent = faker.random.numeric(1)==='6'?true:false;
+        message.isGroup = faker.random.numeric(1)==='7'?true:false;
+        message.isTyping = faker.random.numeric(1)==='8'?true:false;
+        message.isDeleted = faker.random.numeric(1)==='9'?true:false;
+        message.deliveryStatus = faker.random.numeric(1);
+        message.userOnlineStatus = faker.random.numeric(1);
+        message.messageType = messageTypes[faker.random.numeric(1)];
+        message.unseen = faker.random.numeric(1);
+
+        console.log(":::-MESSAGE-:::", message);
+
+        dispatch('addIMListChats', message)
+
+      },15000);
 
     }
 
