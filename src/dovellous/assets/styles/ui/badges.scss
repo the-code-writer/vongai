@@ -16,4 +16,14 @@
     font-size: var(--f7-badge-font-size);
     line-height: var(--f7-badge-font-size); 
     margin-left: 5px;
-}
+
+  }
+
+  .dark{
+    
+  .toolbar-inner .link.tab-link .badge {
+    background-color: var(--f7-tabbar-link-inactive-color);
+    color: var(--f7-list-bg-color);
+  }
+
+  }
