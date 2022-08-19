@@ -13,8 +13,6 @@ import { StorageIM, useStorageIM } from "../store/im-store";
 
 import IMListViewAvatar from "../../user/components/im-list-view-avatar";
 
-import IMListViewStoriesAvatar from "../../user/components/im-list-view-stories-avatar";
-
 interface DF7Icon {
   ios: string;
   md: string;
@@ -337,26 +335,13 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
               >
 
                 <div className="im-list-view-avatar-wrapper" slot="media" onTouchStart={()=>onOpenProfile(chat)}>
-{/*
+
                   <IMListViewAvatar 
                     userOnlineStatus={getListViewUserOnlineStatus(chat.userOnlineStatus)}
                     avatarSrc={chat.avatar} 
                     canvasWidth={48} 
                     elementId={index}
                     />
-*/}
-                  <IMListViewStoriesAvatar
-                    avatarSrc={chat.avatar}
-                    elementId={index}
-                    canvasWidth={48}
-                    unseenSegments={chat.unseen}
-                    totalSegments={10}
-                    segmentColorSeen={`rgb(200,200,200)`}
-                    segmentColorUnSeen={`rgb(76,175,80)`}
-                    backgroundColor={`rgb(28,28,29)`}
-                    />
-
-
 
                 </div>
 

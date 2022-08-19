@@ -6,6 +6,7 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
     const canvasRef = useRef({});
 
     const contextRef = useRef({});
+
     const contextRef2 = useRef({});
 
     const imageLocalFilename = useMemo(
@@ -13,19 +14,74 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
         [avatarSrc]
     );
 
-    const roundedImage = (ctx, x, y, width, height, radius)=>{
-        ctx.beginPath();
-        ctx.moveTo(x + radius, y);
-        ctx.lineTo(x + width - radius, y);
-        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-        ctx.lineTo(x + width, y + height - radius);
-        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-        ctx.lineTo(x + radius, y + height);
-        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-        ctx.lineTo(x, y + radius);
-        ctx.quadraticCurveTo(x, y, x + radius, y);
-        ctx.closePath();
-      }
+    const saveImageToLocalFileSystem = async (
+        path: any,
+        fileName: any,
+        imageData: any
+    ) => {
+        Snippets.files.lib.pathExist(
+            path,
+            fileName,
+            (fileExists: boolean) => {
+                console.log(
+                    "::: saveImageToLocalFileSystem ::: PATH EXIST :::",
+                    fileExists
+                );
+
+                if (fileExists) {
+                    Snippets.files.lib.saveFile(
+                        `${path}/${fileName}`,
+                        imageData,
+                        (fileObject: any): void => {
+                            console.log(
+                                "::SAVED FILE::",
+                                `${path}/${fileName}`,
+                                imageData,
+                                fileObject
+                            );
+                        },
+                        (error: any) => {
+                            console.log(
+                                "::SAVE ERROR::",
+                                `${path}/${fileName}`,
+                                imageData,
+                                error
+                            );
+                        }
+                    );
+                }
+            },
+            true
+        );
+    };
+
+    const loadImageFromLocalFileSystem = async (
+        path: any,
+        fileName: any,
+        callBack: any
+    ) => {
+
+        Snippets.files.lib.pathExist(
+            path,
+            fileName,
+            (fileExists: boolean) => {
+                if (fileExists) {
+                    Snippets.files.lib.readFile(
+                        `${path}/${fileName}`,
+                        (imageData: any) => {
+                            console.log("::READ FILE::", `${path}/${fileName}`, imageData);
+                            callBack(imageData);
+                        },
+                        (error: any) => {
+                            console.log("::READ ERROR::", `${path}/${fileName}`, error);
+                        }
+                    );
+                }
+            },
+            true
+        );
+        
+    };
     
     const render = (
         avatarSrc: any, 
@@ -42,7 +98,8 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
             unseenSegments,
             totalSegments,
             segmentColorSeen,
-            segmentColorUnSeen
+            segmentColorUnSeen,
+            true
         );
 
     };
@@ -53,45 +110,103 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
         unseenSegments: number, 
         totalSegments: number,
         segmentColorSeen: string, 
-        segmentColorUnSeen: string
+        segmentColorUnSeen: string,
+        saveAndLoadLocal: boolean
     ) => {
-        
+        const baseImage = new Image();
+
+        baseImage.crossOrigin = "Anonymous";
+
         contextRef.current = canvasRef.current.getContext("2d");
         contextRef2.current = canvasRef.current.getContext("2d");
 
+        let locallyLoaded = false;
         let strokeColorSeen = segmentColorSeen;
         let strokeColorUnSeen = segmentColorUnSeen;
         let segmentsArray = Array.from(Array(totalSegments).keys());
-        let gapsAngle = totalSegments < 2 ? 0 : 8;
+        let gapsAngle = totalSegments < 2 ? 0 : 7.5;
         let gapsAngleX = gapsAngle / 180;
         let gapsAngleTotal = gapsAngle * totalSegments;
         let solidAngleTotal = 360 - gapsAngleTotal;
         let segmentAngle = solidAngleTotal / totalSegments;
         let segmentAngleX = segmentAngle / 180;
         let originAngle = -0.5;
-        let strokeWidth = Math.ceil(canvasWidth / 20);
-        let imgOffsetX = strokeWidth + strokeWidth / 2;
-        let imgOffsetY = strokeWidth + strokeWidth / 2;
-        let avatarWidth = canvasWidth - imgOffsetX * 2;
-        let avatarHeight = canvasWidth - imgOffsetY * 2;
-        
-        const baseImage = new Image();
-        baseImage.crossOrigin = "Anonymous";
-        baseImage.onload = () => {
+        let strokeWidth = canvasWidth / 20;
+        let imgOffset = strokeWidth + strokeWidth / 2;
 
-            contextRef.current.save();
-            roundedImage(contextRef.current, imgOffsetX, imgOffsetY, avatarWidth, avatarHeight, canvasWidth*0.4999);
-            contextRef.current.clip();
-            contextRef.current.drawImage(baseImage, imgOffsetX, imgOffsetY, avatarWidth, avatarHeight);
-            contextRef.current.restore();
+        if (saveAndLoadLocal) {
+            try {
+                loadImageFromLocalFileSystem(
+                    K.Files.Paths.IM_DISPLAY_PROFILE_IMAGE,
+                    imageLocalFilename,
+                    (imageData: any) => {
+                        if (imageData) {
+                            console.log(
+                                "::IMAGE DATA  :: loadImageFromLocalFileSystem ::",
+                                imageData.data
+                            );
 
+                            contextRef.current.putImageData(
+                                imageData.data,
+                                imgOffset,
+                                imgOffset,
+                                canvasWidth - (imgOffset * 2),
+                                canvasWidth - (imgOffset * 2)
+                            );
+
+                            locallyLoaded = true;
+                        }
+                    }
+                );
+            } catch (e) {
+                console.warn(
+                    "::IMAGE DATA ERROR :: loadImageFromLocalFileSystem ::",
+                    e
+                );
+            }
+
+            if (!locallyLoaded) {
+                baseImage.onload = () => {
+                    contextRef.current.drawImage(
+                        baseImage,
+                        imgOffset,
+                        imgOffset,
+                        canvasWidth - (imgOffset * 2),
+                        canvasWidth - (imgOffset * 2)
+                    );
+
+                    if (saveAndLoadLocal) {
+                        try {
+                            const imageData = canvasRef.current.toDataURL(
+                                K.Files.MimeTypes.Images.PNG
+                            );
+
+                            console.log(
+                                "::IMAGE DATA :: saveImageToLocalFileSystem ::",
+                                imageData
+                            );
+
+                            saveImageToLocalFileSystem(
+                                K.Files.Paths.IM_DISPLAY_PROFILE_IMAGE,
+                                imageLocalFilename,
+                                imageData
+                            );
+                        } catch (e) {
+                            console.log(
+                                "::IMAGE DATA ERROR :: saveImageToLocalFileSystem ::",
+                                e
+                            );
+                        }
+                    }
+                };
+
+                baseImage.onerror = (error) => {
+                    console.log("::IMAGE LOAD ERROR ::", error);
+                };
+
+                baseImage.src = avatarSrc;
+            }
         }
-        
-        baseImage.onerror = (error) => {
-                console.log("::IMAGE LOAD ERROR ::", error);
-            };
-
-        baseImage.src = avatarSrc;
 
         segmentsArray.map((n, i) => {
             let startAngle = originAngle;
@@ -100,11 +215,11 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
             contextRef2.current.strokeStyle = i < unseenSegments ? strokeColorUnSeen : strokeColorSeen;
             contextRef2.current.beginPath();
             contextRef2.current.arc(
-                Math.ceil(canvasWidth / 2),
-                Math.ceil(canvasWidth / 2),
-                Math.ceil(canvasWidth / 2 - (strokeWidth - 2) / 2),
-                startAngle * Math.PI,
-                endAngle * Math.PI
+              canvasWidth / 2,
+              canvasWidth / 2,
+              canvasWidth / 2 - (strokeWidth - 2) / 2,
+              startAngle * Math.PI,
+              endAngle * Math.PI
             );
             contextRef2.current.stroke();
             originAngle = endAngle + gapsAngleX;
@@ -116,7 +231,7 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
         
         setTimeout(() => {
             
-            render(avatarSrc, canvasWidth, unseenSegments, totalSegments, segmentColorSeen, segmentColorUnSeen);
+            render(avatarSrc, canvasWidth, unseenSegments, totalSegments, canvasWidth, segmentColorSeen, segmentColorUnSeen);
 
         });
 

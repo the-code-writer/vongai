@@ -22,7 +22,6 @@ import {
   ListInput,
   ListButton,
   BlockFooter,
-  theme,
 } from "framework7-react";
 
 import capacitorApp from "../js/capacitor-app";
@@ -31,7 +30,6 @@ import store from "../js/store";
 
 import { StorageIM, useStorageIM } from "../dovellous/src/modules/im/store/im-store";
 import { StorageContacts, useStorageContacts } from "../dovellous/src/modules/im/store/contacts-store";
-import Dom7 from "dom7";
 
 const MyApp = () => {
   // Login screen demo data
@@ -118,10 +116,6 @@ const MyApp = () => {
       // Call F7 APIs here
 
       window.F7React = F7React;
-
-      window.F7React.dom7x = Dom7;
-
-      window.F7React.themex = theme;
 
       StorageContacts.dispatch("syncIMContacts", null);
 
