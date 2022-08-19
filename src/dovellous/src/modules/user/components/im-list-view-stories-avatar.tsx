@@ -106,7 +106,7 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
               startAngle * Math.PI,
               endAngle * Math.PI
             );
-            contextRef2.current.stroke();
+            contextRef2.current.stroke(); 
             originAngle = endAngle + gapsAngleX;
           });
 
