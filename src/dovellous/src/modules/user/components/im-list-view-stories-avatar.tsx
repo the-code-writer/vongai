@@ -69,7 +69,7 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
         let segmentAngle = solidAngleTotal / totalSegments;
         let segmentAngleX = segmentAngle / 180;
         let originAngle = -0.5;
-        let strokeWidth = Math.ceil(canvasWidth / 20);
+        let strokeWidth = canvasWidth / 20;
         let imgOffsetX = strokeWidth + strokeWidth / 2;
         let imgOffsetY = strokeWidth + strokeWidth / 2;
         let avatarWidth = canvasWidth - imgOffsetX * 2;
@@ -80,7 +80,7 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
                 baseImage.onload = () => {
 
             contextRef.current.save();
-            roundedImage(contextRef.current, imgOffsetX, imgOffsetY, avatarWidth, avatarHeight, canvasWidth*0.4999);
+            roundedImage(contextRef.current, imgOffsetX, imgOffsetY, avatarWidth, avatarHeight, canvasWidth*0.5);
             contextRef.current.clip();
             contextRef.current.drawImage(baseImage, imgOffsetX, imgOffsetY, avatarWidth, avatarHeight);
             contextRef.current.restore();
@@ -100,9 +100,9 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
             contextRef2.current.strokeStyle = i < unseenSegments ? strokeColorUnSeen : strokeColorSeen;
             contextRef2.current.beginPath();
             contextRef2.current.arc(
-                Math.ceil(canvasWidth / 2),
-                Math.ceil(canvasWidth / 2),
-                Math.ceil(canvasWidth / 2 - (strokeWidth - 2) / 2),
+                canvasWidth / 2,
+                canvasWidth / 2,
+                canvasWidth / 2 - (strokeWidth - 2) / 2,
               startAngle * Math.PI,
               endAngle * Math.PI
             );
