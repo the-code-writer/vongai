@@ -339,14 +339,14 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
               >
 
                 <div className="im-list-view-avatar-wrapper" slot="media" onTouchStart={()=>onOpenProfile(chat)}>
-{/*
+
                   <IMListViewAvatar 
                     userOnlineStatus={getListViewUserOnlineStatus(chat.userOnlineStatus)}
                     avatarSrc={chat.avatar} 
                     canvasWidth={48} 
                     elementId={index}
                     />
-*/} 
+{/*
                 <IMListViewStoriesAvatar
                   avatarSrc={chat.avatar}
                   elementId={index}
@@ -357,7 +357,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
                   segmentColorUnSeen={Dom7('html').hasClass('dark')?`rgb(76,255,80)`:`rgb(76,175,80)`}
                   backgroundColor={Dom7('html').hasClass('dark')?`rgb(28,28,29)`:`rgb(255,255,255)`}
                   />
-
+*/} 
                 </div>
 
                 <span className="im-list-view-subtitle" slot="subtitle" dangerouslySetInnerHTML={{ __html: getListViewSubTitle(chat) }} />

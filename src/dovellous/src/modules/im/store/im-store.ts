@@ -576,7 +576,7 @@ const StorageIM = createStore({
       state.imListBots = data;
     },
 
-    insertFakeMessages({ state, dispatch }) {
+    insertFakeMessages({ dispatch }) {
 
       const messageTypes = [
         
@@ -717,13 +717,13 @@ const StorageIM = createStore({
 
         const message = {};
 
-        message.title = `${faker.name.firstName()} ${faker.name.lastName()}`;
+        message.contactName = `${faker.name.firstName()} ${faker.name.lastName()}`;
         message.senderName = `${faker.name.firstName()} ${faker.name.lastName()}`;
         message.senderNumber = `${faker.phone.number()}`;
         message.uuid = faker.unique;
         message.text = faker.lorem.words(7);
         message.badge =  parseInt(faker.random.numeric(1));
-        message.after =  faker.date.recent().getTime();
+        message.time =  faker.date.recent().getTime();
         message.avatar = `http://localhost/dev/pix/people/${faker.random.numeric(2)}.png`;
         message.isMute = faker.random.numeric(1)==='5'?true:false;
         message.isSent = faker.random.numeric(1)==='6'?true:false;
@@ -735,178 +735,152 @@ const StorageIM = createStore({
         message.messageType = messageTypes[faker.random.numeric(1)];
         message.unseen = faker.random.numeric(1);
 
-        console.log(":::-MESSAGE-:::", message);
+        //console.log(":::-MESSAGE-:::", message);
 
-        dispatch('addIMListChats', message)
+        dispatch('addIMListChats', message);
 
       },5000);
 
     },
 
-    insertFakeStories({ state, dispatch }) {
+    insertFakeStories({ dispatch }) {
 
-      const messageTypes = [
-        
-        {
-          type: 'Call', 
-          iconClass: 'color-green',
-          icon: {
-            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Location', 
-          iconClass: 'color-default', 
-          icon: {
-            ios: 'placemark_fill', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Contact', 
-          iconClass: 'color-default', 
-          icon: {
-            ios: 'person_crop_rectangle', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Missed Call ', 
-          iconClass: 'color-red',
-          icon: {
-            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: '00:54',
-          iconClass: 'color-default', 
-          icon: {
-            ios: 'mic_fill', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Text', 
-          icon: {
-            ios: ',', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Photo', 
-          iconClass: 'color-default', 
-          icon: {
-            ios: 'photo', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Video (1:35:47)', 
-          iconClass: 'color-blue', 
-          icon: {
-            ios: 'videocam_fill', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Audio (4:57)', 
-          iconClass: 'color-blue', 
-          icon: {
-            ios: 'music_note_2', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Attachment (PDF)', 
-          iconClass: 'color-default', 
-          icon: {
-            ios: 'paperclip', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Contact', 
-          iconClass: 'color-default', 
-          icon: {
-            ios: 'person_crop_rectangle', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Call', 
-          iconClass: 'color-green',
-          icon: {
-            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Missed Call ', 
-          iconClass: 'color-red',
-          icon: {
-            ios: 'phone_fill_arrow_down_left', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Recording (00:54)',
-          iconClass: 'color-default', 
-          icon: {
-            ios: 'mic_fill', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Text', 
-          icon: {
-            ios: ',', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Photo', 
-          iconClass: 'color-default', 
-          icon: {
-            ios: 'photo', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Video', 
-          iconClass: 'color-blue', 
-          icon: {
-            ios: 'videocam_fill', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Audio', 
-          iconClass: 'color-blue', 
-          icon: {
-            ios: 'music_note_2', md: 'material:', aurora: 'f7:'
-          }
-        },
-        {
-          type: 'Attachment', 
-          iconClass: 'color-default', 
-          icon: {
-            ios: 'paperclip', md: 'material:', aurora: 'f7:'
-          }
-        },
-      ];
+      if(true){
 
-      setInterval(()=>{
+        const getStory = (storyCreator: string)=>{
 
-        const message = {};
+          let storyType = '';
 
-        message.title = `${faker.name.firstName()} ${faker.name.lastName()}`;
-        message.senderName = `${faker.name.firstName()} ${faker.name.lastName()}`;
-        message.senderNumber = `${faker.phone.number()}`;
-        message.uuid = faker.unique;
-        message.text = faker.lorem.words(7);
-        message.badge =  parseInt(faker.random.numeric(1));
-        message.after =  '06:53';
-        message.avatar = `http://34.134.134.114/dev/pix/people/${faker.random.numeric(2)}.png`;
-        message.isMute = faker.random.numeric(1)==='5'?true:false;
-        message.isSent = faker.random.numeric(1)==='6'?true:false;
-        message.isGroup = faker.random.numeric(1)==='7'?true:false;
-        message.isTyping = faker.random.numeric(1)==='8'?true:false;
-        message.isDeleted = faker.random.numeric(1)==='9'?true:false;
-        message.deliveryStatus = faker.random.numeric(1);
-        message.userOnlineStatus = faker.random.numeric(1);
-        message.messageType = messageTypes[faker.random.numeric(1)];
-        message.unseen = faker.random.numeric(1);
+            switch(faker.mersenne.rand(9,0)){
 
-        console.log(":::-MESSAGE-:::", message);
+              case 0:{
+                storyType = 'people';
+                break;
+              }
 
-        dispatch('addIMListChats', message)
+              case 1:{
+                storyType = 'cars';
+                break;
+              }
 
-      },15000);
+              case 2:{
+                storyType = 'nature';
+                break;
+              }
+
+              case 3:{
+                storyType = 'sport';
+                break;
+              }
+
+              case 4:{
+                storyType = 'tech';
+                break;
+              }
+
+              case 5:{
+                storyType = 'people';
+                break;
+              }
+
+              case 6:{
+                storyType = 'nature';
+                break;
+              }
+
+              case 7:{
+                storyType = 'cars';
+                break;
+              }
+
+              case 8:{
+                storyType = 'animals';
+                break;
+              }
+
+              case 9:{
+                storyType = 'sport';
+                break;
+              }
+
+              default:{
+                storyType = 'animals';
+                break;
+              }
+
+            }
+
+            const story = {};
+
+            story.title = `${storyCreator}`;
+            story.id = faker.mersenne.rand(9,0);
+            story.uuid = faker.unique;
+            story.time =  time;
+            story.photo = `http://34.134.134.114/dev/pix/${storyType}/${faker.random.numeric(2)}.png`;
+            story.text = faker.lorem.words(7);
+            story.isSeen = faker.datatype.boolean();
+            story.views = [];
+            
+            return story;
+
+        }
+
+        [...Array(faker.random.numeric(1)).keys()].map((n) => {
+
+          const storyCreator = `${faker.name.firstName()} ${faker.name.lastName()}`;
+
+          const time = faker.date.recent().getTime();
+
+          const storiesPayload = {};
+
+          [...Array(faker.random.numeric(1)).keys()].map((n) => {
+
+            storiesPayload[`S${time}_{${n}}`] = getStory(storyCreator);
+
+          });
+
+          const randInt = faker.mersenne.rand(2,0);
+
+          switch(randInt){
+
+            case 0: {
+              dispatch('addIMStoriesUnSeen', storiesPayload);
+              break;
+            }
+            
+            case 2: {
+              dispatch('addIMStoriesSeen', storiesPayload);
+              break;
+            }
+            
+            case 3: {
+              dispatch('addIMStoriesMuted', storiesPayload);
+              break;
+            }
+            
+            default: {
+              dispatch('addIMStoriesMuted', storiesPayload);
+              break;
+            }
+            
+          }
+
+          console.log(":::-STORIES-:::", storiesPayload);
+
+        });
+
+        [...Array(faker.random.numeric(1)).keys()].map((n) => {
+
+          const myStory = getStory('Me');
+
+          dispatch('addIMMyStories', myStory);
+
+          console.log(":::-STORIES-:::", myStory);
+
+        });
+
+
+      }
 
     }
 
