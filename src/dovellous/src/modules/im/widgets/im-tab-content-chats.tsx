@@ -8,6 +8,7 @@ import {
   f7ready,
   Icon,
 } from "framework7-react";
+import moment from 'moment';
 import InfiniteScroll from "react-infinite-scroller";
 import { StorageIM, useStorageIM } from "../store/im-store";
 
@@ -294,7 +295,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
       <List
         mediaList
         noChevron
-        className="search-list searchbar-found im-tab-content-chats-searchbar-found no-hairlines"
+        className="search-list searchbar-found im-tab-content-chats-searchbar-found no-hairlines no-hairlines-between"
       >
         {listViewLoading ? (
           
@@ -333,7 +334,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
                 link="#"
                 onClick={()=>onOpenMessage(chat)}
                 title={chat.title}
-                after={chat.after}
+                after={moment(chat.after).format('HH:mm')}
                 className={`${chat.badge > 5 ? 'has-badge':''} ${chat.isMute ? 'is-mute':''}`}
               >
 
@@ -352,8 +353,8 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
                   canvasWidth={48}
                   unseenSegments={chat.unseen}
                   totalSegments={10}
-                  segmentColorSeen={Dom7('html').hasClass('dark')?`rgb(119,136,119)`:`rgb(200,200,200)`}
-                  segmentColorUnSeen={Dom7('html').hasClass('dark')?`rgb(76,255,80)`:`rgb(76,255,80)`}
+                  segmentColorSeen={Dom7('html').hasClass('dark')?`rgb(127,127,127)`:`rgb(200,200,200)`}
+                  segmentColorUnSeen={Dom7('html').hasClass('dark')?`rgb(76,255,80)`:`rgb(76,175,80)`}
                   backgroundColor={Dom7('html').hasClass('dark')?`rgb(28,28,29)`:`rgb(255,255,255)`}
                   />
 

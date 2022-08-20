@@ -723,8 +723,8 @@ const StorageIM = createStore({
         message.uuid = faker.unique;
         message.text = faker.lorem.words(7);
         message.badge =  parseInt(faker.random.numeric(1));
-        message.after =  '06:53';
-        message.avatar = `http://34.134.134.114/dev/pix/people/${faker.random.numeric(2)}.png`;
+        message.after =  faker.date.recent().getTime();
+        message.avatar = `http://localhost/dev/pix/people/${faker.random.numeric(2)}.png`;
         message.isMute = faker.random.numeric(1)==='5'?true:false;
         message.isSent = faker.random.numeric(1)==='6'?true:false;
         message.isGroup = faker.random.numeric(1)==='7'?true:false;
