@@ -14,6 +14,7 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
     );
 
     const roundedImage = (ctx, x, y, width, height, radius)=>{
+        //ctx.clearRect(x, y, width, height);
         ctx.beginPath();
         ctx.moveTo(x + radius, y);
         ctx.lineTo(x + width - radius, y);
@@ -79,6 +80,7 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
         baseImage.crossOrigin = "Anonymous";
                 baseImage.onload = () => {
 
+            //contextRef.current.clearRect(imgOffsetX, imgOffsetY, avatarWidth, avatarHeight);
             contextRef.current.save();
             roundedImage(contextRef.current, imgOffsetX, imgOffsetY, avatarWidth, avatarHeight, canvasWidth*0.5);
             contextRef.current.clip();
@@ -92,12 +94,13 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
                 };
 
                 baseImage.src = avatarSrc;
-
+        contextRef2.current.clearRect(0, 0, canvasWidth, canvasWidth);
         segmentsArray.map((n, i) => {
             let startAngle = originAngle;
             let endAngle = startAngle + segmentAngleX;
             contextRef2.current.lineWidth = strokeWidth;
             contextRef2.current.strokeStyle = i < unseenSegments ? strokeColorUnSeen : strokeColorSeen;
+            
             contextRef2.current.beginPath();
             contextRef2.current.arc(
                 canvasWidth / 2,

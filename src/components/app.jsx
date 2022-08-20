@@ -85,6 +85,9 @@ const MyApp = () => {
       darkThemeChange: function (e) {
         console.log(":: APP THEME CHANGED ::", e);
       },
+      orientationchange: function (e) {
+        console.log(":: APP ORIENTATION CHANGED ::", e);
+      },
       connection: function (isOnline) {
         console.log(":: APP CXN STATE CHANGED ::", isOnline);
       },
