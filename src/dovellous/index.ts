@@ -1,6 +1,9 @@
 import { Dovellous } from "./dovellous";
 import { K, Snippets } from "./src/libraries/app/helpers";
 
+import { StorageIM } from "./src/modules/im/store/im-store";
+import { StorageContacts } from "./src/modules/im/store/contacts-store";
+
 /**
  * Dovellous F7 Plugin for Framework7 1.0.0
  * Keypad plugin extends Framework7 with additional custom keyboards
@@ -15,7 +18,7 @@ import { K, Snippets } from "./src/libraries/app/helpers";
 
 const DovellousF7Plugin = {
   // Module Name
-  name: "demo-module",
+  name: "DovellousF7Plugin",
   /* Install callback
   It will be executed right after component is installed
   Context of this callback points to Class where it was installed
@@ -34,7 +37,7 @@ const DovellousF7Plugin = {
 
     app.dovellous = {
       k: K,
-      snippets: Snippets,
+      helpers: Snippets,
       libs: dovellousLibs,
       enableDebug: function () {
         app.params.dovellous.debugger = true;
@@ -50,7 +53,11 @@ const DovellousF7Plugin = {
   params: {
     dovellous: {
       debugger: true,
-      modules: {
+      // Dovellous Constants
+      konstants: K,
+      // Dovellous Snippets / Helpers
+      snippets: Snippets,
+      plugins: {
         agora: { 
           appId: '',
           primaryCertificate: '',
@@ -88,41 +95,46 @@ const DovellousF7Plugin = {
   },
   /* Event handlers */
   on: {
-    demoEventF7(a, b) {
+    demoEventF7(a: any, b: any) {
       console.log("demo-event", a, b);
     },
     init: function () {
+
       var app = this;
+      
       if (app.params.dovellous.debugger) console.log("app init");
+
+      app.emit('DOVELLOUS_READY', app.params.dovellous);
+
     },
-    pageBeforeIn: function (page) {
-      const $ = page.app.$;
+    pageBeforeIn: function (page: any) {
       const app = page.app;
+      const $   = app.$;
       if (app.params.dovellous.debugger) console.log("pageBeforeIn", page);
     },
-    pageAfterIn: function (page) {
-      const $ = page.app.$;
+    pageAfterIn: function (page: any) {
       const app = page.app;
+      const $   = app.$;
       if (app.params.dovellous.debugger) console.log("pageAfterIn", page);
     },
-    pageBeforeOut: function (page) {
-      const $ = page.app.$;
+    pageBeforeOut: function (page: any) {
       const app = page.app;
+      const $   = app.$;
       if (app.params.dovellous.debugger) console.log("pageBeforeOut", page);
     },
-    pageAfterOut: function (page) {
-      const $ = page.app.$;
+    pageAfterOut: function (page: any) {
       const app = page.app;
+      const $   = app.$;
       if (app.params.dovellous.debugger) console.log("pageAfterOut", page);
     },
-    pageInit: function (page) {
-      const $ = page.app.$;
+    pageInit: function (page: any) {
       const app = page.app;
+      const $   = app.$;
       if (app.params.dovellous.debugger) console.log("pageInit", page);
     },
-    pageBeforeRemove: function (page) {
-      const $ = page.app.$;
+    pageBeforeRemove: function (page: any) {
       const app = page.app;
+      const $   = app.$;
       if (app.params.dovellous.debugger) console.log("pageBeforeRemove", page);
     },
   },
@@ -136,4 +148,4 @@ const DovellousF7Plugin = {
   },
 };
 
-export { DovellousF7Plugin as default };
+export { DovellousF7Plugin as default, K, Snippets, StorageIM, StorageContacts};

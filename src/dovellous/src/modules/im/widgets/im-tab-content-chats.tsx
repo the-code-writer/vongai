@@ -27,7 +27,7 @@ import IMListViewStoriesAvatar from "../../user/components/im-list-view-stories-
 
 export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfile }): JSX.Element => {
 
-  const [imChatsLoading, setIMChatsLoading] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imChatsLoading, true);
+  const [imChatsLoading, setIMChatsLoading] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imChatsLoading, false);
 
   const [imListChats, setIMListChats] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imListChats, []);
 
@@ -47,10 +47,12 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
 
   const ChatListViewItem = ({ chat, index }): JSX.Element => {
 
-    return <ListItem
+    return <ListItem 
+        
         key={`im-chat-list-item-key-${index}`}
         id={`im-chat-list-item-key-${index}`}
         link="#"
+        mediaItem
         onClick={() => onOpenMessage(chat)}
         title={chat.displayName}
         after={moment(chat.time).format('HH:mm')}
@@ -200,7 +202,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
           imListChats.length > 0 ? (
             
             <InfiniteScroll
-              className={`search-list searchbar-found im-tab-content-chats-searchbar-found media-list  no-chevron no-hairlines no-hairlines-between`}
+              className={`search-list searchbar-found im-tab-content-chats-searchbar-found list media-list  no-chevron no-hairlines no-hairlines-between`}
               pageStart={0}
               loadMore={loadMoreChats}
               hasMore={hasMoreChats}

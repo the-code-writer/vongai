@@ -87,87 +87,93 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
         canvasWidth: number,
         saveAndLoadLocal: boolean
     ) => {
-        const baseImage = new Image();
 
-        baseImage.crossOrigin = "Anonymous";
+        if(canvasRef.current !== null && typeof canvasRef.current !== "undefined"){
 
-        contextRef.current = canvasRef.current.getContext("2d");
+            const baseImage = new Image();
 
-        let locallyLoaded = false;
+            baseImage.crossOrigin = "Anonymous";
 
-        if (saveAndLoadLocal) {
-            try {
-                loadImageFromLocalFileSystem(
-                    K.Files.Paths.IM_DISPLAY_PROFILE_IMAGE,
-                    imageLocalFilename,
-                    (imageData: any) => {
-                        if (imageData) {
-                            console.log(
-                                "::IMAGE DATA  :: loadImageFromLocalFileSystem ::",
-                                imageData.data
-                            );
+            contextRef.current = canvasRef.current.getContext("2d");
 
-                            contextRef.current.putImageData(
-                                imageData.data,
-                                0,
-                                0,
-                                canvasWidth,
-                                canvasWidth
-                            );
+            let locallyLoaded = false;
 
-                            locallyLoaded = true;
+            if (saveAndLoadLocal) {
+                try {
+                    loadImageFromLocalFileSystem(
+                        K.Files.Paths.IM_DISPLAY_PROFILE_IMAGE,
+                        imageLocalFilename,
+                        (imageData: any) => {
+                            if (imageData) {
+                                console.log(
+                                    "::IMAGE DATA  :: loadImageFromLocalFileSystem ::",
+                                    imageData.data
+                                );
+
+                                contextRef.current.putImageData(
+                                    imageData.data,
+                                    0,
+                                    0,
+                                    canvasWidth,
+                                    canvasWidth
+                                );
+
+                                locallyLoaded = true;
+                            }
                         }
-                    }
-                );
-            } catch (e) {
-                console.warn(
-                    "::IMAGE DATA ERROR :: loadImageFromLocalFileSystem ::",
-                    e
-                );
-            }
-
-            if (!locallyLoaded) {
-                baseImage.onload = () => {
-                    contextRef.current.drawImage(
-                        baseImage,
-                        0,
-                        0,
-                        canvasWidth,
-                        canvasWidth
                     );
+                } catch (e) {
+                    console.warn(
+                        "::IMAGE DATA ERROR :: loadImageFromLocalFileSystem ::",
+                        e
+                    );
+                }
 
-                    if (saveAndLoadLocal) {
-                        try {
-                            const imageData = canvasRef.current.toDataURL(
-                                K.Files.MimeTypes.Images.PNG
-                            );
+                if (!locallyLoaded) {
+                    baseImage.onload = () => {
+                        contextRef.current.drawImage(
+                            baseImage,
+                            0,
+                            0,
+                            canvasWidth,
+                            canvasWidth
+                        );
 
-                            console.log(
-                                "::IMAGE DATA :: saveImageToLocalFileSystem ::",
-                                imageData
-                            );
+                        if (saveAndLoadLocal) {
+                            try {
+                                const imageData = canvasRef.current.toDataURL(
+                                    K.Files.MimeTypes.Images.PNG
+                                );
 
-                            saveImageToLocalFileSystem(
-                                K.Files.Paths.IM_DISPLAY_PROFILE_IMAGE,
-                                imageLocalFilename,
-                                imageData
-                            );
-                        } catch (e) {
-                            console.log(
-                                "::IMAGE DATA ERROR :: saveImageToLocalFileSystem ::",
-                                e
-                            );
+                                console.log(
+                                    "::IMAGE DATA :: saveImageToLocalFileSystem ::",
+                                    imageData
+                                );
+
+                                saveImageToLocalFileSystem(
+                                    K.Files.Paths.IM_DISPLAY_PROFILE_IMAGE,
+                                    imageLocalFilename,
+                                    imageData
+                                );
+                            } catch (e) {
+                                console.log(
+                                    "::IMAGE DATA ERROR :: saveImageToLocalFileSystem ::",
+                                    e
+                                );
+                            }
                         }
-                    }
-                };
+                    };
 
-                baseImage.onerror = (error) => {
-                    console.log("::IMAGE LOAD ERROR ::", error);
-                };
+                    baseImage.onerror = (error) => {
+                        console.log("::IMAGE LOAD ERROR ::", error);
+                    };
 
-                baseImage.src = src;
+                    baseImage.src = src;
+                }
             }
+
         }
+
     };
 
     useEffect(() => {
