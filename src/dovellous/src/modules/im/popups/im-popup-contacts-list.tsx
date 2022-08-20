@@ -244,6 +244,7 @@ export default ({
             }
 
             return contactsListItems;
+            
 
         } else {
 

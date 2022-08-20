@@ -889,9 +889,9 @@ const StorageIM = createStore({
   },
 })
 
-const useStorageIM = (storageKey: string, fallbackState?: any) => {
+const useStorageIM = (storageKey: string, initialState?: any) => {
 
-  const [storageIMValue, setStorageIMValue] = React.useState<any>(StorageIM.getters[storageKey].value??fallbackState);
+  const [storageIMValue, setStorageIMValue] = React.useState<any>(initialState??StorageIM.getters[storageKey].value);
    
   StorageIM.getters[storageKey].onUpdated((newValue: any)=>{
     

@@ -238,6 +238,7 @@ const K = {
 			dataStores: {
 				imChatsLoading: 'imChatsLoading',
 				imListChats: 'imListChats',
+				imStoriesLoading: 'imStoriesLoading'
 			}
 		}
 	}

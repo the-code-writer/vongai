@@ -29,6 +29,8 @@ import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 
 import IMTabContentChats from "../widgets/im-tab-content-chats";
 
+import IMTabContentStories from "../widgets/im-tab-content-stories";
+
 import navBarLogo from "../../../../assets/img/logo-typographical-white.png";
 
 import {StorageIM} from "../store/im-store";
@@ -386,19 +388,21 @@ export default ({onTabIndexChanged, onOpenIMPopupContactsList, onOpenMessage, on
 
               )}
 
+              { tabContentItem.view === "IMTabContentStories" &&(
+
+                <IMTabContentStories
+                  className={`im-tab im-tab-content-stories ${tabContentItem.slug}-id`}
+                  skeletonList={tabContentItem.skeletonList}
+                  key={`${tabContentItem.slug}-key`}
+                  id={`${tabContentItem.slug}-id`}
+                  slug={tabContentItem.slug}
+                  onOpenMessage={onOpenMessage}
+                  onOpenProfile={onOpenProfile}
+                />
+
+              )}
+
               {/*
-
-                { tabContentItem.view === "IMTabContentStories" &&(
-
-                  <IMTabContentCIMTabContentStories
-                    key={`im-tab-content-stories-key`}
-                    id={`im-tab-content-stories-key`}
-                    className={`im-tab-content-stories`}
-                    slug={tabContentItem.tabClass} 
-                    view={tabContentItem.view} 
-                  />
-
-                )}
 
                 { tabContentItem.view === "IMTabContentCalls" &&(
 
