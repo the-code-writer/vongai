@@ -92,7 +92,7 @@ const StorageContacts = createStore({
 
 })
 
-const useStorageContacts = (storageKey: string, fallbackState: any) => {
+const useStorageContacts = (storageKey: string, fallbackState?: any) => {
 
   const [storageContactsValue, setStorageContactsValue] = React.useState<any>(StorageContacts.getters[storageKey].value??fallbackState);
    

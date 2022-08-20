@@ -1,6 +1,8 @@
 import Encryption from '../cryptography/encryption';
 import FileSystem from '../filesystem';
 
+import {DeliveryStatus, ListViewMessage} from '../intefaces/im';
+
 const Snippets = {
 
     numbers: {
@@ -220,6 +222,237 @@ const Snippets = {
                 return 0;
 
             }
+
+        }
+
+    },
+
+    modules: {
+
+        im: {
+
+            getListViewSubTitle : (chat: ListViewMessage) : string =>{
+
+                let textHtml: string = '';
+            
+                if(chat.isTyping){
+                  return '<span class="color-green">Typing...</span>';
+                }
+            
+                if(chat.isDeleted){
+                  return '<i class="f7-icons im-list-view-subtitle-icon">trash</i> <em>This message was deleted</em>';
+                }
+            
+                if(chat.hasOwnProperty('deliveryStatus')){
+                  textHtml += `<i class="f7-icons im-list-view-subtitle-icon-delivery-status ${Snippets.modules.im.getDeliveryStatus(chat.deliveryStatus).class} ">${Snippets.modules.im.getDeliveryStatus(chat.deliveryStatus).icon.ios}</i> `;
+                }
+            
+                if(chat.isGroup){
+                  textHtml += (chat.isSent ? `You: `:`${chat.senderName}: `);
+                }
+            
+                if(chat.messageType.type !== 'Text'){
+                  textHtml += `<i class="f7-icons im-list-view-subtitle-icon ${chat.messageType.iconClass}">${chat.messageType.icon.ios}</i> ${chat.messageType.type} `;      
+                  textHtml += `: ${chat.text}`;
+                }
+            
+                if(chat.messageType.type === 'Text'){
+                  textHtml += chat.text;
+                }
+            
+                return textHtml;
+            
+            },
+
+            getDeliveryStatus : (status: any) : DeliveryStatus => {
+
+                const _status:DeliveryStatus = {
+                  icon: {
+                    ios: '',md: '', aurora: ''
+                  },
+                  class: 'default'
+                };
+                
+                switch(parseInt(status)){
+            
+                  case 0 : { //Failed
+                    _status.icon = {
+                      ios: 'exclamationmark_circle_fill',
+                      md: '',
+                      aurora: 'exclamationmark_circle_fill'
+                    };
+                    _status.class = 'error';
+                    break;
+                  }
+            
+                  case 1 : { //Pending
+                    _status.icon = {
+                      ios: 'timer',
+                      md: '',
+                      aurora: 'timer'
+                    };
+                    break;
+                  }
+            
+                  case 2 : { //Sent
+                    _status.icon = {
+                      ios: 'checkmark',
+                      md: '',
+                      aurora: 'checkmark'
+                    };
+                    break;
+                  }
+            
+                  case 3 : { //Delivered
+                    _status.icon = {
+                      ios: 'checkmark_2',
+                      md: '',
+                      aurora: 'checkmark_2'
+                    };
+                    break;
+                  }
+            
+                  case 4 : { //READ
+                    _status.icon = {
+                      ios: 'checkmark_2',
+                      md: '',
+                      aurora: 'checkmark_2'
+                    };
+                    _status.class = 'info';
+                    break;
+                  }
+            
+                  case 5 : { //Failed
+                    _status.icon = {
+                      ios: 'exclamationmark_circle_fill',
+                      md: '',
+                      aurora: 'exclamationmark_circle_fill'
+                    };
+                    _status.class = 'error';
+                    break;
+                  }
+            
+                  case 6 : { //Pending
+                    _status.icon = {
+                      ios: 'timer',
+                      md: '',
+                      aurora: 'timelapse'
+                    };
+                    break;
+                  }
+            
+                  case 7 : { //Sent
+                    _status.icon = {
+                      ios: 'checkmark',
+                      md: '',
+                      aurora: 'checkmark'
+                    };
+                    break;
+                  }
+            
+                  case 8 : { //Delivered
+                    _status.icon = {
+                      ios: 'checkmark_2',
+                      md: '',
+                      aurora: 'checkmark_2'
+                    };
+                    break;
+                  }
+            
+                  case 9 : { //READ
+                    _status.icon = {
+                      ios: 'checkmark_2',
+                      md: '',
+                      aurora: 'checkmark_2'
+                    };
+                    _status.class = 'info';
+                    break;
+                  }
+            
+                  default: { //PENDING
+                    _status.icon = {
+                      ios: 'timer',
+                      md: '',
+                      aurora: 'timer'
+                    };
+                    _status.class = 'default';
+                    break;
+                  }
+            
+                }
+            
+                return _status;
+            
+            },
+
+            getListViewUserOnlineStatus : (onlineStatus: any) : string =>{
+
+                let _status: string;
+            
+                switch(parseInt(onlineStatus)){
+            
+                  case 0:{
+                    _status = 'offline';
+                    break;
+                  }
+            
+                  case 1:{
+                    _status = 'online';
+                    break;
+                  }
+            
+                  case 2:{
+                    _status = 'away';
+                    break;
+                  }
+            
+                  case 3:{
+                    _status = 'busy';
+                    break;
+                  }
+            
+                  case 4:{
+                    _status = 'private';
+                    break;
+                  }
+            
+                  case 5:{
+                    _status = 'offline';
+                    break;
+                  }
+            
+                  case 6:{
+                    _status = 'online';
+                    break;
+                  }
+            
+                  case 7:{
+                    _status = 'away';
+                    break;
+                  }
+            
+                  case 8:{
+                    _status = 'busy';
+                    break;
+                  }
+            
+                  case 9:{
+                    _status = 'private';
+                    break;
+                  }
+            
+                  default:{
+                    _status = 'unavailable';
+                    break;
+                  }
+            
+                }
+            
+                return _status;
+            
+            },
+
+
 
         }
 

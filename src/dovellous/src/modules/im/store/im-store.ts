@@ -717,7 +717,7 @@ const StorageIM = createStore({
 
         const message = {};
 
-        message.contactName = `${faker.name.firstName()} ${faker.name.lastName()}`;
+        message.displayName = `${faker.name.firstName()} ${faker.name.lastName()}`;
         message.senderName = `${faker.name.firstName()} ${faker.name.lastName()}`;
         message.senderNumber = `${faker.phone.number()}`;
         message.uuid = faker.unique;
@@ -889,7 +889,7 @@ const StorageIM = createStore({
   },
 })
 
-const useStorageIM = (storageKey: string, fallbackState: any) => {
+const useStorageIM = (storageKey: string, fallbackState?: any) => {
 
   const [storageIMValue, setStorageIMValue] = React.useState<any>(StorageIM.getters[storageKey].value??fallbackState);
    

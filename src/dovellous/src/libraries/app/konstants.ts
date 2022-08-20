@@ -233,6 +233,14 @@ const K = {
 		white: "Konstants",
 		black: "⚫",
 	},
+	ModuleComponentsLibs: {
+		im: {
+			dataStores: {
+				imChatsLoading: 'imChatsLoading',
+				imListChats: 'imListChats',
+			}
+		}
+	}
 };
 
 export default K;

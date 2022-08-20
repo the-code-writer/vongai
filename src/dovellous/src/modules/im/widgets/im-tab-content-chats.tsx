@@ -8,278 +8,32 @@ import {
   f7ready,
   Icon,
 } from "framework7-react";
+
+import Dom7 from "dom7";
+
 import moment from 'moment';
+
 import InfiniteScroll from "react-infinite-scroller";
-import { StorageIM, useStorageIM } from "../store/im-store";
+
+import {K, Snippets} from "../../../libraries/app/helpers";
+
+import {ListViewMessage} from '../../../libraries/intefaces/im';
+
+import { useStorageIM } from "../store/im-store";
 
 import IMListViewAvatar from "../../user/components/im-list-view-avatar";
 
 import IMListViewStoriesAvatar from "../../user/components/im-list-view-stories-avatar";
-import Dom7 from "dom7";
- 
-interface DF7Icon {
-  ios: string;
-  md: string;
-  aurora: string;
-}
-
-interface DeliveryStatus {
-  icon: DF7Icon,
-  class: string
-};
-
-interface MessageType {
-  type: string; 
-  iconClass: any; 
-  icon: { ios: any; }; 
-}
-
-interface ListViewMessage { 
-  isTyping: any; 
-  isDeleted: any; 
-  hasOwnProperty: (
-    arg0: string
-    ) => DeliveryStatus; 
-  messageType: MessageType;
-  userOnlineStatus: number; 
-  deliveryStatus: any;
-  senderName: any;  
-  isGroup: any; 
-  isSent: any; 
-  text: string; 
-}
 
 export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfile }): JSX.Element => {
 
-  const [listViewLoading, setListViewLoading] = useState(true);
+  const [imChatsLoading, setIMChatsLoading] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imChatsLoading, true);
 
-  const [imChatsLoading, setIMChatsLoading] = useStorageIM('imChatsLoading', true);
-  const [imListChats, setIMListChats] = useStorageIM('imListChats', []);
-
-  const getDeliveryStatus = (status: any) : DeliveryStatus => {
-
-    const _status:DeliveryStatus = {
-      icon: {
-        ios: '',md: '', aurora: ''
-      },
-      class: 'default'
-    };
-    
-    switch(parseInt(status)){
-
-      case 0 : { //Failed
-        _status.icon = {
-          ios: 'exclamationmark_circle_fill',
-          md: '',
-          aurora: 'exclamationmark_circle_fill'
-        };
-        _status.class = 'error';
-        break;
-      }
-
-      case 1 : { //Pending
-        _status.icon = {
-          ios: 'timer',
-          md: '',
-          aurora: 'timer'
-        };
-        break;
-      }
-
-      case 2 : { //Sent
-        _status.icon = {
-          ios: 'checkmark',
-          md: '',
-          aurora: 'checkmark'
-        };
-        break;
-      }
-
-      case 3 : { //Delivered
-        _status.icon = {
-          ios: 'checkmark_2',
-          md: '',
-          aurora: 'checkmark_2'
-        };
-        break;
-      }
-
-      case 4 : { //READ
-        _status.icon = {
-          ios: 'checkmark_2',
-          md: '',
-          aurora: 'checkmark_2'
-        };
-        _status.class = 'info';
-        break;
-      }
-
-      case 5 : { //Failed
-        _status.icon = {
-          ios: 'exclamationmark_circle_fill',
-          md: '',
-          aurora: 'exclamationmark_circle_fill'
-        };
-        _status.class = 'error';
-        break;
-      }
-
-      case 6 : { //Pending
-        _status.icon = {
-          ios: 'timer',
-          md: '',
-          aurora: 'timelapse'
-        };
-        break;
-      }
-
-      case 7 : { //Sent
-        _status.icon = {
-          ios: 'checkmark',
-          md: '',
-          aurora: 'checkmark'
-        };
-        break;
-      }
-
-      case 8 : { //Delivered
-        _status.icon = {
-          ios: 'checkmark_2',
-          md: '',
-          aurora: 'checkmark_2'
-        };
-        break;
-      }
-
-      case 9 : { //READ
-        _status.icon = {
-          ios: 'checkmark_2',
-          md: '',
-          aurora: 'checkmark_2'
-        };
-        _status.class = 'info';
-        break;
-      }
-
-      default: { //PENDING
-        _status.icon = {
-          ios: 'timer',
-          md: '',
-          aurora: 'timer'
-        };
-        _status.class = 'default';
-        break;
-      }
-
-    }
-
-    return _status;
-
-  }
-
-  const getListViewSubTitle = (chat: ListViewMessage) : string =>{
-
-    let textHtml: string = '';
-
-    if(chat.isTyping){
-      return '<span class="color-green">Typing...</span>';
-    }
-
-    if(chat.isDeleted){
-      return '<i class="f7-icons im-list-view-subtitle-icon">trash</i> <em>This message was deleted</em>';
-    }
-
-    if(chat.hasOwnProperty('deliveryStatus')){
-      textHtml += `<i class="f7-icons im-list-view-subtitle-icon-delivery-status ${getDeliveryStatus(chat.deliveryStatus).class} ">${getDeliveryStatus(chat.deliveryStatus).icon.ios}</i> `;
-    }
-
-    if(chat.isGroup){
-      textHtml += (chat.isSent ? `You: `:`${chat.senderName}: `);
-    }
-
-    if(chat.messageType.type !== 'Text'){
-      textHtml += `<i class="f7-icons im-list-view-subtitle-icon ${chat.messageType.iconClass}">${chat.messageType.icon.ios}</i> ${chat.messageType.type} `;      
-      textHtml += `: ${chat.text}`;
-    }
-
-    if(chat.messageType.type === 'Text'){
-      textHtml += chat.text;
-    }
-
-    return textHtml;
-
-  };
-
-  const getListViewUserOnlineStatus = (onlineStatus: any) : string =>{
-
-    let _status: string = '';
-
-    switch(parseInt(onlineStatus)){
-
-      case 0:{
-        _status = 'offline';
-        break;
-      }
-
-      case 1:{
-        _status = 'online';
-        break;
-      }
-
-      case 2:{
-        _status = 'away';
-        break;
-      }
-
-      case 3:{
-        _status = 'busy';
-        break;
-      }
-
-      case 4:{
-        _status = 'private';
-        break;
-      }
-
-      case 5:{
-        _status = 'offline';
-        break;
-      }
-
-      case 6:{
-        _status = 'online';
-        break;
-      }
-
-      case 7:{
-        _status = 'away';
-        break;
-      }
-
-      case 8:{
-        _status = 'busy';
-        break;
-      }
-
-      case 9:{
-        _status = 'private';
-        break;
-      }
-
-      default:{
-        _status = 'unavailable';
-        break;
-      }
-
-    }
-
-    return _status;
-
-  };
+  const [imListChats, setIMListChats] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imListChats, []);
 
   useEffect(() => {
 
-    setListViewLoading(false);
+    console.log(":: USE EFFECT ::imListChats::", imListChats);
 
   }, [imListChats]);
 
@@ -298,7 +52,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
         noChevron
         className="search-list searchbar-found im-tab-content-chats-searchbar-found no-hairlines no-hairlines-between"
       >
-        {listViewLoading ? (
+        {imChatsLoading ? (
           
           [...Array(skeletonList.count).keys()].map((n) => (
 
@@ -334,15 +88,15 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
                 id={`im-chat-list-item-key-${index}`}
                 link="#"
                 onClick={()=>onOpenMessage(chat)}
-                title={chat.title}
-                after={moment(chat.after).format('HH:mm')}
+                title={chat.displayName}
+                after={moment(chat.time).format('HH:mm')}
                 className={`${chat.badge > 5 ? 'has-badge':''} ${chat.isMute ? 'is-mute':''}`}
               >
 
                 <div className="im-list-view-avatar-wrapper" slot="media" onTouchStart={()=>onOpenProfile(chat)}>
 
                   <IMListViewAvatar 
-                    userOnlineStatus={getListViewUserOnlineStatus(chat.userOnlineStatus)}
+                    userOnlineStatus={Snippets.modules.im.getListViewUserOnlineStatus(chat.userOnlineStatus)}
                     avatarSrc={chat.avatar} 
                     canvasWidth={48} 
                     elementId={index}
@@ -361,7 +115,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
 */} 
                 </div>
 
-                <span className="im-list-view-subtitle" slot="subtitle" dangerouslySetInnerHTML={{ __html: getListViewSubTitle(chat) }} />
+                <span className="im-list-view-subtitle" slot="subtitle" dangerouslySetInnerHTML={{ __html: Snippets.modules.im.getListViewSubTitle(chat) }} />
 
                 {chat.badge > 5 && (
                   
