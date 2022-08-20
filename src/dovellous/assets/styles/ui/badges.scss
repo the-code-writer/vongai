@@ -2,8 +2,8 @@
 .item-after .badge {
     background-color: var(--f7-bars-bg-color);
     color: var(--f7-bars-text-color);
-    height: calc(var(--f7-badge-size) * 1.3);
-    min-width: calc(var(--f7-badge-size) * 1.3);    
+    height: calc(var(--f7-badge-size) * 1.2);
+    min-width: calc(var(--f7-badge-size) * 1.2);    
     font-size: var(--f7-badge-font-size);
     line-height: var(--f7-badge-font-size);
   }
@@ -11,8 +11,8 @@
   .toolbar-inner .link.tab-link .badge {
     background-color: var(--f7-bars-text-color);
     color: var(--f7-bars-bg-color);
-    height: calc(var(--f7-badge-size) * 1.3);
-    min-width: calc(var(--f7-badge-size) * 1.3);
+    height: calc(var(--f7-badge-size) * 1.2);
+    min-width: calc(var(--f7-badge-size) * 1.2);
     font-size: var(--f7-badge-font-size);
     line-height: var(--f7-badge-font-size); 
     margin-left: 5px;

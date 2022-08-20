@@ -2,3 +2,9 @@
     max-height: 38px;
     margin-left: 7px;
 }
+
+.dark{
+    .nav-bar-logo {
+        filter: grayscale(1);
+    }
+}
