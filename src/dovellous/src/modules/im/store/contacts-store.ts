@@ -102,7 +102,13 @@ const useStorageContacts = (storageKey: string, fallbackState: any) => {
 
   });
 
-  return [storageContactsValue, setStorageContactsValue];
+  const setStorageContactsValueInternal = (newValue:any)=>{
+
+    StorageContacts.dispatch(storageKey, newValue);
+
+  }
+
+  return [storageContactsValue, setStorageContactsValueInternal];
 
 };
 

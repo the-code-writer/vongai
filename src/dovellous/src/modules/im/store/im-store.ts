@@ -891,7 +891,7 @@ const StorageIM = createStore({
 
 const useStorageIM = (storageKey: string, fallbackState: any) => {
 
-  const [storageContactsValue, setStorageIMValue] = React.useState<any>(StorageIM.getters[storageKey].value??fallbackState);
+  const [storageIMValue, setStorageIMValue] = React.useState<any>(StorageIM.getters[storageKey].value??fallbackState);
    
   StorageIM.getters[storageKey].onUpdated((newValue: any)=>{
     
@@ -899,7 +899,13 @@ const useStorageIM = (storageKey: string, fallbackState: any) => {
 
   });
 
-  return [storageContactsValue, setStorageIMValue];
+  const setStorageIMValueInternal = (newValue:any)=>{
+
+    StorageIM.dispatch(storageKey, newValue);
+
+  }
+
+  return [storageIMValue, setStorageIMValueInternal];
 
 };
 

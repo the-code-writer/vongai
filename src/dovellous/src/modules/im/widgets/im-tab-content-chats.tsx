@@ -53,6 +53,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
 
   const [listViewLoading, setListViewLoading] = useState(true);
 
+  const [imChatsLoading, setIMChatsLoading] = useStorageIM('imChatsLoading', true);
   const [imListChats, setIMListChats] = useStorageIM('imListChats', []);
 
   const getDeliveryStatus = (status: any) : DeliveryStatus => {
