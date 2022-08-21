@@ -1,23 +1,44 @@
 import {K, Snippets} from "../../../app/helpers";
+
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
 
+import { VideoCallConfigClass } from "./VideoCallConfig";
+
 import { VideoCallError } from "./VideoCallErrors";
-import { Config, VideoCallConfig } from "./VideoCallConfig";
+
+interface VideoCallConfigInterface {
+  defaultChannel: string;
+}
 
 // Parent constructor
 class VideoCall {
 
-  config: VideoCallConfig;
+  videoCallError: VideoCallError;
+
+  config: VideoCallConfigInterface;
 
   framework7Component: any;
 
-	constructor(eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, framework7Component: any, defaultChannel: any | Config) {
-    if (defaultChannel instanceof Config) {
+	constructor(
+    eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, 
+    framework7: any, 
+    defaultChannel: any | VideoCallConfigClass
+  ) {
+
+    this.videoCallError = new VideoCallError('', 0);
+
+    if (defaultChannel instanceof VideoCallConfigClass) {
+
       this.config = defaultChannel;
+
     } else {
-      this.config = new Config(defaultChannel);
+
+      this.config = new VideoCallConfigClass(defaultChannel);
+
     }
-    this.framework7Component = framework7Component;
+
+    this.framework7Component = framework7;
+
 	}
 	/**
 	 * Initiates a simple call
@@ -49,7 +70,8 @@ class VideoCall {
 		return _data;
 
 	}
+                    
 }
 
-export {VideoCallConfig, VideoCall}
+export {VideoCallConfigInterface, VideoCall}
 

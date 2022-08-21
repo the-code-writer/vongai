@@ -69,11 +69,11 @@ class Dovellous{
 
     /* Begin Agora Library Init */
 
-    window.addEventListener(K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED, function (e){
+    F7.on(K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED, (agoraInstance: any) => {
 
-      self.Libraries.Agora = e.detail;
+      self.Libraries.Agora = agoraInstance;
     
-      //const appData = e.detail[1];
+      F7.emit(K.Events.Modules.Agora.AgoraLibEvent.MODULE_READY, agoraInstance);
     
     });
 

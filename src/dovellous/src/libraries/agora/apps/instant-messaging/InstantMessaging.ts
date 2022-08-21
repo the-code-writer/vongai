@@ -1,23 +1,44 @@
 import {K, Snippets} from "../../../app/helpers";
+
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
 
+import { InstantMessagingConfigClass } from "./InstantMessagingConfig";
+
 import { InstantMessagingError } from "./InstantMessagingErrors";
-import { Config, InstantMessagingConfig } from "./InstantMessagingConfig";
+
+interface InstantMessagingConfigInterface {
+  defaultChannel: string;
+}
 
 // Parent constructor
 class InstantMessaging {
 
-  config: InstantMessagingConfig;
+  instantMessagingError: InstantMessagingError;
+
+  config: InstantMessagingConfigInterface;
 
   framework7Component: any;
 
-	constructor(eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, framework7Component: any, defaultChannel: any | Config) {
-    if (defaultChannel instanceof Config) {
+	constructor(
+    eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, 
+    framework7: any, 
+    defaultChannel: any | InstantMessagingConfigClass
+  ) {
+
+    this.instantMessagingError = new InstantMessagingError('', 0);
+
+    if (defaultChannel instanceof InstantMessagingConfigClass) {
+
       this.config = defaultChannel;
+
     } else {
-      this.config = new Config(defaultChannel);
+
+      this.config = new InstantMessagingConfigClass(defaultChannel);
+
     }
-    this.framework7Component = framework7Component;
+
+    this.framework7Component = framework7;
+
 	}
 	/**
 	 * Initiates a simple call
@@ -49,8 +70,8 @@ class InstantMessaging {
 		return _data;
 
 	}
+                    
 }
 
-export {InstantMessagingConfig, InstantMessaging}
-
+export {InstantMessagingConfigInterface, InstantMessaging}
 

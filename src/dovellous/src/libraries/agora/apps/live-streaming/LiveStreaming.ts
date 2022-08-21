@@ -1,23 +1,44 @@
 import {K, Snippets} from "../../../app/helpers";
+
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
 
+import { LiveStreamingConfigClass } from "./LiveStreamingConfig";
+
 import { LiveStreamingError } from "./LiveStreamingErrors";
-import { Config, LiveStreamingConfig } from "./LiveStreamingConfig";
+
+interface LiveStreamingConfigInterface {
+  defaultChannel: string;
+}
 
 // Parent constructor
 class LiveStreaming {
 
-  config: LiveStreamingConfig;
+  liveStreamingError: LiveStreamingError;
+
+  config: LiveStreamingConfigInterface;
 
   framework7Component: any;
 
-	constructor(eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, framework7Component: any, defaultChannel: any | Config) {
-    if (defaultChannel instanceof Config) {
+	constructor(
+    eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, 
+    framework7: any, 
+    defaultChannel: any | LiveStreamingConfigClass
+  ) {
+
+    this.liveStreamingError = new LiveStreamingError('', 0);
+
+    if (defaultChannel instanceof LiveStreamingConfigClass) {
+
       this.config = defaultChannel;
+
     } else {
-      this.config = new Config(defaultChannel);
+
+      this.config = new LiveStreamingConfigClass(defaultChannel);
+
     }
-    this.framework7Component = framework7Component;
+
+    this.framework7Component = framework7;
+
 	}
 	/**
 	 * Initiates a simple call
@@ -49,8 +70,8 @@ class LiveStreaming {
 		return _data;
 
 	}
+                    
 }
 
-export {LiveStreamingConfig, LiveStreaming}
-
+export {LiveStreamingConfigInterface, LiveStreaming}
 

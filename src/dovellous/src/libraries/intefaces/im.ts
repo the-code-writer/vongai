@@ -1,4 +1,5 @@
-interface DF7Icon {
+  
+  interface DF7Icon { 
     ios: string;
     md: string;
     aurora: string;
@@ -30,4 +31,4 @@ interface DF7Icon {
     text: string; 
   }
 
-  export {DF7Icon, DeliveryStatus, MessageType, ListViewMessage}
+  export {VoiceCallConfigInterface, DF7Icon, DeliveryStatus, MessageType, ListViewMessage}

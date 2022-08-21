@@ -1,23 +1,44 @@
 import {K, Snippets} from "../../../app/helpers";
+
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
 
+import { VoiceCallConfigClass } from "./VoiceCallConfig";
+
 import { VoiceCallError } from "./VoiceCallErrors";
-import { Config, VoiceCallConfig } from "./VoiceCallConfig";
+
+interface VoiceCallConfigInterface {
+  defaultChannel: string;
+}
 
 // Parent constructor
 class VoiceCall {
 
-  config: VoiceCallConfig;
+  voiceCallError: VoiceCallError;
+
+  config: VoiceCallConfigInterface;
 
   framework7Component: any;
 
-	constructor(eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, framework7Component: any, defaultChannel: any | Config) {
-    if (defaultChannel instanceof Config) {
+	constructor(
+    eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, 
+    framework7: any, 
+    defaultChannel: any | VoiceCallConfigClass
+  ) {
+
+    this.voiceCallError = new VoiceCallError('', 0);
+
+    if (defaultChannel instanceof VoiceCallConfigClass) {
+
       this.config = defaultChannel;
+
     } else {
-      this.config = new Config(defaultChannel);
+
+      this.config = new VoiceCallConfigClass(defaultChannel);
+
     }
-    this.framework7Component = framework7Component;
+
+    this.framework7Component = framework7;
+
 	}
 	/**
 	 * Initiates a simple call
@@ -49,7 +70,8 @@ class VoiceCall {
 		return _data;
 
 	}
+                    
 }
 
-export {VoiceCallConfig, VoiceCall}
+export {VoiceCallConfigInterface, VoiceCall}
 

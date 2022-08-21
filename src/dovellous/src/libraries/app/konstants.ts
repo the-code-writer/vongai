@@ -157,7 +157,8 @@ const K = {
 				},
 				AgoraLibEvent: {
 					NAME: "ModulesAgoraLibEvent",
-					MODULE_LOADED: "ModulesAgoraLoaded"
+					MODULE_LOADED: "ModulesAgoraLoaded",
+					MODULE_READY: "ModulesAgoraReady"
 				},
 				VoiceCall: {
 					ON_APP_INIT: "ModulesAgoraVoiceCallOnAppInit",

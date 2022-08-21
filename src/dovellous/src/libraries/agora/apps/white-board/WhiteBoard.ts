@@ -1,23 +1,44 @@
 import {K, Snippets} from "../../../app/helpers";
+
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
 
+import { WhiteBoardConfigClass } from "./WhiteBoardConfig";
+
 import { WhiteBoardError } from "./WhiteBoardErrors";
-import { Config, WhiteBoardConfig } from "./WhiteBoardConfig";
+
+interface WhiteBoardConfigInterface {
+  defaultChannel: string;
+}
 
 // Parent constructor
 class WhiteBoard {
 
-  config: WhiteBoardConfig;
+  whiteBoardError: WhiteBoardError;
+
+  config: WhiteBoardConfigInterface;
 
   framework7Component: any;
 
-	constructor(eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, framework7Component: any, defaultChannel: any | Config) {
-    if (defaultChannel instanceof Config) {
+	constructor(
+    eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, 
+    framework7: any, 
+    defaultChannel: any | WhiteBoardConfigClass
+  ) {
+
+    this.whiteBoardError = new WhiteBoardError('', 0);
+
+    if (defaultChannel instanceof WhiteBoardConfigClass) {
+
       this.config = defaultChannel;
+
     } else {
-      this.config = new Config(defaultChannel);
+
+      this.config = new WhiteBoardConfigClass(defaultChannel);
+
     }
-    this.framework7Component = framework7Component;
+
+    this.framework7Component = framework7;
+
 	}
 	/**
 	 * Initiates a simple call
@@ -49,8 +70,8 @@ class WhiteBoard {
 		return _data;
 
 	}
+                    
 }
 
-export {WhiteBoardConfig, WhiteBoard}
-
+export {WhiteBoardConfigInterface, WhiteBoard}
 
