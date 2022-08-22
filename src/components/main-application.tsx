@@ -7,6 +7,8 @@ import {
   View
 } from "framework7-react";
 
+import { ErrorBoundary } from 'react-error-boundary';
+
 import capacitorApp from "../js/capacitor-app";
 import routes from "../js/routes";
 import store from "../js/store";
@@ -35,7 +37,6 @@ const MainApplication = () => {
     serviceWorker: import.meta.env.MODE === 'production' ? {
       path: '/service-worker.js',
     } : {},
-    // Input settings
     // Input settings
     input: {
       scrollIntoViewOnFocus: device.capacitor,
@@ -109,13 +110,27 @@ const MainApplication = () => {
     });
 
   }, []);
-
+  
+  const errorFallback: ({ error }) => {
+    return (
+      <div role="alert">
+        <h2>Something went wrong:</h2>
+        <pre>{error.message}</pre>
+      </div>
+    )
+  }
+  
   return (
-    <App {...f7params}>
-      
-      <View id="view-home" main tab tabActive url="/" />
-
-    </App>
+    <React.Fragment>
+      {/* <ThemeContextProvider>  */}
+      <ToastContainer/>
+      <ErrorBoundary FallbackComponent={errorFallback}>
+          <App {...f7params}>      
+            <View id="view-home" main tab tabActive url="/" />
+          </App>
+      </ErrorBoundary>
+      {/* </ThemeContextProvider> */}
+    </React.Fragment>
   );
 
 };
