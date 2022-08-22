@@ -18,11 +18,11 @@ const MainApplication = () => {
   // Framework7 Parameters
   const f7params = {
     // App name
-    name: `process.env.APP_NAME`, 
+    name: import.meta.env.VNG_APP_NAME, 
     // Automatic theme detection
-    theme: `process.env.AUTO_THEME_DETECTION`,
+    theme: import.meta.env.VNG_AUTO_THEME_DETECTION,
     // App bundle ID
-    id: `process.env.APP_ID`, 
+    id: import.meta.env.VNG_APP_ID, 
     // App store
     store: store,
     // App routes
@@ -32,7 +32,7 @@ const MainApplication = () => {
     // Get device language
     language: navigator.language,
     // Register service worker (only on production build)
-    serviceWorker: process.env.NODE_ENV === 'production' ? {
+    serviceWorker: import.meta.env.MODE === 'production' ? {
       path: '/service-worker.js',
     } : {},
     // Input settings
@@ -88,7 +88,7 @@ const MainApplication = () => {
 
       }
       
-      if(`process.env.APP_ENV !== 'production'`){
+      if(import.meta.env.MODE !== 'production'){
 
         window.F7React = F7React;
 
