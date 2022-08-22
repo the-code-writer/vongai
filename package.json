@@ -117,7 +117,7 @@
     "postcss-preset-env": "^7.8.0",
     "sass": "^1.54.4",
     "typescript": "4.7.4",
-    "vite": "^3.0.8",
+    "vite": "^3.0.9",
     "workbox-cli": "^6.5.4"
   },
   "scripts": {
@@ -126,7 +126,7 @@
     "gen-android-icons": "cordova-res android --skip-config --copy",
     "pre-android-icons": "npm install --ignore-scripts=false --verbose  --force --legacy-peer-deps sharp",
     "gen-ios-icons": "cordova-res ios --skip-config --copy",
-    "deploy-android": "C:\\sdk\\android\\platform-tools\\adb.exe install -r --install-location 2 C:\\apps\\projects\\project-vongai\\android\\app\\build\\outputs\\apk\\debug\\app-debug.apk",
+    "deploy-android": "adb.exe install -r --install-location 2 C:\\apps\\projects\\project-vongai\\android\\app\\build\\outputs\\apk\\debug\\app-debug.apk",
     "rstart": "react-scripts start",
     "rbuild": "react-scripts build",
     "rtest": "react-scripts test --env=jsdom",

@@ -6901,11 +6901,6 @@
     "is-date-object" "^1.0.1"
     "is-symbol" "^1.0.2"
 
-"esbuild-linux-64@0.14.54":
-  "integrity" "sha512-EgjAgH5HwTbtNsTqQOXWApBaPVdDn7XcK+/PtJwZLT1UmpLoznPd8c5CxqsH2dQK3j05YsB3L17T8vE7cp4cCg=="
-  "resolved" "https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-0.14.54.tgz"
-  "version" "0.14.54"
-
 "esbuild@^0.14.47":
   "integrity" "sha512-Cy9llcy8DvET5uznocPyqL3BFRrFXSVqbgpMJ9Wz8oVjZlh/zUSNbPRbov0VX7VxN2JH1Oa0uNxZ7eLRb62pJA=="
   "resolved" "https://registry.npmjs.org/esbuild/-/esbuild-0.14.54.tgz"
@@ -16621,10 +16616,10 @@
     "unist-util-stringify-position" "^3.0.0"
     "vfile-message" "^3.0.0"
 
-"vite@^3.0.8":
-  "integrity" "sha512-AOZ4eN7mrkJiOLuw8IA7piS4IdOQyQCA81GxGsAQvAZzMRi9ZwGB3TOaYsj4uLAWK46T5L4AfQ6InNGlxX30IQ=="
-  "resolved" "https://registry.npmjs.org/vite/-/vite-3.0.8.tgz"
-  "version" "3.0.8"
+"vite@^3.0.9":
+  "integrity" "sha512-waYABTM+G6DBTCpYAxvevpG50UOlZuynR0ckTK5PawNVt7ebX6X7wNXHaGIO6wYYFXSM7/WcuFuO2QzhBB6aMw=="
+  "resolved" "https://registry.npmjs.org/vite/-/vite-3.0.9.tgz"
+  "version" "3.0.9"
   dependencies:
     "esbuild" "^0.14.47"
     "postcss" "^8.4.16"

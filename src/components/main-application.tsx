@@ -11,8 +11,6 @@ import capacitorApp from "../js/capacitor-app";
 import routes from "../js/routes";
 import store from "../js/store";
 
-import { StorageIM, StorageContacts } from "../dovellous/index";
-
 const MainApplication = () => {
 
   // Device data
@@ -20,11 +18,11 @@ const MainApplication = () => {
   // Framework7 Parameters
   const f7params = {
     // App name
-    name: process.env.APP_NAME, 
+    name: `process.env.APP_NAME`, 
     // Automatic theme detection
-    theme: process.env.AUTO_THEME_DETECTION,
+    theme: `process.env.AUTO_THEME_DETECTION`,
     // App bundle ID
-    id: process.env.APP_ID, 
+    id: `process.env.APP_ID`, 
     // App store
     store: store,
     // App routes
@@ -90,7 +88,7 @@ const MainApplication = () => {
 
       }
       
-      if(process.env.APP_ENV !== 'production'){
+      if(`process.env.APP_ENV !== 'production'`){
 
         window.F7React = F7React;
 
@@ -98,13 +96,13 @@ const MainApplication = () => {
 
       // Generate data for IM Testing
 
-      StorageContacts.dispatch("syncIMContacts");
+      f7.dovellous.store.StorageContacts.dispatch("syncIMContacts",null);
 
-      StorageIM.dispatch("insertFakeMessages");
+      f7.dovellous.store.StorageIM.dispatch("insertFakeMessages",null);
 
-      StorageIM.dispatch("insertFakeStories");
+      f7.dovellous.store.StorageIM.dispatch("insertFakeStories",null);
 
-      //StorageIM.dispatch("insertCalls");
+      //f7.dovellous.store.StorageIM.dispatch("insertCalls");
 
       //
 

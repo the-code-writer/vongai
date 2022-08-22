@@ -1,13 +1,16 @@
 import React, { useCallback, useMemo, useEffect, useRef, useState } from 'react';
 
+import { f7, f7ready } from 'framework7-react';
+
 import IMHomeScreen from '../dovellous/src/modules/im/views/im-home-screen';
 
 import IMPopupContactsList from "../dovellous/src/modules/im/popups/im-popup-contacts-list";
 
 import IMPanelLeft from "../dovellous/src/modules/im/panels/im-panel-left";
 
+import IMUserProfileSummary from '../dovellous/src/modules/im/sheets/im-user-profile-summary';
+
 import { StorageIM, useStorageIM } from "../dovellous/src/modules/im/store/im-store";
-import { f7, f7ready } from 'framework7-react';
 
 export default () => {
 
@@ -26,6 +29,8 @@ export default () => {
     },3000);
 
   }
+
+  const [imUserData, setIMUserData] = useState({});
 
   const [popupIMContactsListOpened, setPopupIMContactsListOpened] = useState(false);
 
@@ -75,16 +80,27 @@ export default () => {
     }
 
     const conversationViewOptions: RouteOptions = {
-      animate: true
+      animate: true,
+      props: imGetConversationProps(chat),
     }
 
-    f7.views.main.router.navigate('/about', conversationViewOptions);
+    f7.views.main.router.navigate('/im/conversation/', conversationViewOptions);
 
   }
 
-  const onOpenProfileHandler = (chat) => {
+  const onOpenProfileHandler = (userData: any) => {
 
-    console.log(":::OPEN PROFILE:::", chat);
+    console.log(":::OPEN PROFILE WITH USER DATA:::", userData);
+
+    setIMUserData(userData);
+
+    f7.sheet.open(`im-user-profile-summary`);
+
+  }
+
+  const imGetConversationProps = (chat: any) => {
+
+    return chat;
 
   }
 
@@ -123,7 +139,12 @@ export default () => {
           itemsPerPage={16}
         />
 
-      <IMPanelLeft />      
+      <IMPanelLeft />     
+
+      <IMUserProfileSummary 
+        key={`im-user-profile-summary`} 
+        id={`im-user-profile-summary`}
+        userData={imUserData} /> 
 
     </React.Fragment>
 
