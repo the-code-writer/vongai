@@ -1,21 +1,21 @@
 {
-  "cwd": "C:\\apps\\project-vongai-app",
+  "cwd": "C:\\apps\\projects\\project-vongai\\",
   "type": [
     "capacitor",
     "pwa",
     "web"
   ],
-  "name": "Vongai",
+  "name": "V.O.N.G.A.I",
   "framework": "react",
   "template": "single-view",
   "bundler": "vite",
-  "cssPreProcessor": "scss",
+  "cssPreProcessor": false,
   "theming": {
     "customColor": true,
-    "color": "#7700ff",
+    "color": "#5500ce",
     "darkTheme": false,
     "iconFonts": true,
-    "fillBars": true
+    "fillBars": false
   },
   "customBuild": false,
   "pkg": "vong.ai",
