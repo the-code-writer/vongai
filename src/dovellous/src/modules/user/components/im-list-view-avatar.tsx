@@ -7,7 +7,7 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
     const contextRef = useRef({});
 
     const imageLocalFilename = useMemo(
-        () => `${Snippets.urls.url3hash(avatarSrc)}.png`,
+        () => `${Snippets.urls.url2hash(avatarSrc)}.png`,
         [avatarSrc]
     );
 
@@ -177,7 +177,7 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
     };
 
     useEffect(() => {
-        //const filename = `${Snippets.urls.url3hash(avatarSrc)}.png`;
+        //const filename = `${Snippets.urls.url2hash(avatarSrc)}.png`;
 
         //setImageLocalFilename(filename); 
 

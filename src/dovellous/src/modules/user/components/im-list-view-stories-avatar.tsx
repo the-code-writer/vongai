@@ -9,7 +9,7 @@ export default ({ avatarSrc, elementId, canvasWidth, unseenSegments, totalSegmen
     const contextRef2 = useRef({});
 
     const imageLocalFilename = useMemo(
-        () => `${Snippets.urls.url3hash(avatarSrc)}.png`,
+        () => `${Snippets.urls.url2hash(avatarSrc)}.png`,
         [avatarSrc]
     );
 

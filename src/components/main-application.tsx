@@ -58,7 +58,7 @@ const MainApplication = () => {
         if (f7.device.capacitor) {
           capacitorApp.init(f7);
         }
-        console.log(":: APP THEME INITIALIZED ::", process.env, f7, e);
+        console.log(":: APP THEME INITIALIZED ::", import.meta.env, f7, e);
       },
       darkThemeChange: function (e) {
         console.log(":: APP THEME CHANGED ::", e);
@@ -97,11 +97,11 @@ const MainApplication = () => {
 
       // Generate data for IM Testing
 
-      f7.dovellous.store.StorageContacts.dispatch("syncIMContacts",null);
+      //f7.dovellous.store.StorageContacts.dispatch("syncIMContacts",null);
 
-      f7.dovellous.store.StorageIM.dispatch("insertFakeMessages",null);
+      //f7.dovellous.store.StorageIM.dispatch("insertFakeMessages",null);
 
-      f7.dovellous.store.StorageIM.dispatch("insertFakeStories",null);
+      //f7.dovellous.store.StorageIM.dispatch("insertFakeStories",null);
 
       //f7.dovellous.store.StorageIM.dispatch("insertCalls");
 
@@ -123,7 +123,6 @@ const MainApplication = () => {
   return (
     <React.Fragment>
       {/* <ThemeContextProvider>  */}
-      <ToastContainer/>
       <ErrorBoundary FallbackComponent={errorFallback}>
           <App {...f7params}>      
             <View id="view-home" main tab tabActive url="/" />
