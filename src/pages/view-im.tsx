@@ -90,6 +90,12 @@ export default () => {
 
   }
 
+  const imGetConversationProps = (chat: any) => {
+
+    return chat;
+
+  }
+
   const onOpenProfileHandler = (userData: any) => {
 
     console.log(":::OPEN PROFILE WITH USER DATA:::", userData);
@@ -99,12 +105,29 @@ export default () => {
     f7.sheet.open(`.im-user-profile-summary`);
 
   }
+  const onChatHandler = (userData: any) => {
 
-  const imGetConversationProps = (chat: any) => {
+    console.log(":::ON CHAT HANDLER:::", userData); 
 
-    return chat;
+  };
+  
+  const onVoiceCallHandler = (userData: any) => {
 
-  }
+    console.log(":::ON VOICE CALL HANDLER:::", userData); 
+
+  };
+  
+  const onVideoCallHandler = (userData: any) => {
+
+    console.log(":::ON VIDEO CALL HANDLER:::", userData);
+    
+  };
+  
+  const onContactInfoHandler = (userData: any) => {
+
+    console.log(":::ON CONTACT INFO HANDLER:::", userData);
+
+  };
 
   useEffect(()=>{
 
@@ -146,7 +169,12 @@ export default () => {
       <IMUserProfileSummary 
         key={`im-user-profile-summary`} 
         id={`im-user-profile-summary`}
-        userData={imUserData} /> 
+        userData={imUserData}
+        onChat={onChatHandler}
+        onVoiceCall={onVoiceCallHandler}
+        onVideoCall={onVideoCallHandler}
+        onContactInfo={onContactInfoHandler}
+        /> 
 
         
 

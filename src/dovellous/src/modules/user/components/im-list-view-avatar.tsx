@@ -79,7 +79,7 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
     };
 
     const render = (src: string, canvasWidth: number) => {
-        load(src, canvasWidth, true);
+        load(src, canvasWidth, false);
     };
 
     const load = (
