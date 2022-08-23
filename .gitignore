@@ -29,6 +29,7 @@ node_modules/
 
 # dotenv environment variables file
 .env
+.env.*
 
 # Misc
 .DS_Store
@@ -49,4 +50,5 @@ resources/windows/icon
 resources/windows/splash
 
 # Production build
-# www/
+www/
+!www/index.html
