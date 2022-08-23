@@ -12,6 +12,8 @@ import IMUserProfileSummary from '../dovellous/src/modules/im/sheets/im-user-pro
 
 import { StorageIM, useStorageIM } from "../dovellous/src/modules/im/store/im-store";
 
+import ReactModal from 'react-modal';
+
 export default () => {
 
   const imHomeScreenRef = useRef(null);
@@ -94,7 +96,7 @@ export default () => {
 
     setIMUserData(userData);
 
-    f7.sheet.open(`im-user-profile-summary`);
+    f7.sheet.open(`.im-user-profile-summary`);
 
   }
 
@@ -145,6 +147,8 @@ export default () => {
         key={`im-user-profile-summary`} 
         id={`im-user-profile-summary`}
         userData={imUserData} /> 
+
+        
 
     </React.Fragment>
 

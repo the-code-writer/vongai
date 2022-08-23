@@ -724,7 +724,7 @@ const StorageIM = createStore({
         message.text = faker.lorem.words(7);
         message.badge =  parseInt(faker.random.numeric(1));
         message.time =  faker.date.recent().getTime();
-        message.avatar = `http://34.134.134.114/dev/pix/people/${faker.random.numeric(2)}.png`;
+        message.avatar = `http://localhost/dev/pix/people/${faker.random.numeric(2)}.png`;
         message.isMute = faker.random.numeric(1)==='5'?true:false;
         message.isSent = faker.random.numeric(1)==='6'?true:false;
         message.isGroup = faker.random.numeric(1)==='7'?true:false;
@@ -885,13 +885,13 @@ const StorageIM = createStore({
         const message = {};
 
         message.displayName = `${faker.name.firstName()} ${faker.name.lastName()}`;
-        message.senderName = `${faker.name.firstName()} ${faker.name.lastName()}`;
+        message.senderUsername = `${faker.name.firstName()} ${faker.name.lastName()}`;
         message.senderNumber = `${faker.phone.number()}`;
         message.uuid = faker.unique;
         message.text = faker.lorem.words(7);
         message.badge =  parseInt(faker.random.numeric(1));
         message.time =  faker.date.recent().getTime();
-        message.avatar = `http://34.134.134.114/dev/pix/people/${faker.random.numeric(2)}.png`;
+        message.avatar = `http://localhost/dev/pix/people/${faker.random.numeric(2)}.png`;
         message.isMute = faker.random.numeric(1)==='5'?true:false;
         message.isSent = faker.random.numeric(1)==='6'?true:false;
         message.isGroup = faker.random.numeric(1)==='7'?true:false;
@@ -983,7 +983,7 @@ const StorageIM = createStore({
             story.id = faker.mersenne.rand(9,0);
             story.uuid = faker.unique;
             story.time =  time;
-            story.photo = `http://34.134.134.114/dev/pix/${storyType}/${faker.random.numeric(2)}.png`;
+            story.photo = `http://localhost/dev/pix/${storyType}/${faker.random.numeric(2)}.png`;
             story.text = faker.lorem.words(7);
             story.isSeen = faker.datatype.boolean();
             story.views = [];

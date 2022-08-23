@@ -45,12 +45,12 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
       }
   },[imListChats]);
 
-  const ChatListViewItem = ({ chat, index }): JSX.Element => {
+  const ChatListViewItem = ({ chat, chatIndex }): JSX.Element => {
 
     return <ListItem 
         
-        key={`im-chat-list-item-key-${index}`}
-        id={`im-chat-list-item-key-${index}`}
+        key={`im-chat-list-item-key-${chatIndex}`}
+        id={`im-chat-list-item-key-${chatIndex}`}
         link="#"
         mediaItem
         onClick={() => onOpenMessage(chat)}
@@ -68,7 +68,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
             userOnlineStatus={Snippets.modules.im.getListViewUserOnlineStatus(chat.userOnlineStatus)}
             avatarSrc={chat.avatar}
             canvasWidth={48}
-            elementId={index}
+            elementId={chatIndex}
           />
 
         </div>

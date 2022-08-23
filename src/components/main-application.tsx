@@ -34,7 +34,7 @@ const MainApplication = () => {
     // Get device language
     language: navigator.language,
     // Register service worker (only on production build)
-    serviceWorker: import.meta.env.MODE === 'production' ? {
+    serviceWorker: import.meta.env.PROD ? {
       path: '/service-worker.js',
     } : {},
     // Input settings
@@ -78,18 +78,20 @@ const MainApplication = () => {
     },
 
   };
-  
+      
   useEffect(() => {
 
     f7ready((F7React) => {
-      
+
       if (f7.device.capacitor) {
 
         capacitorApp.init(f7);
 
       }
+
+      console.warn("::::::", import.meta.env);
       
-      if(import.meta.env.MODE !== 'production'){
+      if(!import.meta.env.PROD){
 
         window.F7React = F7React;
 
@@ -126,7 +128,7 @@ const MainApplication = () => {
       <ErrorBoundary FallbackComponent={errorFallback}>
           <App {...f7params}>      
             <View id="view-home" main tab tabActive url="/" />
-          </App>
+         </App>
       </ErrorBoundary>
       {/* </ThemeContextProvider> */}
     </React.Fragment>

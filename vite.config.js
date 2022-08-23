@@ -21,9 +21,6 @@ Object.keys(process.env).forEach((key) => {
 console.warn("::: VITE ENV :::", viteEnv);
 
 export default {
-  alias: {
-    '@': require('path').resolve(__dirname, 'src')
-  },
   //define: viteEnv,
   plugins: [
     reactRefresh(),
