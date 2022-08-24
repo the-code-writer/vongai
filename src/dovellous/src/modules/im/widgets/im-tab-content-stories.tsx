@@ -7,6 +7,7 @@ import {
   SkeletonBlock,
   f7ready,
   Icon,
+  BlockTitle,
 } from "framework7-react";
 
 import Dom7 from "dom7";
@@ -25,36 +26,92 @@ import IMListViewAvatar from "../../user/components/im-list-view-avatar";
 
 import IMListViewStoriesAvatar from "../../user/components/im-list-view-stories-avatar";
 
-export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfile }): JSX.Element => {
+export default ({ id, slug, className, skeletonList, onOpenStatus}): JSX.Element => {
 
-  const [imStoriesLoading, setIMChatsLoading] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imStoriesLoading, false);
+  const [imStoriesLoading, setIMStoriesLoading] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imStoriesLoading, false);
 
-  const [imListChats, setIMListChats] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imListChats, []);
+  const [imStoriesViewed, setIMStoriesViewed] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imStoriesViewed, []);
+  const [imStoriesNotViewed, setIMStoriesNotViewed] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imStoriesNotViewed, []);
+  const [imStoriesMuted, setIMStoriesMuted] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imStoriesMuted, []);
+  const [imMyStories, setIMMyStories] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imMyStories, []);
+
+  const StoryListViewItem = ({story, storyIndex}) : JSX.Element=>{
+
+return (
+  <ListItem
+                key={`im-story-list-item-key-${storyIndex}`}
+                id={`im-story-list-item-key-${storyIndex}`}
+                link="#"
+                onClick={()=>onOpenStatus(story)}
+                title={story.displayName}
+                after={moment(story.time).format('HH:mm')}
+                className={`${story.badge > 5 ? 'has-badge':''} ${story.isMute ? 'is-mute':''}`}
+              >
+
+                <div className="im-list-view-avatar-wrapper" slot="media">
+
+                  <IMListViewStoriesAvatar
+                    avatarSrc={story.avatar}
+                    elementId={storyIndex}
+                    canvasWidth={48}
+                    unseenSegments={story.unseen}
+                    totalSegments={10}
+                    segmentColorSeen={Dom7('html').hasClass('dark')?`rgb(127,127,127)`:`rgb(200,200,200)`}
+                    segmentColorUnSeen={Dom7('html').hasClass('dark')?`rgb(76,255,80)`:`rgb(76,175,80)`}
+                    backgroundColor={Dom7('html').hasClass('dark')?`rgb(28,28,29)`:`rgb(255,255,255)`}
+                    />
+
+                </div>
+
+                <span className="im-list-view-subtitle" slot="subtitle" dangerouslySetInnerHTML={{ __html: Snippets.modules.im.getListViewSubTitle(story) }} />
+
+                {story.badge > 5 && (
+                  
+                <div slot="after" className={"badge im-list-view-after-badge"} >
+                  {story.badge}
+                </div>
+
+                )}
+
+                {story.isMute && (
+                  
+                <div slot="after" className={"im-list-view-after-mute"} >
+                  <Icon ios="f7:speaker_slash_fill" md="f7:speaker_slash_fill" aurora="f7:speaker_slash_fill" />
+                </div>
+
+                )}
+
+              </ListItem>
+)
+
+  };
 
   useEffect(() => {
 
-    console.log(":: USE EFFECT ::imListChats::", imListChats);
+    console.log(":: USE EFFECT ::imListStories::", imStoriesViewed, imStoriesNotViewed, imStoriesMuted, imMyStories);
 
-  }, [imListChats]);
+  }, [imStoriesViewed, imStoriesNotViewed, imStoriesMuted, imMyStories]);
 
   return (
 
     <Page id={`${id}`} name={`${slug}`} className={`page ${className}`}>
 
-      <List className="searchbar-not-found im-tab-content-chats-searchbar-not-found">
+      <List className="searchbar-not-found im-tab-content-stories-searchbar-not-found">
         <div style={{ textAlign: "center", marginTop: "64px" }}>
-          No chats found
+          No stories found
         </div>
       </List>
       
-      <List
-        mediaList
-        noChevron
-        className="search-list searchbar-found im-tab-content-chats-searchbar-found no-hairlines no-hairlines-between"
-      >
+  
         {imStoriesLoading ? (
+
+          <List
+          mediaList
+          noChevron
+          className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
+          >
           
-          [...Array(skeletonList.count).keys()].map((n) => (
+          {[...Array(skeletonList.count).keys()].map((n) => (
 
             <ListItem
               key={n}
@@ -75,71 +132,91 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
 
             </ListItem>
 
-          ))
+          ))}
+
+          </List>
         
         ):(
+
+          <React.Fragment>
+
+          {imStoriesNotViewed.length > 0 && (
+
+            <>
           
-          imListChats.length > 0 ? (
+            <BlockTitle>Not Viewed</BlockTitle>
+
+            <List
+              mediaList
+              noChevron
+              className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
+            >
           
-            imListChats.reverse().map((chat: ListViewMessage, index: number) => (
+            {imStoriesNotViewed.reverse().map((story: ListViewMessage, storyIndex: number) => (
 
-              <ListItem
-                key={`im-chat-list-item-key-${index}`}
-                id={`im-chat-list-item-key-${index}`}
-                link="#"
-                onClick={()=>onOpenMessage(chat)}
-                title={chat.displayName}
-                after={moment(chat.time).format('HH:mm')}
-                className={`${chat.badge > 5 ? 'has-badge':''} ${chat.isMute ? 'is-mute':''}`}
-              >
+              <StoryListViewItem story={story} storyIndex={storyIndex} />
 
-                <div className="im-list-view-avatar-wrapper" slot="media" onTouchStart={()=>onOpenProfile(chat)}>
-
-                  <IMListViewStoriesAvatar
-                    avatarSrc={chat.avatar}
-                    elementId={index}
-                    canvasWidth={48}
-                    unseenSegments={chat.unseen}
-                    totalSegments={10}
-                    segmentColorSeen={Dom7('html').hasClass('dark')?`rgb(127,127,127)`:`rgb(200,200,200)`}
-                    segmentColorUnSeen={Dom7('html').hasClass('dark')?`rgb(76,255,80)`:`rgb(76,175,80)`}
-                    backgroundColor={Dom7('html').hasClass('dark')?`rgb(28,28,29)`:`rgb(255,255,255)`}
-                    />
-
-                </div>
-
-                <span className="im-list-view-subtitle" slot="subtitle" dangerouslySetInnerHTML={{ __html: Snippets.modules.im.getListViewSubTitle(chat) }} />
-
-                {chat.badge > 5 && (
-                  
-                <div slot="after" className={"badge im-list-view-after-badge"} >
-                  {chat.badge}
-                </div>
-
-                )}
-
-                {chat.isMute && (
-                  
-                <div slot="after" className={"im-list-view-after-mute"} >
-                  <Icon ios="f7:speaker_slash_fill" md="f7:speaker_slash_fill" aurora="f7:speaker_slash_fill" />
-                </div>
-
-                )}
-
-              </ListItem>
-
-            ))
+            ))}
+            
+            </List>
+            
+            </>
           
-          ):(
+          )}
 
-            <h2>Empty Chats</h2>
+          {imStoriesViewed.length > 0 && (
 
-          ))
+            <>
           
-        }
+            <BlockTitle>Viewed</BlockTitle>
 
-      </List>
+            <List
+              mediaList
+              noChevron
+              className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
+            >
+          
+            {imStoriesViewed.reverse().map((story: ListViewMessage, storyIndex: number) => (
 
+              <StoryListViewItem story={story} storyIndex={storyIndex} />
+
+            ))}
+            
+            </List>
+            
+            </>
+          
+          )}
+
+          {imStoriesMuted.length > 0 && (
+
+            <>
+          
+            <BlockTitle>Muted</BlockTitle>
+
+            <List
+              mediaList
+              noChevron
+              className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
+              style={{opacity: 0.75}}
+            >
+          
+            {imStoriesMuted.reverse().map((story: ListViewMessage, storyIndex: number) => (
+
+              <StoryListViewItem story={story} storyIndex={storyIndex} />
+
+            ))}
+            
+            </List>
+            
+            </>
+          
+          )}
+
+          </React.Fragment>
+
+        )}
+ 
     </Page>
 
   );

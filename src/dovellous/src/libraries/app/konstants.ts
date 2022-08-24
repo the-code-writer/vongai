@@ -239,7 +239,11 @@ const K = {
 			dataStores: {
 				imChatsLoading: 'imChatsLoading',
 				imListChats: 'imListChats',
-				imStoriesLoading: 'imStoriesLoading'
+				imStoriesLoading: 'imStoriesLoading',
+				imStoriesViewed: 'imStoriesViewed',
+				imStoriesNotViewed: 'imStoriesNotViewed',
+				imStoriesMuted: 'imStoriesMuted',
+				imMyStories: 'imMyStories',
 			}
 		}
 	}

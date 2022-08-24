@@ -20,10 +20,8 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
             path,
             fileName,
             (fileExists: boolean) => {
-                console.log(
-                    "::: saveImageToLocalFileSystem ::: PATH EXIST :::",
-                    fileExists
-                );
+                
+                //console.log( "::: saveImageToLocalFileSystem ::: PATH EXIST :::", fileExists );
 
                 if (fileExists) {
                     Snippets.files.lib.saveFile(
@@ -79,7 +77,7 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
     };
 
     const render = (src: string, canvasWidth: number) => {
-        load(src, canvasWidth, false);
+        load(src, canvasWidth, true);
     };
 
     const load = (
@@ -105,10 +103,8 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                         imageLocalFilename,
                         (imageData: any) => {
                             if (imageData) {
-                                console.log(
-                                    "::IMAGE DATA  :: loadImageFromLocalFileSystem ::",
-                                    imageData.data
-                                );
+
+                                console.log( "::IMAGE DATA  :: loadImageFromLocalFileSystem ::", imageData.data );
 
                                 contextRef.current.putImageData(
                                     imageData.data,
@@ -123,10 +119,7 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                         }
                     );
                 } catch (e) {
-                    console.warn(
-                        "::IMAGE DATA ERROR :: loadImageFromLocalFileSystem ::",
-                        e
-                    );
+                    console.warn( "::IMAGE DATA ERROR :: loadImageFromLocalFileSystem ::", e );
                 }
 
                 if (!locallyLoaded) {
@@ -145,10 +138,7 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                                     K.Files.MimeTypes.Images.PNG
                                 );
 
-                                console.log(
-                                    "::IMAGE DATA :: saveImageToLocalFileSystem ::",
-                                    imageData
-                                );
+                                //console.log( "::IMAGE DATA :: saveImageToLocalFileSystem ::", imageData );
 
                                 saveImageToLocalFileSystem(
                                     K.Files.Paths.IM_DISPLAY_PROFILE_IMAGE,
@@ -156,10 +146,9 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                                     imageData
                                 );
                             } catch (e) {
-                                console.log(
-                                    "::IMAGE DATA ERROR :: saveImageToLocalFileSystem ::",
-                                    e
-                                );
+
+                                //console.log( "::IMAGE DATA ERROR :: saveImageToLocalFileSystem ::", e );
+
                             }
                         }
                     };
