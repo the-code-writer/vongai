@@ -83,6 +83,8 @@ export default () => {
 
     console.log(":::ON VOICE CALL HANDLER:::", userData); 
 
+    f7.sheet.open('.im-voice-call-sheet-modal');
+
   };
   
   const onVideoCallHandler = (userData: any) => {

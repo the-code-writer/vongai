@@ -152,17 +152,29 @@
     color: var(--f7-message-received-text-color);
     background: var(--f7-message-received-bg-color);
   }
+
+  .im-voice-call-sheet-modal{
+
+    background-color: #000000;
+    width: 100vw;
+    height: 100vh;
+
+  }
   
 
 .im-contact-info-sheet-modal{
   height: calc(100vw + calc(var(--f7-block-margin-vertical) * 2) + 100px +  calc( var(--f7-navbar-height) + var(--f7-safe-area-top)));
+  display: block;
+    background-size: 140vw;
+    background-position-y: -150vw;
+    background-position-x: center;
 
   .page-content{
       padding-top: 0px;
-      background-color: #ffffffe5;
+      background-color: rgba(255,255,255,0.5);
       background-position: center center;
       background-size: contain;
-      backdrop-filter: blur(50px);
+      backdrop-filter: blur(25px);
   }
   
   .button {
