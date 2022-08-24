@@ -157,33 +157,129 @@ div.m-b-0.fab>a {
   width: 100vw;
   height: 100vh;
 
-  .sheet-modal-inner .page-content {
-    position: relative;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    align-content: space-between;
-    flex-direction: column;
-    flex-wrap: nowrap;
+  background-image: url(https://c4.wallpaperflare.com/wallpaper/65/236/842/space-vertical-portrait-display-iss-wallpaper-preview.jpg);
+  background-image: url(https://www.fonewalls.com/wp-content/uploads/2019/12/Full-Moon-Night-Background-Wallpaper-720x1600-1.jpg);
+  background-image: url(https://images.pexels.com/photos/544268/pexels-photo-544268.jpeg);
+  background-size: cover;
+  background-position: center center;
 
-    .call-controls {
+  .sheet-modal-inner{
+    margin: 0 32px;
+
+    .videos{
+        width: 100vw;
+        height: 100vh;
+        /*background: url(https://images.ctfassets.net/lh3zuq09vnm2/yBDals8aU8RWtb0xLnPkI/19b391b…/How_tracking_user_behavior_on_your_website_can_improve_customer_experience.png);*/
+        background-size: cover;
+        background-position: center;
+        background-color: rgb(0,0,255, 0.6);
+        margin: 0 -32px;
+        position: fixed;
+        opacity: 1;
+
+        .remote{
+
+          position: absolute;
+        
+          &.not-connected{
+            width: 1;
+            height: 1;
+            background-color: rgb(255,0,0, 0.6);
+          }
+
+          &.connected{
+            width: 100vw;
+            height: 100vh;
+            background-color: rgb(0,255,0, 1);
+          }
+
+        }
+
+        .local{
+          
+          position: absolute;
+          border-radius: 10px;
+        
+          &.not-connected{
+            width: 100vw;
+            height: 100vh;
+            background-color: rgb(255,0,255, 0.6);
+          }
+
+          &.connected{
+            width: 100%;
+            max-width: 28vw;
+            height: 49.7vw;
+            background-color: rgb(255,255,0, 1);
+            top: 24px;
+            left: 24px;
+          }
+
+        }
+
+    }
+
+    .page-content {
       position: relative;
       box-sizing: border-box;
       display: flex;
-      justify-content: space-evenly;
+      justify-content: space-between;
       align-items: center;
-      width: 100%;
-      background-color: #00000094;
-      padding: 37px 0;
-    }
+      align-content: space-between;
+      flex-direction: column;
+      flex-wrap: nowrap;
 
-    a.im-solid-rounded{
-      border-radius: 50% !important;
-      width: 56px;
-      height: 56px;
-    }
+      .call-remote-user {
 
+        margin-top: calc(calc(100vw - 33vw) / 2);
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex-direction: column;
+        align-content: center;
+        flex-wrap: nowrap;
+
+        img {
+          border: 5px solid rgba(255,255,255,0.75);
+          border-radius: 50%;
+          width: 33vw;
+          height: 33vw;
+        }
+
+        .block-title {
+          margin: auto;
+        }
+
+        .block-title.block-title-large {
+          margin: 24px auto;
+        }
+
+      }
+
+      .call-actions{
+        position: sticky;
+      }
+
+      .call-controls {
+        position: relative;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        width: 100%;
+        background-color: #00000094;
+        padding: 25px 0;
+        border-radius: 50px;
+      }
+
+      a.im-solid-rounded{
+        border-radius: 50% !important;
+        width: 48px;
+        height: 48px;
+      }
+
+
+    }
 
   }
 
