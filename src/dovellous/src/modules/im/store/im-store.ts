@@ -281,12 +281,12 @@ const StorageIM = createStore({
       return state.imStoriesViewed;
     },
 
-    imListStoriesNotViewed({ state }) {
-      return state.imListStoriesNotViewed;
+    imStoriesNotViewed({ state }) {
+      return state.imStoriesNotViewed;
     },
 
-    imListStoriesMuted({ state }) {
-      return state.imListStoriesMuted;
+    imStoriesMuted({ state }) {
+      return state.imStoriesMuted;
     },
 
     imMyStories({ state }) {
@@ -429,15 +429,19 @@ const StorageIM = createStore({
     },
 
     addIMStoriesViewed({ state }, story) {
-      state.imStoriesViewed = [...state.imStoriesViewed, story];
+      const _currentStoriesObj = state.imStoriesViewed;
+      _currentStoriesObj[story.displayname] = story.stories;
+      state.imStoriesViewed = _currentStoriesObj;
     },
 
-    imStoriesNotViewed({ state }, data) {
+    imStoriesNotViewed({ state }, data) {      
       state.imStoriesNotViewed = data;
     },
 
     addIMStoriesNotViewed({ state }, story) {
-      state.imStoriesNotViewed = [...state.imStoriesNotViewed, story];
+      const _currentStoriesObj = state.imStoriesNotViewed;
+      _currentStoriesObj[story.displayname] = story.stories;
+      state.imStoriesNotViewed = _currentStoriesObj;
     },
 
     imStoriesMuted({ state }, data) {
@@ -445,15 +449,19 @@ const StorageIM = createStore({
     },
 
     addIMStoriesMuted({ state }, story) {
-      state.imStoriesMuted = [...state.imStoriesMuted, story];
+      const _currentStoriesObj = state.imStoriesMuted;
+      _currentStoriesObj[story.displayname] = story.stories;
+      state.imStoriesMuted = _currentStoriesObj;
     },
 
-    imMyStoriesMuted({ state }, data) {
+    imMyStories({ state }, data) {
       state.imMyStories = data;
     },
 
     addIMMyStories({ state }, story) {
-      state.imMyStories = [...state.imMyStories, story];
+      const _currentStoriesObj = state.imMyStories;
+      _currentStoriesObj[story.displayName] = story.stories;
+      state.imMyStories = _currentStoriesObj;
     },
 
     // IM Calls
@@ -910,7 +918,7 @@ const StorageIM = createStore({
 
     },
 
-    insertFakeStories({ dispatch }) {
+    insertFakeStories({ state, dispatch }) {
 
       if(true){
 
@@ -977,12 +985,21 @@ const StorageIM = createStore({
 
             }
 
-            const story = {};
+            const story = {
+              title: '',
+              id: 0,
+              uuid: '',
+              time: 0,
+              photo: '',
+              text: '',
+              isSeen: false,
+              views: [],
+            };
 
             story.title = `${storyCreator}`;
             story.id = faker.mersenne.rand(9,0);
             story.uuid = faker.unique;
-            story.time =  time;
+            story.time =  faker.date.recent().getTime();
             story.photo = `http://localhost:8088/dev/pix/${storyType}/${faker.random.numeric(2)}.png`;
             story.text = faker.lorem.words(7);
             story.isSeen = faker.datatype.boolean();
@@ -992,21 +1009,46 @@ const StorageIM = createStore({
 
         }
 
-        [...Array(faker.random.numeric(1)).keys()].map((n) => {
+        let time='';
 
-          const storyCreator = `${faker.name.firstName()} ${faker.name.lastName()}`;
+        [...Array(faker.mersenne.rand(40,10)).keys()].map((n1) => {
 
-          const time = faker.date.recent().getTime();
+          const _storyCreator = `${faker.name.firstName()} ${faker.name.lastName()}`;
 
-          const storiesPayload = {};
+          time = `${faker.date.recent().getTime()}_${n1}_${faker.mersenne.rand(99,10)}`;
 
-          [...Array(faker.random.numeric(1)).keys()].map((n) => {
+          const storiesPayload = {
+            displayPicture: '',
+            displayName: '',
+            stories: {},
+            totalStories: 0,
+            seenStories: 0,
+          };
 
-            storiesPayload[`S${time}_{${n}}`] = getStory(storyCreator);
+          [...Array(faker.mersenne.rand(15,5)).keys()].map((n2) => {
+
+            const _storyKey = `S${time}_${n2}`;
+
+            const _story = getStory(_storyCreator);
+
+            if(n2===0){
+              storiesPayload.displayPicture = _story.photo;
+            }
+
+            if(_story.isSeen){
+              storiesPayload.seenStories++;
+            }
+
+            storiesPayload.totalStories++;
+
+            storiesPayload.displayName = _storyCreator;
+            storiesPayload.stories[_storyKey] = _story;
 
           });
 
-          const randInt = faker.mersenne.rand(2,0);
+          const randInt = faker.mersenne.rand(3,0);          
+          
+          console.log('::: STORIES PAYLOAD ::: ####', randInt, storiesPayload);
 
           switch(randInt){
 
@@ -1032,19 +1074,48 @@ const StorageIM = createStore({
             
           }
 
-          console.log(":::-STORIES-:::", storiesPayload);
+        });
+
+        const myStoriesPayload = {
+          displayPicture: "",
+          displayName: "Me",
+          stories: {},
+          totalStories: 0,
+          seenStories: 0,
+        };
+
+        time = `${faker.date.recent().getTime()}_${faker.mersenne.rand(99,10)}`;
+
+        [...Array(faker.mersenne.rand(7,3)).keys()].map((n3) => {
+
+          const _storyCreator = "Me";
+
+          const _story = getStory(_storyCreator);
+
+          const _storyKey = `M${time}_${n3}`;
+
+          if(n3===0){
+            myStoriesPayload.displayPicture = _story.photo;
+          }
+
+          if(_story.isSeen){
+            myStoriesPayload.seenStories++;
+          }
+
+          myStoriesPayload.totalStories++;
+
+          myStoriesPayload.displayName = _storyCreator;
+          myStoriesPayload.stories[_storyKey] = _story;
+
+          dispatch('addIMMyStories', myStoriesPayload);
 
         });
 
-        [...Array(faker.random.numeric(1)).keys()].map((n) => {
+        setTimeout(()=>{
 
-          const myStory = getStory('Me');
+          console.log("::  >>> IM STORIES <<< ::", state.imStoriesViewed, state.imStoriesNotViewed, state.imStoriesMuted, state.imMyStories);
 
-          dispatch('addIMMyStories', myStory);
-
-          console.log(":::-STORIES-:::", myStory);
-
-        });
+        },4000);
 
 
       }

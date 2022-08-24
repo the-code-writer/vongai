@@ -110,6 +110,7 @@ export default () => {
     f7ready((framework7IO) => {
 
       StorageIM.dispatch('insertFakeMessages', null);
+      StorageIM.dispatch('insertFakeStories', null);
 
     });
 

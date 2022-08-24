@@ -14,19 +14,15 @@ import Dom7 from "dom7";
 
 import moment from 'moment';
 
-import InfiniteScroll from "react-infinite-scroller";
+import { K, Snippets } from "../../../libraries/app/helpers";
 
-import {K, Snippets} from "../../../libraries/app/helpers";
-
-import {ListViewMessage} from '../../../libraries/intefaces/im';
+import { ListViewMessage } from '../../../libraries/intefaces/im';
 
 import { useStorageIM } from "../store/im-store";
 
-import IMListViewAvatar from "../../user/components/im-list-view-avatar";
-
 import IMListViewStoriesAvatar from "../../user/components/im-list-view-stories-avatar";
 
-export default ({ id, slug, className, skeletonList, onOpenStatus}): JSX.Element => {
+export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Element => {
 
   const [imStoriesLoading, setIMStoriesLoading] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imStoriesLoading, false);
 
@@ -35,54 +31,37 @@ export default ({ id, slug, className, skeletonList, onOpenStatus}): JSX.Element
   const [imStoriesMuted, setIMStoriesMuted] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imStoriesMuted, []);
   const [imMyStories, setIMMyStories] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imMyStories, []);
 
-  const StoryListViewItem = ({story, storyIndex}) : JSX.Element=>{
+  const StoryListViewItem = ({ story, storyIndex }): JSX.Element => {
 
-return (
-  <ListItem
-                key={`im-story-list-item-key-${storyIndex}`}
-                id={`im-story-list-item-key-${storyIndex}`}
-                link="#"
-                onClick={()=>onOpenStatus(story)}
-                title={story.displayName}
-                after={moment(story.time).format('HH:mm')}
-                className={`${story.badge > 5 ? 'has-badge':''} ${story.isMute ? 'is-mute':''}`}
-              >
+    return (
+      <ListItem
+        key={`im-story-list-item-key-${storyIndex}`}
+        id={`im-story-list-item-key-${storyIndex}`}
+        link="#"
+        onClick={() => onOpenStatus(story)}
+        title={story.displayName}
+        subtitle={moment(story.time).format('DD MMM YYYY, HH:mm')}
+        className={`${story.badge > 5 ? 'has-badge' : ''} ${story.isMute ? 'is-mute' : ''}`}
+      >
 
-                <div className="im-list-view-avatar-wrapper" slot="media">
+        <div className="im-list-view-avatar-wrapper" slot="media">
 
-                  <IMListViewStoriesAvatar
-                    avatarSrc={story.avatar}
-                    elementId={storyIndex}
-                    canvasWidth={48}
-                    unseenSegments={story.unseen}
-                    totalSegments={10}
-                    segmentColorSeen={Dom7('html').hasClass('dark')?`rgb(127,127,127)`:`rgb(200,200,200)`}
-                    segmentColorUnSeen={Dom7('html').hasClass('dark')?`rgb(76,255,80)`:`rgb(76,175,80)`}
-                    backgroundColor={Dom7('html').hasClass('dark')?`rgb(28,28,29)`:`rgb(255,255,255)`}
-                    />
+          <IMListViewStoriesAvatar
+            avatarSrc={story.avatar}
+            elementId={storyIndex}
+            canvasWidth={48}
+            unseenSegments={story.unseen}
+            totalSegments={10}
+            segmentColorSeen={Dom7('html').hasClass('dark') ? `rgb(127,127,127)` : `rgb(200,200,200)`}
+            segmentColorUnSeen={Dom7('html').hasClass('dark') ? `rgb(76,255,80)` : `rgb(76,175,80)`}
+            backgroundColor={Dom7('html').hasClass('dark') ? `rgb(28,28,29)` : `rgb(255,255,255)`}
+          />
 
-                </div>
+        </div>
 
-                <span className="im-list-view-subtitle" slot="subtitle" dangerouslySetInnerHTML={{ __html: Snippets.modules.im.getListViewSubTitle(story) }} />
+      </ListItem>
 
-                {story.badge > 5 && (
-                  
-                <div slot="after" className={"badge im-list-view-after-badge"} >
-                  {story.badge}
-                </div>
-
-                )}
-
-                {story.isMute && (
-                  
-                <div slot="after" className={"im-list-view-after-mute"} >
-                  <Icon ios="f7:speaker_slash_fill" md="f7:speaker_slash_fill" aurora="f7:speaker_slash_fill" />
-                </div>
-
-                )}
-
-              </ListItem>
-)
+    )
 
   };
 
@@ -101,16 +80,16 @@ return (
           No stories found
         </div>
       </List>
-      
-  
-        {imStoriesLoading ? (
 
-          <List
+
+      {imStoriesLoading ? (
+
+        <List
           mediaList
           noChevron
           className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
-          >
-          
+        >
+
           {[...Array(skeletonList.count).keys()].map((n) => (
 
             <ListItem
@@ -134,89 +113,89 @@ return (
 
           ))}
 
-          </List>
-        
-        ):(
+        </List>
 
-          <React.Fragment>
+      ) : (
+
+        <React.Fragment>
 
           {imStoriesNotViewed.length > 0 && (
 
             <>
-          
-            <BlockTitle>Not Viewed</BlockTitle>
 
-            <List
-              mediaList
-              noChevron
-              className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
-            >
-          
-            {imStoriesNotViewed.reverse().map((story: ListViewMessage, storyIndex: number) => (
+              <BlockTitle>Not Viewed</BlockTitle>
 
-              <StoryListViewItem story={story} storyIndex={storyIndex} />
+              <List
+                mediaList
+                noChevron
+                className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
+              >
 
-            ))}
-            
-            </List>
-            
+                {imStoriesNotViewed.reverse().map((story: ListViewMessage, storyIndex: number) => (
+
+                  <StoryListViewItem story={story} storyIndex={storyIndex} />
+
+                ))}
+
+              </List>
+
             </>
-          
+
           )}
 
           {imStoriesViewed.length > 0 && (
 
             <>
-          
-            <BlockTitle>Viewed</BlockTitle>
 
-            <List
-              mediaList
-              noChevron
-              className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
-            >
-          
-            {imStoriesViewed.reverse().map((story: ListViewMessage, storyIndex: number) => (
+              <BlockTitle>Viewed</BlockTitle>
 
-              <StoryListViewItem story={story} storyIndex={storyIndex} />
+              <List
+                mediaList
+                noChevron
+                className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
+              >
 
-            ))}
-            
-            </List>
-            
+                {imStoriesViewed.reverse().map((story: ListViewMessage, storyIndex: number) => (
+
+                  <StoryListViewItem story={story} storyIndex={storyIndex} />
+
+                ))}
+
+              </List>
+
             </>
-          
+
           )}
 
           {imStoriesMuted.length > 0 && (
 
             <>
-          
-            <BlockTitle>Muted</BlockTitle>
 
-            <List
-              mediaList
-              noChevron
-              className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
-              style={{opacity: 0.75}}
-            >
-          
-            {imStoriesMuted.reverse().map((story: ListViewMessage, storyIndex: number) => (
+              <BlockTitle>Muted</BlockTitle>
 
-              <StoryListViewItem story={story} storyIndex={storyIndex} />
+              <List
+                mediaList
+                noChevron
+                className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
+                style={{ opacity: 0.75 }}
+              >
 
-            ))}
-            
-            </List>
-            
+                {imStoriesMuted.reverse().map((story: ListViewMessage, storyIndex: number) => (
+
+                  <StoryListViewItem story={story} storyIndex={storyIndex} />
+
+                ))}
+
+              </List>
+
             </>
-          
+
           )}
 
-          </React.Fragment>
+        </React.Fragment>
 
-        )}
- 
+      )}
+
     </Page>
 
   );
