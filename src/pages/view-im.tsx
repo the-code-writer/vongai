@@ -10,9 +10,9 @@ import IMPanelLeft from "../dovellous/src/modules/im/panels/im-panel-left";
 
 import IMUserProfileSummary from '../dovellous/src/modules/im/sheets/im-user-profile-summary';
 
-import { StorageIM, useStorageIM } from "../dovellous/src/modules/im/store/im-store";
+import IMModalsWrapper from '../dovellous/src/modules/im/modals/im-modals-wrapper';
 
-import ReactModal from 'react-modal';
+import { StorageIM, useStorageIM } from "../dovellous/src/modules/im/store/im-store";
 
 export default () => {
 
@@ -54,39 +54,7 @@ export default () => {
 
     console.log(":::OPEN MESSAGE:::", chat);
 
-    interface RouteOptions {
-      /** whether the page should be animated or not (overwrites default router settings) */
-      animate?: boolean;
-      /** whether the page should be saved in router history */
-      history?: boolean;
-      /** whether the page should be saved in browser state. In case you are using browserHistory, then you can pass here false to prevent route getting in browser history */
-      browserHistory?: boolean;
-      /** replace the current page with the new one from route */
-      reloadCurrent?: boolean;
-      /** replace the previous page in history with the new one from route */
-      reloadPrevious?: boolean;
-      /** load new page and remove all previous pages from history and DOM */
-      reloadAll?: boolean;
-      /** previous pages history will be cleared after reloading/navigate to the specified route */
-      clearPreviousHistory?: boolean;
-      /** If set to `true` then it will ignore if such URL in cache and reload it using XHR again */
-      ignoreCache?: boolean;
-      /** if set to `true` then it will ignore previous page in history and load specified one */
-      force?: boolean;
-      /** pass React/Vue component props */
-      props?: object;
-      /** custom page transition name */
-      transition?: string;
-      /** Allows open page route as modal or panel */
-      openIn?: 'popup' | 'loginScreen' | 'sheet' | 'popover' | 'panel';
-    }
-
-    const conversationViewOptions: RouteOptions = {
-      animate: true,
-      props: imGetConversationProps(chat),
-    }
-
-    f7.views.main.router.navigate('/im/conversation/', conversationViewOptions);
+    f7.views.main.router.navigate(`/im/conversation/0/${chat.uuid}/`);
 
   }
 
@@ -176,7 +144,7 @@ export default () => {
         onContactInfo={onContactInfoHandler}
         /> 
 
-        
+        <IMModalsWrapper />        
 
     </React.Fragment>
 
