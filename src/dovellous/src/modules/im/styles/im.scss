@@ -164,7 +164,7 @@ div.m-b-0.fab>a {
   background-position: center center;
 
   .sheet-modal-inner{
-    margin: 0 32px;
+    margin: 0 16px;
 
     .videos{
         width: 100vw;
@@ -173,7 +173,7 @@ div.m-b-0.fab>a {
         background-size: cover;
         background-position: center;
         background-color: rgb(0,0,255, 0.6);
-        margin: 0 -32px;
+        margin: 0 -16px;
         position: fixed;
         opacity: 1;
 
@@ -184,13 +184,13 @@ div.m-b-0.fab>a {
           &.not-connected{
             width: 1;
             height: 1;
-            background-color: rgb(255,0,0, 0.6);
+            background-color: rgb(255,0,0, 0.2);
           }
 
           &.connected{
             width: 100vw;
             height: 100vh;
-            background-color: rgb(0,255,0, 1);
+            background-color: rgb(0,255,0, 0.2);
           }
 
         }
@@ -203,16 +203,16 @@ div.m-b-0.fab>a {
           &.not-connected{
             width: 100vw;
             height: 100vh;
-            background-color: rgb(255,0,255, 0.6);
+            background-color: rgb(255,0,255, 0.2);
           }
 
           &.connected{
             width: 100%;
             max-width: 28vw;
-            height: 49.7vw;
-            background-color: rgb(255,255,0, 1);
-            top: 24px;
-            left: 24px;
+            height: 50vw;
+            background-color: rgb(255,255,0, 0.2);
+            top: 16px;
+            left: 16px;
           }
 
         }
@@ -251,24 +251,72 @@ div.m-b-0.fab>a {
         }
 
         .block-title.block-title-large {
-          margin: 24px auto;
+          margin: 16px auto;
         }
 
       }
 
       .call-actions{
         position: sticky;
+
+        .fab-buttons a{
+          width: var(--f7-fab-size);
+          height: var(--f7-fab-size);
+          border-radius: calc(var(--f7-fab-size) / 2);
+        }
+
+        .fab-buttons-center a:nth-child(1) {
+          left: 50%;
+          margin-left: calc(-1 * var(--f7-fab-size) / 2);
+          bottom: 100%;
+          margin-bottom: 32px;
+          transform: translateY(-32px) scale(0.3);
+          transform-origin: center bottom;
+          transition-delay: 10ms;
+        }
+
+        .fab-buttons-center a:nth-child(2) {
+          left: 100%;
+          margin-top: calc(-1 * var(--f7-fab-size) / 2);
+          top: 50%;
+          margin-left: 32px;
+          transform: translateX(-32px) scale(0.3);
+          transform-origin: left center;
+          transition-delay: 100ms;
+        }
+
+        .fab-buttons-center a:nth-child(3) {
+          left: 50%;
+          margin-left: calc(-1 * var(--f7-fab-size) / 2);
+          top: 100%;
+          margin-top: 32px;
+          transform: translateY(32px) scale(0.3);
+          transform-origin: center top;
+          transition-delay: 200ms;
+        }
+
+        .fab-buttons-center a:nth-child(4) {
+          right: 100%;
+          margin-top: calc(-1 * var(--f7-fab-size) / 2);
+          top: 50%;
+          margin-right: 32px;
+          transform: translateX(32px) scale(0.3);
+          transform-origin: right center;
+          transition-delay: 300ms;
+        }
+
       }
 
       .call-controls {
         position: relative;
         box-sizing: border-box;
         display: flex;
-        justify-content: space-evenly;
+        justify-content: space-around;
         align-items: center;
         width: 100%;
-        background-color: #00000094;
-        padding: 25px 0;
+        background-color: rgba(0, 0, 0, 0.25);
+        backdrop-filter: blur(16px);
+        padding: 16px 0;
         border-radius: 50px;
       }
 

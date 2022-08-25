@@ -190,6 +190,22 @@ export default ({ id, className, userData, isVideoCall,
 
     };
 
+    const onActionsAddParticipantHandler = () => {
+        
+    }
+
+    const onActionsChatHandler = () => {
+        
+    }
+
+    const onActionsHoldHandler = () => {
+        
+    }
+
+    const onActionsKeypadHandler = () => {
+        
+    }
+
     const client: IAgoraRTCClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
     const rtc = {
         // For the local client.
@@ -253,11 +269,19 @@ export default ({ id, className, userData, isVideoCall,
                         <Fab position="center-center"  >
                             <Icon ios="f7:plus" aurora="f7:plus" md="material:add"></Icon>
                             <Icon ios="f7:xmark" aurora="f7:xmark" md="material:close"></Icon>
-                            <FabButtons position="center">
-                                <FabButton>1</FabButton>
-                                <FabButton>2</FabButton>
-                                <FabButton>3</FabButton>
-                                <FabButton>4</FabButton>
+                            <FabButtons  position="center" color="black">
+                                <FabButton onClick={onActionsKeypadHandler}>
+                                    <Icon ios="f7:circle_grid_3x3_fill" aurora="f7:circle_grid_3x3_fill" md="material:dialpad"/>
+                                </FabButton>
+                                <FabButton onClick={onActionsAddParticipantHandler}>
+                                    <Icon ios="f7:person_badge_plus_fill" aurora="f7:person_badge_plus_fill" md="material:person_add_alt_1"/>
+                                </FabButton>
+                                <FabButton onClick={onActionsHoldHandler}>
+                                    <Icon ios="f7:pause_circle" aurora="f7:pause_circle" md="material:pause_circle_outline"/>
+                                </FabButton>
+                                <FabButton onClick={onActionsChatHandler}>
+                                    <Icon ios="f7:text_bubble_fill" aurora="f7:text_bubble_fill" md="material:chat"/>
+                                </FabButton>
                             </FabButtons>
                         </Fab>
                     </div>
@@ -270,7 +294,7 @@ export default ({ id, className, userData, isVideoCall,
                             iconIos={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
                             iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
                             iconAurora={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
-                            iconSize={32} 
+                            iconSize={24} 
                         />
                         <Button outline large
                             id="im-solid-rounded-mute"
@@ -280,7 +304,7 @@ export default ({ id, className, userData, isVideoCall,
                             iconIos={`f7:${!isMuteOn?'mic_fill':'mic_slash_fill'}`}
                             iconMd={`material:${!isMuteOn?'mic':'mic_off'}`}
                             iconAurora={`f7:${!isMuteOn?'mic_fill':'mic_slash_fill'}`}
-                            iconSize={32} 
+                            iconSize={24} 
                         />
                         <Button outline large
                             id="im-solid-rounded-camera"
@@ -290,7 +314,7 @@ export default ({ id, className, userData, isVideoCall,
                             iconIos={`f7:${isCameraOn?'videocam_fill':'videocam'}`}
                             iconMd={`material:${isCameraOn?'videocam':'videocam_off'}`}
                             iconAurora={`f7:${isCameraOn?'videocam_fill':'videocam'}`}
-                            iconSize={32} 
+                            iconSize={24} 
                         />
                         <Button outline large
                             id="im-solid-rounded-hangup"
@@ -300,7 +324,7 @@ export default ({ id, className, userData, isVideoCall,
                             iconIos={`f7:${isLoudSpeakerOn?'phone_down_fill':'phone_down'}`}
                             iconMd={`material:${isLoudSpeakerOn?'phone_enabled':'phone_enabled'}`}
                             iconAurora={`f7:${isLoudSpeakerOn?'phone_down_fill':'phone_down'}`}
-                            iconSize={32} 
+                            iconSize={24} 
                         />
                     </Block>
             </PageContent>
