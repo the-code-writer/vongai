@@ -482,6 +482,16 @@ const Snippets = {
 
     }
 
+  },
+
+  errors: {
+
+    getErrorFromCode: (code: number) => {
+      
+      return `ERROR: ${code}`;
+
+    },
+
   }
 
 }

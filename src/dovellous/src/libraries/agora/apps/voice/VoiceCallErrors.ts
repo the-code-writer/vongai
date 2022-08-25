@@ -1,21 +1,34 @@
-export abstract class NestedError extends Error {
-  readonly inner?: Error;
-  readonly id: Number;
+import {K, Snippets} from "../../../app/helpers";
 
-  public constructor(message: string, id: Number, inner?: Error) {
-    super(message);
-    this.inner = inner;
-    this.id = id;
-    this.name = this.constructor.name;
-  }
+import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
 
-  toString(): string {
-    const string = this.name + ": " + this.message;
-    if (this.inner) {
-      return string + ":\n" + this.inner;
+import {AgoraError} from "../../lib/AgoraError";
+
+const VoiceCallError = {
+
+  throwError: (errorMessage: any) => {
+
+    throw new Error(errorMessage);
+
+  },
+
+  composeError: (errorCode: number, errorMessage: any, ...args:any) => {
+
+    const agoraError = Snippets.errors.getErrorFromCode(errorCode);
+
+    const err = new AgoraError(errorCode, agoraError);
+
+    const voiceCallError: AgoraTypeInterfaces.AgoraErrorInterface = {
+      status: err.statusCode,
+      message: err.message,
+      messageDescription: Array.isArray(args)?Snippets.strings.format(err.getErrorMessage(errorMessage), args):err.getErrorMessage(errorMessage),
+      error: err
     }
-    return string;
+
+    return voiceCallError;
+
   }
+
 }
 
-export class VoiceCallError extends NestedError {}
+export { VoiceCallError }

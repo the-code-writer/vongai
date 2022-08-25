@@ -1,27 +1,11 @@
 import Framework7 from 'framework7/lite-bundle';
 
-//import RtcEngine from 'react-native-agora';
-
 import {K, ModuleBaseClasses} from "../app/helpers";
 
 import { VoiceCallConfig, VoiceCall } from "./apps/voice/VoiceCall";
-import { VideoCallConfig, VideoCall } from "./apps/video/VideoCall";
-import { InstantMessagingConfig, InstantMessaging } from "./apps/instant-messaging/InstantMessaging";
-import { LiveStreamingConfig, LiveStreaming } from "./apps/live-streaming/LiveStreaming";
-import { WhiteBoardConfig, WhiteBoard } from "./apps/white-board/WhiteBoard";
-
-const RtcEngine = {
-	create: (appId)=>{
-		console.warn(`::: --- ${appId} --- :::`);
-	}
-};
 
 interface AgoraInterface {
   videoCall: VideoCallConfig,
-  voiceCall: VoiceCallConfig,
-  instantMessaging:InstantMessagingConfig,
-  liveStreaming:LiveStreamingConfig,
-  whiteBoard: WhiteBoardConfig
 }
 
 class AgoraConfig implements AgoraInterface{
@@ -102,7 +86,7 @@ const AgoraLibrary = ModuleBaseClasses.Class.extend({
 
       F7: "",
 
-			RTC_ENGINE: RtcEngine,
+			RTC_ENGINE: {},
 			APP_ID: "",
 			PRIMARY_CERTIFICATE: "",
 			CHANNELS: {},

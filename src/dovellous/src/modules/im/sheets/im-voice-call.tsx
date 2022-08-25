@@ -20,13 +20,55 @@ export default ({ id, className, userData, isVideoCall, isIncoming,
     onAddParticipant
 }) => {
 
-    const userObject = {
-        avatar: ''
+    interface UserDataObject {
+        username: string;
+        displayName: string;
+        displayStatus: string;
+        displayPhoto: string;
+        phoneNumber: string | number;
+        emailAddress: string;
     }
 
-    const callObject = {
-        avatar: ''
+    const userObject = {
+        username: null,
+        displayName: null,
+        displayStatus: null,
+        displayPhoto: null,
+        phoneNumber: null,
+        emailAddress: null,
     }
+
+    interface CallDestinationObject {
+        phoneNumber: any;
+        displayName: any;
+    }
+
+    interface CallOriginObject {
+        phoneNumber: any;
+        displayName: any;
+    }
+
+    interface CallDataObject {
+        uid: any;
+        destination: CallDestinationObject | null;
+        origin: CallOriginObject | null;
+        callStarted: number;
+        callEnded: number;
+        isVideoCall: boolean;
+        isIncoming: boolean;
+    }
+
+    const callObject: CallDataObject = {
+        uid: null,
+        destination: null,
+        origin: null,
+        callStarted: 0,
+        callEnded: 0,
+        isVideoCall: false,
+        isIncoming: false,
+    }
+
+    const [currentCallUID, setCurrentCallUID] = useState('');
 
     const [currentViewState, setCurrentViewState] = useState(K.ModuleComponentsLibs.im.callScreen.BUSY);
     
@@ -266,8 +308,14 @@ export default ({ id, className, userData, isVideoCall, isIncoming,
     }
 
     const client: IAgoraRTCClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+
+    interface RTCInterface {
+        client: IAgoraRTCClient | null,
+        localAudioTrack: any,
+        localVideoTrack: any
+    }
     
-    const rtc = {
+    const rtc:RTCInterface  = {
         // For the local client.
         client: null,
         // For the local audio and video tracks.
@@ -288,6 +336,15 @@ export default ({ id, className, userData, isVideoCall, isIncoming,
         /**
          * Put the following code snippets here.
          */
+
+        rtc.client = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
+
+        const uid = await rtc.client.join(options.appId, options.channel, options.token, null);
+
+        setCurrentCallUID(uid);
+
+        callObject.uid = uid;
+
     }
 
     useEffect(() => {

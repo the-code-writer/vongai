@@ -22,7 +22,7 @@ import Framework7Keypad from 'framework7-plugin-keypad';
 import '../../node_modules/framework7-plugin-keypad/framework7-keypad.css';
 
 // Import DovellousF7 Plugin
-//import DovellousF7Plugin from "../dovellous/index";
+import DovellousF7Plugin from "../dovellous/index";
 import '../dovellous/assets/styles/main.scss';
 
 // Import App Component

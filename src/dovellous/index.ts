@@ -16,7 +16,7 @@ import { StorageContacts } from "./src/modules/im/store/contacts-store";
  * Released on: July 29, 2022
  */
 
-const DovellousF7Plugin = {
+ const DovellousF7Plugin = {
   // Module Name
   name: "DovellousF7Plugin",
   /* Install callback

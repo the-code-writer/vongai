@@ -2,38 +2,36 @@ import {K, Snippets} from "../../../app/helpers";
 
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
 
-import { VoiceCallConfigClass } from "./VoiceCallConfig";
+import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
+
+import { VoiceCallConfig} from "./VoiceCallConfig";
 
 import { VoiceCallError } from "./VoiceCallErrors";
-
-interface VoiceCallConfigInterface {
-  defaultChannel: string;
-}
 
 // Parent constructor
 class VoiceCall {
 
-  voiceCallError: VoiceCallError;
+  voiceCallError: any;
 
-  config: VoiceCallConfigInterface;
+  voiceCallconfig: AgoraTypeInterfaces.VoiceCallConfigInterface;
 
   framework7Component: any;
 
 	constructor(
     eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, 
     framework7: any, 
-    defaultChannel: any | VoiceCallConfigClass
+    defaultChannel: any | VoiceCallConfig
   ) {
 
-    this.voiceCallError = new VoiceCallError('', 0);
+    this.voiceCallError = VoiceCallError;
 
-    if (defaultChannel instanceof VoiceCallConfigClass) {
+    if (defaultChannel instanceof VoiceCallConfig) {
 
-      this.config = defaultChannel;
+      this.voiceCallconfig = defaultChannel;
 
     } else {
 
-      this.config = new VoiceCallConfigClass(defaultChannel);
+      this.voiceCallconfig = new VoiceCallConfig(defaultChannel);
 
     }
 
@@ -73,5 +71,5 @@ class VoiceCall {
                     
 }
 
-export {VoiceCallConfigInterface, VoiceCall}
+export { VoiceCall, VoiceCallConfig, VoiceCallError }
 
