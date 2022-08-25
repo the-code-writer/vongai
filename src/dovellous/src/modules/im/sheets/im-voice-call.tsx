@@ -265,11 +265,11 @@ export default ({ id, className, userData, isVideoCall,
                         <BlockTitle large>Stephen L. Gains</BlockTitle>
                         <BlockTitle>+263 (563) 628 9828</BlockTitle>
                     </div>
-                    <div className="call-actions">
-                        <Fab position="center-center"  >
+                    <div className="call-actions" >
+                        <Fab position="center-center" color="black" >
                             <Icon ios="f7:plus" aurora="f7:plus" md="material:add"></Icon>
                             <Icon ios="f7:xmark" aurora="f7:xmark" md="material:close"></Icon>
-                            <FabButtons  position="center" color="black">
+                            <FabButtons  position="center">
                                 <FabButton onClick={onActionsKeypadHandler}>
                                     <Icon ios="f7:circle_grid_3x3_fill" aurora="f7:circle_grid_3x3_fill" md="material:dialpad"/>
                                 </FabButton>
