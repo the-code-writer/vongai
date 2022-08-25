@@ -244,6 +244,14 @@ const K = {
 				imStoriesNotViewed: 'imStoriesNotViewed',
 				imStoriesMuted: 'imStoriesMuted',
 				imMyStories: 'imMyStories',
+			},
+			callScreen: {
+				BUSY: 'Please wait...',
+				INCOMING: 'Incoming Call...',
+				OUTGOING: 'Dialing...',
+				CONNECTED: 'Connected',
+				PAUSED: 'Call On Hold',
+				ENDED: 'Call Ended'
 			}
 		}
 	}

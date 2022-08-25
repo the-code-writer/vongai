@@ -1,22 +1,23 @@
-import { Block, BlockTitle, Button, Col, Fab, FabButton, FabButtons, Icon, Link, Navbar, NavRight, NavTitle, PageContent, Row, Segmented, Sheet } from "framework7-react";
+import { Block, BlockTitle, Button, Col, f7, Fab, FabButton, FabButtons, Icon, Link, List, ListItem, Navbar, NavRight, NavTitle, PageContent, Row, Segmented, Sheet } from "framework7-react";
 import React, { useEffect, useState } from "react";
 
 import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng"
+import K from "../../../libraries/app/konstants";
 
-export default ({ id, className, userData, isVideoCall, 
-    onMute, 
-    onUnMute, 
-    onCameraOn, 
-    onCameraOff, 
-    onLoudSpeakerOn, 
-    onLoudSpeakerOff, 
-    onEndCall,  
-    onEndedCall, 
-    onHoldCall,  
-    onUnHoldCall, 
-    onAnswerCall, 
-    onDeclineCall, 
-    onAddParticipant 
+export default ({ id, className, userData, isVideoCall, isIncoming,
+    onMute,
+    onUnMute,
+    onCameraOn,
+    onCameraOff,
+    onLoudSpeakerOn,
+    onLoudSpeakerOff,
+    onEndCall,
+    onEndedCall,
+    onHoldCall,
+    onUnHoldCall,
+    onAnswerCall,
+    onDeclineCall,
+    onAddParticipant
 }) => {
 
     const userObject = {
@@ -27,7 +28,10 @@ export default ({ id, className, userData, isVideoCall,
         avatar: ''
     }
 
-    const [currentViewState, setCurrentViewState] = useState('DEFAULT');
+    const [currentViewState, setCurrentViewState] = useState(K.ModuleComponentsLibs.im.callScreen.BUSY);
+    
+    const [currentCallDuration, setCurrentCallDuration] = useState("00:00");
+
     const [isMuteOn, setisMuteOn] = useState(false);
     const [isCameraOn, setIsCameraOn] = useState(isVideoCall);
     const [isLoudSpeakerOn, setIsLoudSpeakerOn] = useState(false);
@@ -50,11 +54,11 @@ export default ({ id, className, userData, isVideoCall,
 
     const onMuteToggle = () => {
 
-        isMuteOn ? onUnMuteHandler():onMuteHandler();
+        isMuteOn ? onUnMuteHandler() : onMuteHandler();
 
     };
 
-    const onMuteHandler = ()=>{
+    const onMuteHandler = () => {
 
         setisMuteOn(true);
 
@@ -62,7 +66,7 @@ export default ({ id, className, userData, isVideoCall,
 
     };
 
-    const onUnMuteHandler = ()=>{
+    const onUnMuteHandler = () => {
 
         setisMuteOn(false);
 
@@ -72,11 +76,11 @@ export default ({ id, className, userData, isVideoCall,
 
     const onCameraToggle = () => {
 
-        isCameraOn ? onCameraOffHandler():onCameraOnHandler();
+        isCameraOn ? onCameraOffHandler() : onCameraOnHandler();
 
     };
 
-    const onCameraOnHandler = ()=>{
+    const onCameraOnHandler = () => {
 
         setIsCameraOn(true);
 
@@ -84,7 +88,7 @@ export default ({ id, className, userData, isVideoCall,
 
     };
 
-    const onCameraOffHandler = ()=>{
+    const onCameraOffHandler = () => {
 
         setIsCameraOn(false);
 
@@ -94,11 +98,11 @@ export default ({ id, className, userData, isVideoCall,
 
     const onLoudSpeakerToggle = () => {
 
-        isLoudSpeakerOn ? onLoudSpeakerOffHandler():onLoudSpeakerOnHandler();
+        isLoudSpeakerOn ? onLoudSpeakerOffHandler() : onLoudSpeakerOnHandler();
 
     };
 
-    const onLoudSpeakerOnHandler = ()=>{
+    const onLoudSpeakerOnHandler = () => {
 
         setIsLoudSpeakerOn(true);
 
@@ -106,7 +110,7 @@ export default ({ id, className, userData, isVideoCall,
 
     };
 
-    const onLoudSpeakerOffHandler = ()=>{
+    const onLoudSpeakerOffHandler = () => {
 
         setIsLoudSpeakerOn(false);
 
@@ -120,55 +124,93 @@ export default ({ id, className, userData, isVideoCall,
 
     };
 
-    const onEndCallHandler = ()=>{
+    const onEndCallHandler = () => {
 
         setIsCallEnded(true);
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.ENDED
+        );
 
         onEndCall(getCallData());
 
     };
 
-    const onEndedCallHandler = ()=>{
+    const onEndedCallHandler = () => {
 
         setIsCallEnded(true);
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.ENDED
+        );
 
         onEndedCall(getCallData());
 
     };
 
-    const onHoldCallHandler = ()=>{
+    const onHoldToggle = () => {
 
-        setIsOnHold(true);
-
-        onHoldCall(getCallData());
+        !isOnHold ? onHoldCallHandler():onUnHoldCallHandler();
 
     };
 
-    const onUnHoldCallHandler = ()=>{
+    const onHoldCallHandler = () => {
+
+        setIsOnHold(true);
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.PAUSED
+        );
+
+        onHoldCall(getCallData());
+
+        f7.sheet.open('.im-callscreen-action-onhold');
+
+    };
+
+    const onUnHoldCallHandler = () => {
 
         setIsOnHold(false);
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.CONNECTED
+        );
 
         onUnHoldCall(getCallData());
 
     };
 
-    const onAnswerCallHandler = ()=>{
+    const onAnswerCallHandler = () => {
 
-        setIsCallDeclined(true);
+        setIsCallAnswered(true);
+        setIsCallDeclined(false);
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.CONNECTED
+        );
 
         onAnswerCall(getCallData());
 
     };
 
-    const onDeclineCallHandler = ()=>{
+    const onDeclineCallHandler = () => {
 
-        setIsCallAnswered(true);
+        setIsCallAnswered(false);
+        setIsCallDeclined(true);
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.ENDED
+        );
 
         onDeclineCall(getCallData());
 
+        onCloseAllCallScreenSheetsHandler();
+
+        onCloseThisCallScreen();
+
     };
 
-    const onAddParticipantHandler = ()=>{
+    const onAddParticipantHandler = () => {
 
         setCallHasParticipants(true);
 
@@ -178,35 +220,53 @@ export default ({ id, className, userData, isVideoCall,
 
     };
 
-    const onParticipantJoinedHandler  = ()=>{
+    const onParticipantJoinedHandler = () => {
 
         //
 
     };
 
-    const onParticipantLeftHandler = ()=>{
+    const onParticipantLeftHandler = () => {
 
         //
 
     };
 
     const onActionsAddParticipantHandler = () => {
-        
+
     }
 
     const onActionsChatHandler = () => {
-        
+
     }
 
     const onActionsHoldHandler = () => {
-        
+
+        onHoldToggle();
+
     }
 
     const onActionsKeypadHandler = () => {
-        
+
+        f7.sheet.open('.im-callscreen-action-numpad');
+
+    }
+
+
+    const onCloseAllCallScreenSheetsHandler = () => {
+
+        f7.sheet.close('.im-callscreen-sheet');
+
+    }
+
+    const onCloseThisCallScreen = () => {
+
+        f7.sheet.close(`.${id}`);
+
     }
 
     const client: IAgoraRTCClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+    
     const rtc = {
         // For the local client.
         client: null,
@@ -214,7 +274,7 @@ export default ({ id, className, userData, isVideoCall,
         localAudioTrack: null,
         localVideoTrack: null,
     };
-    
+
     const options = {
         // Pass your app ID here.
         appId: import.meta.env.VNG_AGORA_APP_ID,
@@ -223,68 +283,89 @@ export default ({ id, className, userData, isVideoCall,
         // Pass a token if your project enables the App Certificate.
         token: import.meta.env.VNG_AGORA_TOKEN,
     };
-    
+
     const startBasicCall = async () => {
         /**
          * Put the following code snippets here.
          */
     }
 
-    useEffect(()=>{
+    useEffect(() => {
 
         startBasicCall();
+        
+        setCurrentViewState(
+            isIncoming ? 
+            K.ModuleComponentsLibs.im.callScreen.INCOMING : 
+            K.ModuleComponentsLibs.im.callScreen.OUTGOING
+        );
 
-    },[])
+    }, []);
 
     return (
-        <Sheet
-            id={id}
-            key={id}
-            className={`dark im-sheet-modal ${className}`}
-            backdrop={false} 
-            bottom={true} 
-            push={false}
-            swipeToStep={false}
-            swipeToClose={false} 
-            closeByBackdropClick={false}
-            closeByOutsideClick={false}
-            closeOnEscape={false}
-        >
 
-            <div className="videos">
+        <React.Fragment>
 
-            <div className="remote connected"/>
+            <Sheet
+                id={id}
+                key={id}
+                className={`dark im-sheet-modal ${className}`}
+                backdrop={false}
+                bottom={true}
+                push={false}
+                swipeToStep={false}
+                swipeToClose={false}
+                closeByBackdropClick={false}
+                closeByOutsideClick={false}
+                closeOnEscape={false}
+            >
 
-            <div className="local connected"/>
+                <div className="videos">
 
-            </div>
-            
-            <PageContent>
+                    <div className="remote connected" />
+
+                    <div className="local connected" />
+
+                </div>
+
+                <PageContent>
                     <div className="call-remote-user">
                         <img src="https://images.ctfassets.net/lh3zuq09vnm2/yBDals8aU8RWtb0xLnPkI/19b391bda8f43e16e64d40b55561e5cd/How_tracking_user_behavior_on_your_website_can_improve_customer_experience.png" />
                         <BlockTitle large>Stephen L. Gains</BlockTitle>
                         <BlockTitle>+263 (563) 628 9828</BlockTitle>
+                        <BlockTitle medium className="im-call-status">
+                            { currentViewState === K.ModuleComponentsLibs.im.callScreen.CONNECTED ? (
+                                currentCallDuration==="00:00" ? (
+                                    currentViewState
+                                ):(
+                                    currentCallDuration
+                                )
+                            ):(
+                                currentViewState
+                            )}
+                        </BlockTitle>
                     </div>
                     <div className="call-actions" >
                         <Fab position="center-center" color="black" >
                             <Icon ios="f7:plus" aurora="f7:plus" md="material:add"></Icon>
                             <Icon ios="f7:xmark" aurora="f7:xmark" md="material:close"></Icon>
-                            <FabButtons  position="center">
+                            <FabButtons position="center">
                                 <FabButton onClick={onActionsKeypadHandler}>
-                                    <Icon ios="f7:circle_grid_3x3_fill" aurora="f7:circle_grid_3x3_fill" md="material:dialpad"/>
+                                    <Icon ios="f7:circle_grid_3x3_fill" aurora="f7:circle_grid_3x3_fill" md="material:dialpad" />
                                 </FabButton>
                                 <FabButton onClick={onActionsAddParticipantHandler}>
-                                    <Icon ios="f7:person_badge_plus_fill" aurora="f7:person_badge_plus_fill" md="material:person_add_alt_1"/>
+                                    <Icon ios="f7:person_badge_plus_fill" aurora="f7:person_badge_plus_fill" md="material:person_add_alt_1" />
                                 </FabButton>
                                 <FabButton onClick={onActionsHoldHandler}>
-                                    <Icon ios="f7:pause_circle" aurora="f7:pause_circle" md="material:pause_circle_outline"/>
+                                    <Icon ios="f7:pause_circle" aurora="f7:pause_circle" md="material:pause_circle_outline" />
                                 </FabButton>
                                 <FabButton onClick={onActionsChatHandler}>
-                                    <Icon ios="f7:text_bubble_fill" aurora="f7:text_bubble_fill" md="material:chat"/>
+                                    <Icon ios="f7:text_bubble_fill" aurora="f7:text_bubble_fill" md="material:chat" />
                                 </FabButton>
                             </FabButtons>
                         </Fab>
                     </div>
+                    
                     <Block inset className={`call-controls`}>
                         <Button outline large
                             id="im-solid-rounded-loudspeaker"
@@ -316,20 +397,93 @@ export default ({ id, className, userData, isVideoCall,
                             iconAurora={`f7:${isCameraOn?'videocam_fill':'videocam'}`}
                             iconSize={24} 
                         />
-                        <Button outline large
+                        <Button large fill textColor="white" bgColor="red"
                             id="im-solid-rounded-hangup"
                             key="im-solid-rounded-hangup"
-                            className="im-solid-rounded color-red"
+                            className="im-solid-rounded"
                             onClick={onHangUpToggle} 
-                            iconIos={`f7:${isLoudSpeakerOn?'phone_down_fill':'phone_down'}`}
+                            iconIos={`f7:${isLoudSpeakerOn?'phone_down_fill':'phone_down_fill'}`}
                             iconMd={`material:${isLoudSpeakerOn?'phone_enabled':'phone_enabled'}`}
-                            iconAurora={`f7:${isLoudSpeakerOn?'phone_down_fill':'phone_down'}`}
+                            iconAurora={`f7:${isLoudSpeakerOn?'phone_down_fill':'phone_down_fill'}`}
                             iconSize={24} 
                         />
                     </Block>
-            </PageContent>
+                    
+                </PageContent>
 
-        </Sheet>
+            </Sheet>
+
+            <Sheet
+                className="im-callscreen-sheet im-callscreen-action-numpad"
+                style={{ height: 'auto', '--f7-sheet-bg-color': '#000' }}
+                swipeToClose
+                swipeToStep
+                backdrop backdropUnique push
+                swipeHandler=".im-callscreen-action-numpad .sheet-modal-swipe-step"
+            >
+                <div className="sheet-modal-swipe-step">
+                    <div className="display-flex padding justify-content-space-between align-items-center">
+                        <div style={{ fontSize: '18px' }}>
+                            <b>Call Ended:</b>
+                        </div>
+                        <div style={{ fontSize: '22px' }}>
+                            <b>00:48</b>
+                        </div>
+                    </div>
+                    <div className="padding-horizontal padding-bottom">
+                    <Block inset className={`call-after-controls`}>
+                        <Button large fill textColor="white" bgColor="green"
+                            id="im-solid-rounded-hangupx"
+                            key="im-solid-rounded-hangupx"
+                            className="im-solid-rounded"
+                            onClick={onHangUpToggle}
+                            iconIos={`f7:${isLoudSpeakerOn ? 'phone_down_fill' : 'phone_down_fill'}`}
+                            iconMd={`material:${isLoudSpeakerOn ? 'phone_enabled' : 'phone_enabled'}`}
+                            iconAurora={`f7:${isLoudSpeakerOn ? 'phone_down_fill' : 'phone_down_fill'}`}
+                            iconSize={24}
+                        />
+                        <Button large fill textColor="white" bgColor="red"
+                            id="im-solid-rounded-hangup"
+                            key="im-solid-rounded-hangup"
+                            className="im-solid-rounded"
+                            onClick={onHangUpToggle}
+                            iconIos={`f7:${isLoudSpeakerOn ? 'phone_down_fill' : 'phone_down_fill'}`}
+                            iconMd={`material:${isLoudSpeakerOn ? 'phone_enabled' : 'phone_enabled'}`}
+                            iconAurora={`f7:${isLoudSpeakerOn ? 'phone_down_fill' : 'phone_down_fill'}`}
+                            iconSize={24}
+                        />
+                    </Block>
+                        <div className="margin-top text-align-center">Swipe up for more details</div>
+                    </div>
+                </div>
+                <BlockTitle medium className="margin-top">
+                    Decline with a message:
+                </BlockTitle>
+                <List noHairlines>
+                    <ListItem title="Item 1">
+                        <b slot="after" className="text-color-black">
+                            Sorry, can' talk right now
+                        </b>
+                    </ListItem>
+                    <ListItem title="Item 2">
+                        <b slot="after" className="text-color-black">
+                            I am busy
+                        </b>
+                    </ListItem>
+                    <ListItem title="Delivery">
+                        <b slot="after" className="text-color-black">
+                            I will call ypu back later
+                        </b>
+                    </ListItem>
+                    <ListItem title="Delivery">
+                        <b slot="after" className="text-color-black">
+                            Decline with a custom message
+                        </b>
+                    </ListItem>
+                </List>
+            </Sheet>
+
+        </React.Fragment>
 
     );
 

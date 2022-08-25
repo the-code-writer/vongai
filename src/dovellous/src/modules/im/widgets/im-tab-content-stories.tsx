@@ -8,6 +8,7 @@ import {
   f7ready,
   Icon,
   BlockTitle,
+  AccordionContent,
 } from "framework7-react";
 
 import Dom7 from "dom7";
@@ -174,17 +175,33 @@ export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Elemen
               <BlockTitle>Muted</BlockTitle>
 
               <List
-                mediaList
-                noChevron
-                className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
+                accordionList 
                 style={{ opacity: 0.75 }}
               >
 
-                {imStoriesMuted.reverse().map((story: ListViewMessage, storyIndex: number) => (
+                <ListItem accordionItem title="Toggle to show/hide">
 
-                  <StoryListViewItem story={story} storyIndex={storyIndex} />
+                  <AccordionContent>
 
-                ))}
+                    <List
+                      accordionList
+                      mediaList
+                      noChevron
+                      className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
+                      style={{ opacity: 0.75 }}
+                    >
+
+                    {imStoriesMuted.reverse().map((story: ListViewMessage, storyIndex: number) => (
+
+                      <StoryListViewItem story={story} storyIndex={storyIndex} />
+
+                    ))}
+
+                    </List>
+
+                  </AccordionContent>
+
+                </ListItem>
 
               </List>
 
