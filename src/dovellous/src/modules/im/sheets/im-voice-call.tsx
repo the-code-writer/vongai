@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng"
 import K from "../../../libraries/app/konstants";
 
-export default ({ id, className, userData, isVideoCall, isIncoming,
+export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onMute,
     onUnMute,
     onCameraOn,
@@ -67,6 +67,8 @@ export default ({ id, className, userData, isVideoCall, isIncoming,
         isVideoCall: false,
         isIncoming: false,
     }
+
+    const [currentUserData, setCurrentUserData] = useState(userDefinedData);
 
     const [currentCallUID, setCurrentCallUID] = useState('');
 
@@ -349,15 +351,19 @@ export default ({ id, className, userData, isVideoCall, isIncoming,
 
     useEffect(() => {
 
-        startBasicCall();
-        
+        setCurrentUserData(userDefinedData);
+
         setCurrentViewState(
             isIncoming ? 
             K.ModuleComponentsLibs.im.callScreen.INCOMING : 
             K.ModuleComponentsLibs.im.callScreen.OUTGOING
         );
 
-    }, []);
+        startBasicCall();
+
+        console.log(":::::::::: USER DATA :::::::::::", userDefinedData);
+        
+    }, [userDefinedData]);
 
     return (
 
@@ -375,6 +381,7 @@ export default ({ id, className, userData, isVideoCall, isIncoming,
                 closeByBackdropClick={false}
                 closeByOutsideClick={false}
                 closeOnEscape={false}
+                style={{backgroundImage: `url(${currentUserData.displayPhoto})`}}
             >
 
                 <div className="videos">
@@ -385,11 +392,18 @@ export default ({ id, className, userData, isVideoCall, isIncoming,
 
                 </div>
 
+                {/* displayName: "Rickie Howell"
+                displayPhoto: "https://cdn.dovellous.com/img/people/58.png"
+                displayStatus: "placeat alias eveniet debitis rerum eum voluptatem"
+                emailAddress: ""
+                phoneNumber: "653.701.0503"
+                username: "Troy Crona" */}
+
                 <PageContent>
                     <div className="call-remote-user">
-                        <img src="https://images.ctfassets.net/lh3zuq09vnm2/yBDals8aU8RWtb0xLnPkI/19b391bda8f43e16e64d40b55561e5cd/How_tracking_user_behavior_on_your_website_can_improve_customer_experience.png" />
-                        <BlockTitle large>Stephen L. Gains</BlockTitle>
-                        <BlockTitle>+263 (563) 628 9828</BlockTitle>
+                        <img src={currentUserData.displayPhoto} />
+                        <BlockTitle large>{currentUserData.displayName}</BlockTitle>
+                        <BlockTitle>{currentUserData.phoneNumber}</BlockTitle>
                         <BlockTitle medium className="im-call-status">
                             { currentViewState === K.ModuleComponentsLibs.im.callScreen.CONNECTED ? (
                                 currentCallDuration==="00:00" ? (

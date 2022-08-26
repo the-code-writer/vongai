@@ -1,19 +1,15 @@
-import Framework7 from 'framework7/lite-bundle';
-
 import { K, ModuleBaseClasses } from "../app/helpers";
+
+import * as AgoraTypeInterfaces from "./lib/AgoraTypeInterfaces";
 
 import { VoiceCallConfig, VoiceCall } from "./apps/voice/VoiceCall";
 
-interface AgoraInterface {
-	voiceCall: VoiceCallConfig,
-}
-
-class AgoraConfig implements AgoraInterface {
+class AgoraConfig implements AgoraTypeInterfaces.AgoraConfigInterface {
 	appId: any;
 	primaryCertificate: any;
 	channels: any;
 	tokens: any;
-	voiceCall: VoiceCallConfig;
+	voiceCallConfig: VoiceCallConfig;
 	static events: any;
 
 	constructor(
@@ -21,20 +17,20 @@ class AgoraConfig implements AgoraInterface {
 		primaryCertificate: any,
 		channels: any,
 		tokens: any,
-		voiceCall: VoiceCallConfig
+		voiceCallConfig: VoiceCallConfig
 	) {
 		this.appId = appId;
 		this.primaryCertificate = primaryCertificate;
 		this.channels = channels;
 		this.tokens = tokens;
-		this.voiceCall = voiceCall;
+		this.voiceCallConfig = voiceCallConfig;
 	}
 
 }
 
 
 type AgoraOptions = {
-	hat: string
+	agoraConfig: AgoraConfig
 } & ModuleBaseClasses.DovellousModuleOptions
 
 class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
@@ -42,43 +38,41 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 	manaLevel: number
 	declare options: AgoraOptions; // <-- declare
 	declare modules: any;
-	declare events;
+	declare events:  any;
+
 	constructor(
 		events: any,
-		F7: Framework7,
-		appId: any,
-		primaryCertificate: any,
-		channels: any,
-		tokens: any,
-		voiceCall: VoiceCallConfig | AgoraConfig
+		Framework7App: any,
+		appId?: any,
+		primaryCertificate?: any,
+		channels?: any,
+		tokens?: any,
+		voiceCallConfig?: VoiceCallConfig | AgoraConfig
 	) {
-		super()
-		this.manaLevel = 100
-		this.options.hat = "pointy" // <-- no problem now
+
+		super();
 
 		let self = this;
+		
+		self.events = events;
 
-		this.events = events;
+		if (voiceCallConfig instanceof AgoraConfig) {
 
-		this.modules.params = this.options;
-
-		let options: AgoraConfig;
-
-		if (voiceCall instanceof AgoraConfig) {
-
-			options = voiceCall;
+			self.options.agoraConfig = voiceCallConfig;
 
 		} else {
 
-			options = new AgoraConfig(appId, primaryCertificate, channels, tokens, voiceCall);
+			self.options.agoraConfig = new AgoraConfig(appId, primaryCertificate, channels, tokens, voiceCallConfig);
 
 		}
 
-		this.modules.initModules(this, F7, options);
+		self.modules = self.init(events, Framework7App, self.options.agoraConfig);
+
+		self.modules.initModules(self, Framework7App, self.options.agoraConfig);
 
 	}
 
-	init() {
+	init(dovellousEvents: any | null, Framework7App: any | null, agoraConfig: VoiceCallConfig | AgoraConfig | null) {
 
 		this.modules = (function () {
 
@@ -86,9 +80,14 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 				isLoaded: false,
 
-				params: AgoraConfig,
+				DovellousEvents: {},
 
-				F7: "",
+				agoraConfig: {},
+
+				Framework7App: {
+					dovellousEventsEmit: (eventName: string, eventDetails: any)=>{},
+					dovellousEventsOn: (eventName: string, eventDetails: any)=>{},
+				},
 
 				RTC_ENGINE: {},
 				APP_ID: "",
@@ -100,8 +99,8 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 				initModules: async (
 					app: any,
-					F7: Framework7,
-					options: {
+					Framework7App: any,
+					agoraConfig: {
 						appId: string;
 						primaryCertificate: string;
 						agora: {
@@ -109,33 +108,34 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 						};
 						channels: { [x: string]: string; };
 						tokens: { [x: string]: string; };
-						voiceCall: { moduleName: string; };
+						voiceCallConfig: { moduleName: string; };
 					}
 				) => {
 
-					parent.F7 = F7;
+					parent.Framework7App = Framework7App;
 
-					parent.RTC_ENGINE = 'RtcEngine';
-
-					parent.APP_ID = options.appId;
-					parent.PRIMARY_CERTIFICATE = options.primaryCertificate;
-					parent.CHANNELS = options.agora.channels;
-					parent.DEFAULT_CHANNEL = options.channels["default"];
-					parent.TOKENS = options.tokens;
-					parent.DEFAULT_TOKEN = options.tokens["default"];
+					parent.APP_ID = agoraConfig.appId;
+					parent.PRIMARY_CERTIFICATE = agoraConfig.primaryCertificate;
+					parent.CHANNELS = agoraConfig.agora.channels;
+					parent.DEFAULT_CHANNEL = agoraConfig.channels["default"];
+					parent.TOKENS = agoraConfig.tokens;
+					parent.DEFAULT_TOKEN = agoraConfig.tokens["default"];
 
 					await parent.generateDefaultToken();
 
 					await parent.generateDefaultChannel();
 
-					await parent.voiceCall.init(app, options.voiceCall);
+					await parent.voiceCall.init(app, agoraConfig.voiceCallConfig);
 
-					parent.params.events[K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED](
+					parent.Framework7App.dovellousEventsEmit(
+						K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
 						{
 							agoraApp: app,
-							agoraModule: parent
+							agoraModules: parent
 						}
 					);
+
+					parent.isLoaded = true;
 
 				},
 
@@ -165,25 +165,29 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 					lib: {},
 
-					params: {
+					voiceCallConfig: {
 						moduleName: "VoiceCall",
 					},
 
-					init: async (app: any, options: { moduleName: string; }) => {
+					init: async (app: any, voiceCallConfig: { moduleName: string; }) => {
 
-						parent.voiceCall.params = options;
+						parent.voiceCall.voiceCallConfig = voiceCallConfig;
 
 						parent.voiceCall.lib = new VoiceCall(
-							parent.params.events, 
-							parent.F7, 
-							options);
+							parent.DovellousEvents, 
+							parent.Framework7App, 
+							voiceCallConfig
+						);
+
+						parent.Framework7App.dovellousEventsEmit(
+							K.Events.Modules.Agora.VoiceCall.ON_APP_INIT,
+							{
+								agoraApp: app,
+								voiceCallApp: parent.voiceCall,
+							}
+						);
 
 						parent.voiceCall.isReady = true;
-
-						parent.params.events[K.Events.Modules.Agora.VoiceCall.ON_APP_INIT]([
-							app,
-							options
-						]);
 
 						return parent.voiceCall;
 
@@ -213,11 +217,11 @@ ModuleBaseClasses.DovellousEventDispatcher(K.Events.Modules.Agora);
  */
 const AgoraLibEvent: ModuleBaseClasses.DovellousLibraryEvent = new ModuleBaseClasses.DovellousLibraryEvent(K.Events.Modules.Agora.AgoraLibEvent.NAME);
 
-const Agora = (F7: Framework7, AgoraConfigOptions: AgoraConfig) => {
+const Agora = (Framework7App: any, AgoraConfigOptions: AgoraConfig) => {
 	/**
 	 * @type {ModuleBaseClasses.DovellousLibrary}
 	 */
-	return new AgoraLibrary(AgoraLibEvent, F7, AgoraConfigOptions);
+	return new AgoraLibrary(AgoraLibEvent, Framework7App, AgoraConfigOptions);
 
 };
 

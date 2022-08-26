@@ -120,54 +120,6 @@ export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Elemen
 
         <React.Fragment>
 
-          {Object.keys(imStoriesNotViewed).length > 0 && (
-
-            <>
-
-              <BlockTitle>Recent Updates</BlockTitle>
-
-              <List
-                mediaList
-                noChevron
-                className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
-              >
-
-                {Object.keys(imStoriesNotViewed).reverse().map((storyKey: any, storyIndex: number) => (
-
-                  <StoryListViewItem id={storyKey} key={storyKey} storyKey={storyKey} story={imStoriesNotViewed[storyKey]} storyIndex={storyIndex} />
-
-                ))}
-
-              </List>
-
-            </>
-
-          )}
-
-          {Object.keys(imStoriesViewed).length > 0 && (
-
-            <>
-
-              <BlockTitle>Viewed</BlockTitle>
-
-              <List
-                mediaList
-                noChevron
-                className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
-              >
-
-                {Object.keys(imStoriesViewed).reverse().map((storyKey: any, storyIndex: number) => (
-
-                <StoryListViewItem id={storyKey} key={storyKey} storyKey={storyKey} story={imStoriesViewed[storyKey]} storyIndex={storyIndex} />
-
-                ))}
-
-              </List>
-
-            </>
-
-          )}
-
           {Object.keys(imStoriesMuted).length > 0 && (
 
             <>
@@ -179,7 +131,7 @@ export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Elemen
                 style={{ opacity: 0.75 }}
               >
 
-                <ListItem accordionItem title="Toggle to show/hide">
+                <ListItem accordionItem title="Muted Stories">
 
                   <AccordionContent>
 

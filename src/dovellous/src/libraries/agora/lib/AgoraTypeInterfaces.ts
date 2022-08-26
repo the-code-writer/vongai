@@ -1,7 +1,14 @@
-interface AgoraConfigInterface {
 
-  voiceCall: any,
-  
+interface VoiceCallConfigInterface {
+  defaultChannel: string;
+}
+
+interface AgoraConfigInterface {
+  voiceCallConfig: any,  
+}
+
+interface AgoraInterface {
+	voiceCallConfig: VoiceCallConfigInterface,
 }
 
 interface AgoraErrorInterface {
@@ -9,10 +16,6 @@ interface AgoraErrorInterface {
   message: string;
   messageDescription: string;
   error: Error
-}
-
-interface VoiceCallConfigInterface {
-  defaultChannel: string;
 }
 
 interface VoiceCallErrorInterface {

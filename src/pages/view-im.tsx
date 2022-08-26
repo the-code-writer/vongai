@@ -20,6 +20,8 @@ export default () => {
 
   const [currentIMTab, setCurrentIMTab] = useState(1);
 
+  const [userDataObject, setUserDataObject] = useState({});
+
   const tabIndexChangedHandler = (tabIndex: number) => {
     
     console.log("::: tabIndexChangedHandler :::", tabIndex);
@@ -82,6 +84,40 @@ export default () => {
   const onVoiceCallHandler = (userData: any) => {
 
     console.log(":::ON VOICE CALL HANDLER:::", userData); 
+
+    /*
+
+    avatar: "https://cdn.dovellous.com/img/people/72.png"
+badge: 6
+deliveryStatus: "6"
+displayName: "Hobart Gottlieb"
+isDeleted: false
+isGroup: true
+isMute: true
+isSent: false
+isTyping: false
+messageType: {type: 'Missed Call ', iconClass: 'color-red', icon: {…}}
+senderName: "Imogene Glover"
+senderNumber: "471.853.3628 x888"
+text: "ab eos et aut ut iste consequuntur"
+time: 1661508078135
+unseen: "3"
+userOnlineStatus: "3"
+uuid: ƒ ()
+[[Prototype]]: Object
+
+    */
+
+    const userDataObject = {
+      username: userData.senderName,
+      phoneNumber: userData.senderNumber,
+      displayName: userData.displayName,
+      displayStatus: userData.text,
+      displayPhoto: userData.avatar,
+      emailAddress: '',
+    }
+
+    setUserDataObject(userDataObject);
 
     f7.sheet.open('.im-voice-call-sheet-modal');
 
@@ -147,7 +183,7 @@ export default () => {
         onContactInfo={onContactInfoHandler}
         /> 
 
-        <IMModalsWrapper />        
+        <IMModalsWrapper userDataObject={userDataObject} />        
 
     </React.Fragment>
 

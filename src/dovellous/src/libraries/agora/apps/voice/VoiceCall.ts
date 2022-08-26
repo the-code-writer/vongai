@@ -1,5 +1,3 @@
-import Framework7 from "framework7/.";
-
 import { K, Snippets } from "../../../app/helpers";
 
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
@@ -19,15 +17,15 @@ class VoiceCall {
 
   voiceCallconfig: AgoraTypeInterfaces.VoiceCallConfigInterface;
 
-  framework7Component: Framework7;
+  Framework7AppInstance: any;
 
   constructor(
-    eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent,
-    framework7: Framework7,
+    DovellousEvents: ModuleBaseClasses.DovellousLibraryEvent,
+    Framework7App: any,
     defaultChannel: any | VoiceCallConfig
   ) {
 
-    this.voiceCallEvents = eventsLibrary;
+    this.voiceCallEvents = DovellousEvents;
 
     this.voiceCallError = VoiceCallError;
 
@@ -41,7 +39,7 @@ class VoiceCall {
 
     }
 
-    this.framework7Component = framework7;
+    this.Framework7AppInstance = Framework7App;
 
   }
   /**

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 
 import IMVoiceCall from "../sheets/im-voice-call";
 
-export default ({userData}) => {
+export default ({userDataObject}) => {
 
-    const [userDefinedData, setUserDefinedData] = useState(userData);
+    const [userDefinedData, setUserDefinedData] = useState(userDataObject);
 
     const generateCallID = () => {
 
@@ -97,9 +97,9 @@ export default ({userData}) => {
 
     useEffect(() => {
       
-        setUserDefinedData(userData);
+        setUserDefinedData(userDataObject);
     
-    }, [userData])
+    }, [userDataObject])
     
    
     // End Voice Call Actions
@@ -112,12 +112,12 @@ export default ({userData}) => {
                 id={`im-voice-call-sheet-modal`} 
                 key={`im-voice-call-sheet-modal`} 
                 className={`im-voice-call-sheet-modal`}
-                userData={userDefinedData}
+                userDefinedData={userDefinedData}
                 onMute={onMuteHandler}
                 onUnMute={onUnMuteHandler}
                 onCameraOn={onCameraOnHandler}
                 onCameraOff={onCameraOffHandler}
-                onLoudSpekerOn={onLoudSpekerOnHandler}
+                onLoudSpeakerOn={onLoudSpekerOnHandler}
                 onLoudSpeakerOff={onLoudSpeakerOffHandler}
                 onEndCall={onEndCallHandler}
                 onHoldCall={onHoldCallHandler}

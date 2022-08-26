@@ -4,10 +4,15 @@ import { K, Snippets } from "./src/libraries/app/helpers";
 import { StorageIM } from "./src/modules/im/store/im-store";
 import { StorageContacts } from "./src/modules/im/store/contacts-store";
 
+import moment from "moment";
+
+import './assets/styles/main.scss';
+import { eventNames } from "process";
+
 /**
  * Dovellous F7 Plugin for Framework7 1.0.0
- * Keypad plugin extends Framework7 with additional custom keyboards
- * http://dovellous.com/f7/plugins/
+ * Dovellous F7 Plugin extends Framework7 with modules for instant messaging and calls
+ * https://apps.dovellous.com/plugins/f7
  *
  * Copyright 2014-2022 Dovellous
  *
@@ -16,9 +21,9 @@ import { StorageContacts } from "./src/modules/im/store/contacts-store";
  * Released on: July 29, 2022
  */
 
- const DovellousF7Plugin = {
+const Framework7DovellousPlugin = {
   // Module Name
-  name: "DovellousF7Plugin",
+  name: "Framework7 Dovellous Plugin",
   /* Install callback
   It will be executed right after component is installed
   Context of this callback points to Class where it was installed
@@ -30,22 +35,26 @@ import { StorageContacts } from "./src/modules/im/store/contacts-store";
   It will be executed in the very beginning of class initilization (when we create new instance of the class)
   */
   create() {
-    var app = this;
+    const app = this;
+    const $ = app.$;
     // extend app methods with debugger methods when app instance just created
 
-    const dovellousLibs = new Dovellous(app, app.params.dovellous.modules);
+    const dovellousInstance = new Dovellous(app, app.params.dovellous);
 
     app.dovellous = {
-      k: K,
+      konstants: K,
       helpers: Snippets,
-      libs: dovellousLibs,
+      instance: dovellousInstance,
+      domSelector: $,
       enableDebug: function () {
         app.params.dovellous.debugger = true;
       },
       disableDebug: function () {
         app.params.dovellous.debugger = false;
       },
+      appInstance: app,
     };
+
   },
   /*
   Object with default class/plugin parameters
@@ -53,55 +62,89 @@ import { StorageContacts } from "./src/modules/im/store/contacts-store";
   params: {
     dovellous: {
       debugger: true,
-      // Dovellous Constants
-      konstants: K,
-      // Dovellous Snippets / Helpers
-      snippets: Snippets,
-      plugins: {
-        agora: { 
-          appId: '',
-          primaryCertificate: '',
-          channels: '',
-          tokens: '',
-          voiceCall: '',
-          videoCall: '',
-          instantMessaging: '',
-          liveStreaming: '',
-          whiteBoard: ''
+      agoraConfig: {
+        appId: '',
+        primaryCertificate: '',
+        agora: {
+          channels: {},
+        },
+        channels: [],
+        tokens: [],
+        voiceCallConfig: { 
+          moduleName: '', 
         }
-      },
+      }
     },
-  },
-  /* proto object extends Class prototype */
-  proto: {
-    demoDF7() {
-      return "demo-module-proto-method";
-    },
-    demoStaticDF7: "demo-module-proto-static",
-  },
-  // Extend Class with static props and methods, e.g. Class.myMethod
-  static: {
-    demoSTATICF7() {
-      return "demo-module-class-method";
-    },
-    demoStaticSTATICF7: "demo-module-class-static",
   },
   /* Initialized instance Props & Methods */
   instance: {
-    demoPropF7: true,
-    demoMethodF7() {
-      return "demo-method";
+    dovellousKonstants: K,
+    dovellousHelpers: Snippets,
+    dovellousConsole(output: string | boolean | null, ...args: any) {
+
+      const app = this;
+
+      if (app.params.dovellous.debugger) {
+
+        if (output && output !== null) {
+
+          const time = moment().format(`[${output?.toString().toUpperCase()}] :: YYYY-MM-DD, H:mm:ss :: `);
+
+          switch (output.toString().toLowerCase()) {
+
+            case 'error': {
+              console.error(time, args);
+              break;
+            }
+
+            case 'warn': {
+              console.warn(time, args);
+              break;
+            }
+
+            case 'log': {
+              console.log(time, args);
+              break;
+            }
+
+            case 'info': {
+              console.info(time, args);
+              break;
+            }
+
+            default: {
+              console.log(this, time, args);
+              break;
+            }
+
+          }
+
+        }
+
+      } else {
+        console.log(args);
+      }
+
+    },
+    dovellousEventsOn(eventName: string, eventCallBackFunction: any) {
+      
+      const app = this;
+      app.on(eventName, eventCallBackFunction);
+
+    },
+    dovellousEventsEmit(eventName: string, eventDetail: any) {
+      
+      const app = this;
+      app.emit(eventName, eventDetail);
+
     },
   },
   /* Event handlers */
   on: {
-    demoEventF7(a: any, b: any) {
-      console.log("demo-event", a, b);
-    },
     init: function () {
 
       var app = this;
-      
+
       if (app.params.dovellous.debugger) console.log("app init");
 
       app.emit('DOVELLOUS_READY', app.params.dovellous);
@@ -109,32 +152,32 @@ import { StorageContacts } from "./src/modules/im/store/contacts-store";
     },
     pageBeforeIn: function (page: any) {
       const app = page.app;
-      const $   = app.$;
+      const $ = app.$;
       if (app.params.dovellous.debugger) console.log("pageBeforeIn", page);
     },
     pageAfterIn: function (page: any) {
       const app = page.app;
-      const $   = app.$;
+      const $ = app.$;
       if (app.params.dovellous.debugger) console.log("pageAfterIn", page);
     },
     pageBeforeOut: function (page: any) {
       const app = page.app;
-      const $   = app.$;
+      const $ = app.$;
       if (app.params.dovellous.debugger) console.log("pageBeforeOut", page);
     },
     pageAfterOut: function (page: any) {
       const app = page.app;
-      const $   = app.$;
+      const $ = app.$;
       if (app.params.dovellous.debugger) console.log("pageAfterOut", page);
     },
     pageInit: function (page: any) {
       const app = page.app;
-      const $   = app.$;
+      const $ = app.$;
       if (app.params.dovellous.debugger) console.log("pageInit", page);
     },
     pageBeforeRemove: function (page: any) {
       const app = page.app;
-      const $   = app.$;
+      const $ = app.$;
       if (app.params.dovellous.debugger) console.log("pageBeforeRemove", page);
     },
   },
@@ -148,4 +191,4 @@ import { StorageContacts } from "./src/modules/im/store/contacts-store";
   },
 };
 
-export { DovellousF7Plugin as default, K, Snippets, StorageIM, StorageContacts};
+export { Framework7DovellousPlugin as default, K, Snippets, StorageIM, StorageContacts };

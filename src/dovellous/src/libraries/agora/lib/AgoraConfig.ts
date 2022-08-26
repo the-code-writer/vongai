@@ -6,7 +6,7 @@ export interface AgoraConfigInterface {
   
 }
 
-export class Config implements AgoraConfig {
+export class Config implements AgoraConfigInterface {
 
   voiceCall: VoiceCallConfig;
 

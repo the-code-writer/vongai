@@ -57,8 +57,7 @@ const MainApplication = () => {
         const f7 = this;
         if (f7.device.capacitor) {
           capacitorApp.init(f7);
-        }
-        console.log(":: APP THEME INITIALIZED ::", import.meta.env, f7, e);
+        }        
       },
       darkThemeChange: function (e) {
         console.log(":: APP THEME CHANGED ::", e);
@@ -88,14 +87,14 @@ const MainApplication = () => {
         capacitorApp.init(f7);
 
       }
-
-      console.warn("::::::", import.meta.env);
       
       if(!import.meta.env.PROD){
 
         window.F7React = F7React;
 
       }
+
+      console.warn(":: APP THEME INITIALIZED ::", import.meta.env, F7React);
 
       // Generate data for IM Testing
 
@@ -114,6 +113,7 @@ const MainApplication = () => {
   }, []);
   
   const errorFallback = ({ error }) => {
+    console.warn("::: ERROR BOUNDARY :::", error);
     return (
       <div role="alert">
         <h2>Something went wrong:</h2>
