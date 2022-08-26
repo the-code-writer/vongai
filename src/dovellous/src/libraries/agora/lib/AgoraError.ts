@@ -10,7 +10,7 @@ export class AgoraError extends Error {
 
   getErrorMessage(errorMessage: any) {
 
-    return `${this.message.toString()}:${errorMessage.toString()}`;
+    return `${this.message.toString()}: ${errorMessage.toString()}`;
 
   }
 

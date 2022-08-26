@@ -1,3 +1,9 @@
+interface AgoraConfigInterface {
+
+  voiceCall: any,
+  
+}
+
 interface AgoraErrorInterface {
   status: number;
   message: string;
@@ -9,4 +15,15 @@ interface VoiceCallConfigInterface {
   defaultChannel: string;
 }
 
-export { AgoraErrorInterface, VoiceCallConfigInterface } 
+interface VoiceCallErrorInterface {
+  throwError: Function;
+  composeError: Function;
+}
+
+
+export { 
+  AgoraConfigInterface, 
+  AgoraErrorInterface, 
+  VoiceCallErrorInterface, 
+  VoiceCallConfigInterface 
+} 

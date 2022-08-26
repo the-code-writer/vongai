@@ -1,27 +1,33 @@
-import {K, Snippets} from "../../../app/helpers";
+import Framework7 from "framework7/.";
+
+import { K, Snippets } from "../../../app/helpers";
 
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
 
 import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
 
-import { VoiceCallConfig} from "./VoiceCallConfig";
+import { VoiceCallConfig } from "./VoiceCallConfig";
 
 import { VoiceCallError } from "./VoiceCallErrors";
 
 // Parent constructor
 class VoiceCall {
 
-  voiceCallError: any;
+  voiceCallEvents: ModuleBaseClasses.DovellousLibraryEvent;
+
+  voiceCallError: AgoraTypeInterfaces.VoiceCallErrorInterface;
 
   voiceCallconfig: AgoraTypeInterfaces.VoiceCallConfigInterface;
 
-  framework7Component: any;
+  framework7Component: Framework7;
 
-	constructor(
-    eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent, 
-    framework7: any, 
+  constructor(
+    eventsLibrary: ModuleBaseClasses.DovellousLibraryEvent,
+    framework7: Framework7,
     defaultChannel: any | VoiceCallConfig
   ) {
+
+    this.voiceCallEvents = eventsLibrary;
 
     this.voiceCallError = VoiceCallError;
 
@@ -37,14 +43,14 @@ class VoiceCall {
 
     this.framework7Component = framework7;
 
-	}
-	/**
-	 * Initiates a simple call
-	 * param destinationId string - The destination uuid of the callee
-	 * return null
-	 */
-	async start(destinationId, isGroupCall) {
-		
+  }
+  /**
+   * Initiates a simple call
+   * param destinationId string - The destination uuid of the callee
+   * return null
+   */
+  async start(destinationId, isGroupCall) {
+
     const sourceId = "26772128622";
     const sourceTitle = "Douglas Maposa";
     const sourceSubTitle = "Technical Engineer";
@@ -65,10 +71,59 @@ class VoiceCall {
       }
     };
 
-		return _data;
+    this.invokeError(3456, 'This is a mesage to test the error function', null);
 
-	}
-                    
+    return _data;
+
+  }
+
+  throwError(message: string): void {
+
+    this.voiceCallError.throwError(message);
+
+  }
+
+  invokeError(code: number, message: string, output: string | null | boolean, ...args: any): AgoraTypeInterfaces.AgoraErrorInterface {
+
+    const err = this.voiceCallError.composeError(code, message, args);
+
+    if (output && output !== null) {
+
+      switch (output.toString().toLowerCase()) {
+
+        case 'error': {
+          console.error(err);
+          break;
+        }
+
+        case 'warn': {
+          console.warn(err);
+          break;
+        }
+
+        case 'log': {
+          console.log(err);
+          break;
+        }
+
+        case 'info': {
+          console.info(err);
+          break;
+        }
+
+        default: {
+          console.log(err);
+          break;
+        }
+
+      }
+
+    }
+
+    return err;
+
+  }
+
 }
 
 export { VoiceCall, VoiceCallConfig, VoiceCallError }

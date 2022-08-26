@@ -1,18 +1,18 @@
-import {K, Snippets} from "../../../app/helpers";
+import {Snippets} from "../../../app/helpers";
 
 import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
 
 import {AgoraError} from "../../lib/AgoraError";
 
-const VoiceCallError = {
+const VoiceCallError: AgoraTypeInterfaces.VoiceCallErrorInterface = {
 
-  throwError: (errorMessage: any) => {
+  throwError: (errorMessage: any) : void => {
 
-    throw new Error(errorMessage);
+    throw new Error(`Voice Call Error: ${errorMessage}`);
 
   },
 
-  composeError: (errorCode: number, errorMessage: any, ...args:any) => {
+  composeError: (errorCode: number, errorMessage: any, args:any) : AgoraTypeInterfaces.AgoraErrorInterface => {
 
     const agoraError = Snippets.errors.getErrorFromCode(errorCode);
 
@@ -21,7 +21,9 @@ const VoiceCallError = {
     const voiceCallError: AgoraTypeInterfaces.AgoraErrorInterface = {
       status: err.statusCode,
       message: err.message,
-      messageDescription: Array.isArray(args)?Snippets.strings.format(err.getErrorMessage(errorMessage), args):err.getErrorMessage(errorMessage),
+      messageDescription: Array.isArray(args)?
+        Snippets.strings.format(err.getErrorMessage(errorMessage), args):
+        err.getErrorMessage(errorMessage),
       error: err
     }
 

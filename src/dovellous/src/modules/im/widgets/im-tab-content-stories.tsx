@@ -32,12 +32,12 @@ export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Elemen
   const [imStoriesMuted, setIMStoriesMuted] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imStoriesMuted, []);
   const [imMyStories, setIMMyStories] = useStorageIM(K.ModuleComponentsLibs.im.dataStores.imMyStories, []);
 
-  const StoryListViewItem = ({ story, storyIndex }): JSX.Element => {
+  const StoryListViewItem = ({ id, storyKey, story, storyIndex }): JSX.Element => {
 
     return (
       <ListItem
-        key={`im-story-list-item-key-${storyIndex}`}
-        id={`im-story-list-item-key-${storyIndex}`}
+        key={`im-story-list-item-key-${storyKey}`}
+        id={`im-story-list-item-key-${storyIndex}-${id}`}
         link="#"
         onClick={() => onOpenStatus(story)}
         title={story.displayName}
@@ -120,11 +120,11 @@ export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Elemen
 
         <React.Fragment>
 
-          {imStoriesNotViewed.length > 0 && (
+          {Object.keys(imStoriesNotViewed).length > 0 && (
 
             <>
 
-              <BlockTitle>Not Viewed</BlockTitle>
+              <BlockTitle>Recent Updates</BlockTitle>
 
               <List
                 mediaList
@@ -132,9 +132,9 @@ export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Elemen
                 className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
               >
 
-                {imStoriesNotViewed.reverse().map((story: ListViewMessage, storyIndex: number) => (
+                {Object.keys(imStoriesNotViewed).reverse().map((storyKey: any, storyIndex: number) => (
 
-                  <StoryListViewItem story={story} storyIndex={storyIndex} />
+                  <StoryListViewItem id={storyKey} key={storyKey} storyKey={storyKey} story={imStoriesNotViewed[storyKey]} storyIndex={storyIndex} />
 
                 ))}
 
@@ -144,7 +144,7 @@ export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Elemen
 
           )}
 
-          {imStoriesViewed.length > 0 && (
+          {Object.keys(imStoriesViewed).length > 0 && (
 
             <>
 
@@ -156,9 +156,9 @@ export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Elemen
                 className="search-list searchbar-found im-tab-content-stories-searchbar-found no-hairlines no-hairlines-between"
               >
 
-                {imStoriesViewed.reverse().map((story: ListViewMessage, storyIndex: number) => (
+                {Object.keys(imStoriesViewed).reverse().map((storyKey: any, storyIndex: number) => (
 
-                  <StoryListViewItem story={story} storyIndex={storyIndex} />
+                <StoryListViewItem id={storyKey} key={storyKey} storyKey={storyKey} story={imStoriesViewed[storyKey]} storyIndex={storyIndex} />
 
                 ))}
 
@@ -168,7 +168,7 @@ export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Elemen
 
           )}
 
-          {imStoriesMuted.length > 0 && (
+          {Object.keys(imStoriesMuted).length > 0 && (
 
             <>
 
@@ -191,11 +191,11 @@ export default ({ id, slug, className, skeletonList, onOpenStatus }): JSX.Elemen
                       style={{ opacity: 0.75 }}
                     >
 
-                    {imStoriesMuted.reverse().map((story: ListViewMessage, storyIndex: number) => (
+                      {Object.keys(imStoriesMuted).reverse().map((storyKey: any, storyIndex: number) => (
 
-                      <StoryListViewItem story={story} storyIndex={storyIndex} />
+                      <StoryListViewItem id={storyKey} key={storyKey} storyKey={storyKey} story={imStoriesMuted[storyKey]} storyIndex={storyIndex} />
 
-                    ))}
+                      ))}
 
                     </List>
 
