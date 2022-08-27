@@ -166,31 +166,93 @@ div.m-b-0.fab>a {
   .sheet-modal-inner{
     margin: 0 16px;
 
+    .backdrop {
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: 0px;
+      position: fixed;
+      background-color: rgb(0, 0, 0, 0.33);
+
+      &.blurry {
+        backdrop-filter: blur(50px);
+      }
+
+    }
+
+    .im-call-controls-wrapper {
+
+      width: calc(100vw - 64px);
+      bottom: 32px;
+      right: 32px;
+      left: 32px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-content: flex-end;
+      justify-content: space-between;
+      align-items: flex-end;
+      position: fixed;
+      background-color: rgba(0, 0, 0, 0.125);
+      border-radius: 32px;
+      z-index: 2;
+
+      .im-call-button {
+
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+
+        .fab {
+          position: relative;
+          right: unset;
+          left: unset;
+          top: unset;
+          bottom: unset;
+        }
+
+        span {
+          margin: 16px 0 0 0;
+        }
+
+      }
+
+    }
+
     .videos{
         width: 100vw;
         height: 100vh;
-        /*background: url(https://images.ctfassets.net/lh3zuq09vnm2/yBDals8aU8RWtb0xLnPkI/19b391b…/How_tracking_user_behavior_on_your_website_can_improve_customer_experience.png);*/
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: 0px;
+        position: fixed;
         background-size: cover;
         background-position: center;
-        background-color: rgb(0,0,255, 0.6);
-        margin: 0 -16px;
-        position: fixed;
-        opacity: 1;
 
         .remote{
 
           position: absolute;
         
           &.not-connected{
-            width: 1;
-            height: 1;
-            background-color: rgb(255,0,0, 0.2);
+            width: 1px;
+            height: 1px;
+            background-color: rgb(255,0,0, 0);
           }
 
           &.connected{
             width: 100vw;
             height: 100vh;
-            background-color: rgb(0,255,0, 0.2);
+            background-color: rgb(0,255,0, 0);
           }
 
         }
@@ -198,19 +260,19 @@ div.m-b-0.fab>a {
         .local{
           
           position: absolute;
-          border-radius: 10px;
         
           &.not-connected{
             width: 100vw;
             height: 100vh;
-            background-color: rgb(255,0,255, 0.2);
+            background-color: rgb(255,0,255, 0);            
+            border-radius: 0;
           }
 
           &.connected{
-            width: 100%;
-            max-width: 28vw;
+            width: 28vw;
             height: 50vw;
-            background-color: rgb(255,255,0, 0.2);
+            background-color: rgb(255,255,0, 0);
+            border-radius: 16px;
             top: 16px;
             left: 16px;
           }
@@ -248,15 +310,17 @@ div.m-b-0.fab>a {
 
         .block-title {
           margin: auto;
-        }
-
-        .block-title.im-call-status {
-          margin-top: 32px;
-          font-weight: 600;
+          font-weight: 400;
         }
 
         .block-title.block-title-large {
           margin: 16px auto;
+          font-weight: 200;
+        }
+
+        .block-title.block-title-medium {
+          margin-top: 16px;
+          font-weight: 200;
         }
 
       }
@@ -320,7 +384,7 @@ div.m-b-0.fab>a {
         justify-content: space-around;
         align-items: center;
         width: 100%;
-        background-color: rgba(0, 0, 0, 0.25);
+        background-color: rgba(0, 0, 0, 0.125);
         backdrop-filter: blur(16px);
         padding: 16px 0;
         border-radius: 50px;

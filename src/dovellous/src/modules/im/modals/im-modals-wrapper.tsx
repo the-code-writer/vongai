@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 
 import IMVoiceCall from "../sheets/im-voice-call";
 
-export default ({userDataObject}) => {
+export default ({callDataObject}) => {
 
-    const [userDefinedData, setUserDefinedData] = useState(userDataObject);
+    const [callData, setCallData] = useState(callDataObject);
 
     const generateCallID = () => {
 
@@ -66,8 +66,18 @@ export default ({userDataObject}) => {
 
     };
 
+    const onOutgoingCallHandler = (userData)=>{
+        console.log("::: VOICE CALL ACTION - onOutgoingCallHandler", userData);
+
+    };
+
+    const onIncomingCallHandler = (userData)=>{
+        console.log("::: VOICE CALL ACTION - onIncomingCallHandler", userData);
+
+    };
+
     const onAnswerCallHandler = (userData)=>{
-        console.log("::: VOICE CALL ACTION - ", userData);
+        console.log("::: VOICE CALL ACTION - onAnswerCallHandler", userData);
 
     };
 
@@ -97,9 +107,9 @@ export default ({userDataObject}) => {
 
     useEffect(() => {
       
-        setUserDefinedData(userDataObject);
+        setCallData(callDataObject);
     
-    }, [userDataObject])
+    }, [callDataObject])
     
    
     // End Voice Call Actions
@@ -112,7 +122,9 @@ export default ({userDataObject}) => {
                 id={`im-voice-call-sheet-modal`} 
                 key={`im-voice-call-sheet-modal`} 
                 className={`im-voice-call-sheet-modal`}
-                userDefinedData={userDefinedData}
+                isVideoCall={callData.isVideoCall} 
+                isIncoming={callData.isIncomingCall}
+                userDefinedData={callData.userData}
                 onMute={onMuteHandler}
                 onUnMute={onUnMuteHandler}
                 onCameraOn={onCameraOnHandler}
@@ -120,6 +132,8 @@ export default ({userDataObject}) => {
                 onLoudSpeakerOn={onLoudSpekerOnHandler}
                 onLoudSpeakerOff={onLoudSpeakerOffHandler}
                 onEndCall={onEndCallHandler}
+                onIncomingCall={onIncomingCallHandler}
+                onOutgoingCall={onOutgoingCallHandler}
                 onHoldCall={onHoldCallHandler}
                 onAnswerCall={onAnswerCallHandler}
                 onDeclineCall={onDeclineCallHandler}

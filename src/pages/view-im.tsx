@@ -13,6 +13,7 @@ import IMUserProfileSummary from '../dovellous/src/modules/im/sheets/im-user-pro
 import IMModalsWrapper from '../dovellous/src/modules/im/modals/im-modals-wrapper';
 
 import { StorageIM, useStorageIM } from "../dovellous/src/modules/im/store/im-store";
+import K from '../dovellous/src/libraries/app/konstants';
 
 export default () => {
 
@@ -20,7 +21,11 @@ export default () => {
 
   const [currentIMTab, setCurrentIMTab] = useState(1);
 
+  const [callDataObject, setCallDataObject] = useState({isVideoCall: false, isIncomingCall: false, userData: {}});
+
   const [userDataObject, setUserDataObject] = useState({});
+
+  const [imUserData, setIMUserData] = useState({});
 
   const tabIndexChangedHandler = (tabIndex: number) => {
     
@@ -33,8 +38,6 @@ export default () => {
     },3000);
 
   }
-
-  const [imUserData, setIMUserData] = useState({});
 
   const [popupIMContactsListOpened, setPopupIMContactsListOpened] = useState(false);
 
@@ -85,39 +88,29 @@ export default () => {
 
     console.log(":::ON VOICE CALL HANDLER:::", userData); 
 
-    /*
+    const callDataObject = {
+      isVideoCall: false,
+      isIncomingCall: false,
+      userData: 
+      {
+        username: userData.senderName,
+        phoneNumber: userData.senderNumber,
+        displayName: userData.displayName,
+        displayStatus: userData.text,
+        displayPhoto: userData.avatar,
+        emailAddress: '',
+      }
+    };
 
-    avatar: "https://cdn.dovellous.com/img/people/72.png"
-badge: 6
-deliveryStatus: "6"
-displayName: "Hobart Gottlieb"
-isDeleted: false
-isGroup: true
-isMute: true
-isSent: false
-isTyping: false
-messageType: {type: 'Missed Call ', iconClass: 'color-red', icon: {…}}
-senderName: "Imogene Glover"
-senderNumber: "471.853.3628 x888"
-text: "ab eos et aut ut iste consequuntur"
-time: 1661508078135
-unseen: "3"
-userOnlineStatus: "3"
-uuid: ƒ ()
-[[Prototype]]: Object
+    onIncomingVoiceCallHandler(callDataObject);
 
-    */
+  };
+  
+  const onIncomingVoiceCallHandler = (callDataObject: any) => {
 
-    const userDataObject = {
-      username: userData.senderName,
-      phoneNumber: userData.senderNumber,
-      displayName: userData.displayName,
-      displayStatus: userData.text,
-      displayPhoto: userData.avatar,
-      emailAddress: '',
-    }
+    console.log(":::ON INCOMING VOICE CALL HANDLER !!! :::", callDataObject); 
 
-    setUserDataObject(userDataObject);
+    setCallDataObject(callDataObject);
 
     f7.sheet.open('.im-voice-call-sheet-modal');
 
@@ -143,7 +136,14 @@ uuid: ƒ ()
  
   useEffect(() => {
 
-    f7ready((framework7IO) => {
+    f7ready((Framework7App) => {
+
+      Framework7App.dovellousEventsOn(
+        K.ModuleComponentsLibs.im.callScreen.INCOMING,
+        (callDataObject: any)=>{
+          onIncomingVoiceCallHandler(callDataObject);
+        }
+      );
 
       StorageIM.dispatch('insertFakeMessages', null);
       StorageIM.dispatch('insertFakeStories', null);
@@ -183,7 +183,7 @@ uuid: ƒ ()
         onContactInfo={onContactInfoHandler}
         /> 
 
-        <IMModalsWrapper userDataObject={userDataObject} />        
+        <IMModalsWrapper callDataObject={callDataObject} />        
 
     </React.Fragment>
 

@@ -15,6 +15,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onEndedCall,
     onHoldCall,
     onUnHoldCall,
+    onIncomingCall,
+    onOutgoingCall,
     onAnswerCall,
     onDeclineCall,
     onAddParticipant
@@ -78,6 +80,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const [isMuteOn, setisMuteOn] = useState(false);
     const [isCameraOn, setIsCameraOn] = useState(isVideoCall);
+    const [isFrontCamera, setIsFrontCamera] = useState(true);
     const [isLoudSpeakerOn, setIsLoudSpeakerOn] = useState(false);
     const [isOnHold, setIsOnHold] = useState(false);
     const [isCallEnded, setIsCallEnded] = useState(false);
@@ -95,6 +98,16 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         }
 
     };
+
+    const includedInViewState = (states: any) => {
+
+        if(Array.isArray(states)){
+            return states.includes(currentViewState);
+        }
+
+        return false;
+
+    }
 
     const onMuteToggle = () => {
 
@@ -115,6 +128,12 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         setisMuteOn(false);
 
         onUnMute(getCallData());
+
+    };
+
+    const onFrontCameraToggle = () => {
+
+        setIsFrontCamera(!isFrontCamera);
 
     };
 
@@ -164,7 +183,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onHangUpToggle = () => {
 
-        //
+        onEndCallHandler();
 
     };
 
@@ -221,6 +240,32 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         );
 
         onUnHoldCall(getCallData());
+
+    };
+
+    const onIncomingCallHandler = () => {
+
+        setIsCallAnswered(false);
+        setIsCallDeclined(false);
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.INCOMING
+        );
+
+        onIncomingCall(getCallData());
+
+    };
+
+    const onOutgoingCallHandler = () => {
+
+        setIsCallAnswered(false);
+        setIsCallDeclined(false);
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.OUTGOING
+        );
+
+        onOutgoingCall(getCallData());
 
     };
 
@@ -305,6 +350,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onCloseThisCallScreen = () => {
 
+        onCloseAllCallScreenSheetsHandler();
+
         f7.sheet.close(`.${id}`);
 
     }
@@ -353,15 +400,29 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         setCurrentUserData(userDefinedData);
 
-        setCurrentViewState(
-            isIncoming ? 
-            K.ModuleComponentsLibs.im.callScreen.INCOMING : 
-            K.ModuleComponentsLibs.im.callScreen.OUTGOING
-        );
+        userObject.username = userDefinedData.username,
+        userObject.displayName = userDefinedData.displayName,
+        userObject.displayStatus = userDefinedData.displayStatus,
+        userObject.displayStatus = userDefinedData.displayStatus,
+        userObject.displayPhoto = userDefinedData.displayPhoto,
+        userObject.phoneNumber = userDefinedData.phoneNumber,
+        userObject.emailAddress = userDefinedData.emailAddress,
 
+        callObject.uid = null;
+        callObject.destination = {displayName: ``, phoneNumber: ``};
+        callObject.origin = {displayName: ``, phoneNumber: ``};
+        callObject.callStarted = new Date().getTime();
+        callObject.callEnded = 0;
+        callObject.isVideoCall = isVideoCall;
+        callObject.isIncoming = isIncoming;
+
+        isIncoming ? onIncomingCallHandler() : onOutgoingCallHandler();
+        
         startBasicCall();
 
-        console.log(":::::::::: USER DATA :::::::::::", userDefinedData);
+
+
+        console.log(":::::::::: CALL DATA :::::::::::", getCallData());
         
     }, [userDefinedData]);
 
@@ -384,6 +445,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                 style={{backgroundImage: `url(${currentUserData.displayPhoto})`}}
             >
 
+                <div className="backdrop blurry">
+
+                </div>
+
                 <div className="videos">
 
                     <div className="remote connected" />
@@ -404,18 +469,25 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         <img src={currentUserData.displayPhoto} />
                         <BlockTitle large>{currentUserData.displayName}</BlockTitle>
                         <BlockTitle>{currentUserData.phoneNumber}</BlockTitle>
-                        <BlockTitle medium className="im-call-status">
-                            { currentViewState === K.ModuleComponentsLibs.im.callScreen.CONNECTED ? (
-                                currentCallDuration==="00:00" ? (
-                                    currentViewState
-                                ):(
-                                    currentCallDuration
-                                )
-                            ):(
-                                currentViewState
-                            )}
+                        <BlockTitle medium >
+                            {currentViewState}
                         </BlockTitle>
+                        {includedInViewState(
+                            [
+                                K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                                K.ModuleComponentsLibs.im.callScreen.ENDED,
+                            ]
+                        ) && (
+                        <BlockTitle medium >
+                            {currentCallDuration}
+                        </BlockTitle>
+                        )}
                     </div>
+    
+                    {includedInViewState(
+                        [K.ModuleComponentsLibs.im.callScreen.CONNECTED]
+                    ) && (
+                    
                     <div className="call-actions" >
                         <Fab position="center-center" color="black" >
                             <Icon ios="f7:plus" aurora="f7:plus" md="material:add"></Icon>
@@ -436,8 +508,30 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                             </FabButtons>
                         </Fab>
                     </div>
+
+                    )}
+
+                    {includedInViewState(
+                        [
+                            K.ModuleComponentsLibs.im.callScreen.OUTGOING,
+                            K.ModuleComponentsLibs.im.callScreen.PAUSED,
+                            K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                        ]
+                    ) && (
                     
                     <Block inset className={`call-controls`}>
+                        {isCameraOn ? (
+                        <Button outline large
+                            id="im-solid-rounded-loudspeaker"
+                            key="im-solid-rounded-loudspeaker"
+                            className="im-solid-rounded color-white"
+                            onClick={onFrontCameraToggle} 
+                            iconIos={`f7:${isFrontCamera?'camera':'camera'}`}
+                            iconMd={`material:${isFrontCamera?'camera':'camera'}`}
+                            iconAurora={`f7:${isFrontCamera?'camera':'camera'}`}
+                            iconSize={24} 
+                        />
+                        ):(
                         <Button outline large
                             id="im-solid-rounded-loudspeaker"
                             key="im-solid-rounded-loudspeaker"
@@ -447,7 +541,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                             iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
                             iconAurora={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
                             iconSize={24} 
-                        />
+                        /> 
+                        )}
                         <Button outline large
                             id="im-solid-rounded-mute"
                             key="im-solid-rounded-mute"
@@ -479,8 +574,82 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                             iconSize={24} 
                         />
                     </Block>
+
+                    )}
                     
                 </PageContent>
+
+                {includedInViewState(
+                    [K.ModuleComponentsLibs.im.callScreen.ENDED]
+                ) && (
+
+                <div className="im-call-controls-wrapper ended">
+
+                    <div className="im-call-button" onClick={onOutgoingCallHandler}>
+
+                        <Fab color="green" >
+                                <Icon 
+                                    ios="f7:phone_up_fill" 
+                                    aurora="f7:phone_up_fill" 
+                                    md="material:phone_enabled"></Icon>
+                        </Fab>
+
+                        <span>Call again</span>
+
+                    </div>
+
+                    <div className="im-call-button" onClick={onCloseThisCallScreen}>
+
+                        <Fab color="red" >
+                                <Icon 
+                                    ios="f7:close" 
+                                    aurora="f7:close" 
+                                    md="material:close"></Icon>
+                        </Fab>
+
+                        <span>Cancel</span>
+
+                    </div>
+
+                </div>
+
+                )}
+
+                {includedInViewState(
+                    [K.ModuleComponentsLibs.im.callScreen.INCOMING]
+                ) && (
+
+                <div className="im-call-controls-wrapper incoming">
+
+                    <div className="im-call-button" onClick={onAnswerCallHandler}>
+
+                        <Fab color="green" >
+                                <Icon 
+                                    ios="f7:phone_up_fill" 
+                                    aurora="f7:phone_up_fill" 
+                                    md="material:phone_enabled"></Icon>
+                        </Fab>
+
+                        <span>Accept</span>
+
+                    </div>
+
+                    <div className="im-call-button" onClick={onDeclineCallHandler}>
+
+                        <Fab color="red" >
+                                <Icon 
+                                    ios="f7:phone_down_fill" 
+                                    aurora="f7:phone_down_fill" 
+                                    md="material:phone_enabled"></Icon>
+                        </Fab>
+
+                        <span>Decline</span>
+
+                    </div>
+
+                </div>
+
+                )}
 
             </Sheet>
 
