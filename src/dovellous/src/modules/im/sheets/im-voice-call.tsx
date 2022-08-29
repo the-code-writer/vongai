@@ -1,8 +1,9 @@
 import { Block, BlockTitle, Button, Col, f7, Fab, FabButton, FabButtons, Icon, Link, List, ListItem, Navbar, NavRight, NavTitle, PageContent, Row, Segmented, Sheet } from "framework7-react";
-import React, { useEffect, useState } from "react";
-
+import React, { useCallback, useEffect, useState } from "react";
+import { useStopwatch } from 'react-timer-hook';
 import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng"
 import K from "../../../libraries/app/konstants";
+import Dom7 from "dom7";
 
 export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onMute,
@@ -76,8 +77,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const [currentViewState, setCurrentViewState] = useState(K.ModuleComponentsLibs.im.callScreen.BUSY);
     
-    const [currentCallDuration, setCurrentCallDuration] = useState("00:00");
-
     const [isMuteOn, setisMuteOn] = useState(false);
     const [isCameraOn, setIsCameraOn] = useState(isVideoCall);
     const [isFrontCamera, setIsFrontCamera] = useState(true);
@@ -89,6 +88,66 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const [callHasParticipants, setCallHasParticipants] = useState(false);
     const [callParticipants, setCallParticipants] = useState([]);
     const [isCallInProgress, setIsCallInProgress] = useState(false);
+
+    const CallTimer = useCallback(({visible}) => {
+
+        const {
+          seconds,
+          minutes,
+          hours,
+          days,
+          isRunning,
+          start,
+          pause,
+          reset,
+        } = useStopwatch({ autoStart: false });
+
+        useEffect(()=>{
+
+            f7.on('startCallTimer', ()=>{
+
+                start();
+
+            });
+
+            f7.on('pauseCallTimer', ()=>{
+
+                pause();
+
+            });
+
+            f7.on('resetCallTimer', ()=>{
+
+                reset();
+
+            });
+
+            f7.on('stopCallTimer', ()=>{
+
+                pause();
+
+            });
+
+        },[]);
+
+        return (
+          <BlockTitle medium className="im-call-timer" style={{textAlign: 'center'}}>
+            {visible ? (
+                <React.Fragment>
+                    <>{parseInt(days)>0 && (<span>{String(days).padStart(2, '0')}{':'}</span>)}</>
+                    <>{parseInt(hours)>0 && (<span>{String(hours).padStart(2, '0')}{':'}</span>)}</>
+                    <>{<span>{String(minutes).padStart(2, '0')}{':'}</span>}</>
+                    <>{<span>{String(seconds).padStart(2, '0')}</span>}</>
+                </React.Fragment>
+            ):(
+                <React.Fragment>
+                    <span></span>
+                </React.Fragment>
+            )}
+          </BlockTitle>
+        );
+
+    },[]);
 
     const getCallData = () => {
 
@@ -189,23 +248,31 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onEndCallHandler = () => {
 
+        callObject.callEnded = new Date().getTime();
+
         setIsCallEnded(true);
 
         setCurrentViewState(
             K.ModuleComponentsLibs.im.callScreen.ENDED
         );
+
+        onCallDisConnected();
 
         onEndCall(getCallData());
 
     };
 
     const onEndedCallHandler = () => {
+        
+        callObject.callEnded = new Date().getTime();
 
         setIsCallEnded(true);
 
         setCurrentViewState(
             K.ModuleComponentsLibs.im.callScreen.ENDED
         );
+
+        onCallDisConnected();
 
         onEndedCall(getCallData());
 
@@ -269,7 +336,41 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     };
 
+    const onCallConnected = ()=>{
+
+        f7.emit('startCallTimer');
+
+    }
+
+    const onCallDisConnected = ()=>{
+
+        f7.emit('stopCallTimer');
+
+        const duration = Dom7('.im-call-timer').text();
+
+        const _dint = setInterval(()=>{
+
+            Dom7('.im-call-timer').hide()
+
+            setTimeout(()=>{
+                
+            Dom7('.im-call-timer').show()
+
+            },300)
+
+        }, 350);
+
+        setTimeout(()=>{
+            clearInterval(_dint);
+        }, 2000);
+
+        console.log("::>>> CALL SUMMARY <<<::", duration);
+
+    }
+
     const onAnswerCallHandler = () => {
+
+        onCallConnected();
 
         setIsCallAnswered(true);
         setIsCallDeclined(false);
@@ -390,6 +491,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         const uid = await rtc.client.join(options.appId, options.channel, options.token, null);
 
+        callObject.uid = uid;
+
         setCurrentCallUID(uid);
 
         callObject.uid = uid;
@@ -400,17 +503,24 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         setCurrentUserData(userDefinedData);
 
-        userObject.username = userDefinedData.username,
-        userObject.displayName = userDefinedData.displayName,
-        userObject.displayStatus = userDefinedData.displayStatus,
-        userObject.displayStatus = userDefinedData.displayStatus,
-        userObject.displayPhoto = userDefinedData.displayPhoto,
-        userObject.phoneNumber = userDefinedData.phoneNumber,
-        userObject.emailAddress = userDefinedData.emailAddress,
+        userObject.username = userDefinedData.username;
+        userObject.displayName = userDefinedData.displayName;
+        userObject.displayStatus = userDefinedData.displayStatus;
+        userObject.displayStatus = userDefinedData.displayStatus;
+        userObject.displayPhoto = userDefinedData.displayPhoto;
+        userObject.phoneNumber = userDefinedData.phoneNumber;
+        userObject.emailAddress = userDefinedData.emailAddress;
 
-        callObject.uid = null;
-        callObject.destination = {displayName: ``, phoneNumber: ``};
-        callObject.origin = {displayName: ``, phoneNumber: ``};
+        callObject.destination = {
+            displayName: userDefinedData.displayName, 
+            phoneNumber: userDefinedData.phoneNumber
+        };
+
+        callObject.origin = {
+            displayName: userDefinedData.displayName, 
+            phoneNumber: userDefinedData.phoneNumber
+        };
+
         callObject.callStarted = new Date().getTime();
         callObject.callEnded = 0;
         callObject.isVideoCall = isVideoCall;
@@ -419,8 +529,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         isIncoming ? onIncomingCallHandler() : onOutgoingCallHandler();
         
         startBasicCall();
-
-
 
         console.log(":::::::::: CALL DATA :::::::::::", getCallData());
         
@@ -472,16 +580,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         <BlockTitle medium >
                             {currentViewState}
                         </BlockTitle>
-                        {includedInViewState(
-                            [
-                                K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-                                K.ModuleComponentsLibs.im.callScreen.ENDED,
-                            ]
-                        ) && (
-                        <BlockTitle medium >
-                            {currentCallDuration}
-                        </BlockTitle>
-                        )}
+                        <CallTimer visible={
+                            includedInViewState(
+                                [
+                                    K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                                    K.ModuleComponentsLibs.im.callScreen.ENDED,
+                                ]
+                            )} />
                     </div>
     
                     {includedInViewState(
@@ -728,3 +833,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     );
 
 };
+function useMemo(arg0: () => void, arg1: never[]) {
+    throw new Error("Function not implemented.");
+}
+

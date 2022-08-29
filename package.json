@@ -96,6 +96,7 @@
     "react-scripts": "^5.0.1",
     "react-scroll": "^1.8.7",
     "react-spring-lightbox": "^1.7.0",
+    "react-timer-hook": "^3.0.5",
     "react-usestateref": "^1.0.8",
     "react-web-workers": "^1.0.1",
     "reactjs-localstorage": "^1.0.1",
