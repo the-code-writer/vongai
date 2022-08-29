@@ -625,29 +625,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                     ) && (
                     
                     <Block inset className={`call-controls`}>
-                        {isCameraOn ? (
-                        <Button outline large
-                            id="im-solid-rounded-loudspeaker"
-                            key="im-solid-rounded-loudspeaker"
-                            className="im-solid-rounded color-white"
-                            onClick={onFrontCameraToggle} 
-                            iconIos={`f7:${isFrontCamera?'camera':'camera'}`}
-                            iconMd={`material:${isFrontCamera?'camera':'camera'}`}
-                            iconAurora={`f7:${isFrontCamera?'camera':'camera'}`}
-                            iconSize={24} 
-                        />
-                        ):(
-                        <Button outline large
-                            id="im-solid-rounded-loudspeaker"
-                            key="im-solid-rounded-loudspeaker"
-                            className="im-solid-rounded color-white"
-                            onClick={onLoudSpeakerToggle} 
-                            iconIos={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
-                            iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
-                            iconAurora={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
-                            iconSize={24} 
-                        /> 
-                        )}
+                        
                         <Button outline large
                             id="im-solid-rounded-mute"
                             key="im-solid-rounded-mute"
@@ -658,6 +636,35 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                             iconAurora={`f7:${!isMuteOn?'mic_fill':'mic_slash_fill'}`}
                             iconSize={24} 
                         />
+
+                        {isCameraOn ? (
+
+                        <Button outline large
+                            id="im-solid-rounded-loudspeaker"
+                            key="im-solid-rounded-loudspeaker"
+                            className="im-solid-rounded color-white"
+                            onClick={onFrontCameraToggle} 
+                            iconIos={`f7:${isFrontCamera?'camera':'camera'}`}
+                            iconMd={`material:${isFrontCamera?'camera':'camera'}`}
+                            iconAurora={`f7:${isFrontCamera?'camera':'camera'}`}
+                            iconSize={24} 
+                        />
+                        
+                        ):(
+
+                        <Button outline large
+                            id="im-solid-rounded-loudspeaker"
+                            key="im-solid-rounded-loudspeaker"
+                            className="im-solid-rounded color-white"
+                            onClick={onLoudSpeakerToggle} 
+                            iconIos={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
+                            iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
+                            iconAurora={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
+                            iconSize={24} 
+                        />
+
+                        )}
+
                         <Button outline large
                             id="im-solid-rounded-camera"
                             key="im-solid-rounded-camera"
@@ -668,6 +675,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                             iconAurora={`f7:${isCameraOn?'videocam_fill':'videocam'}`}
                             iconSize={24} 
                         />
+
                         <Button large fill textColor="white" bgColor="red"
                             id="im-solid-rounded-hangup"
                             key="im-solid-rounded-hangup"
@@ -678,6 +686,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                             iconAurora={`f7:${isLoudSpeakerOn?'phone_down_fill':'phone_down_fill'}`}
                             iconSize={24} 
                         />
+
                     </Block>
 
                     )}
