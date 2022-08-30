@@ -71,7 +71,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         isIncoming: false,
     }
 
-    const [currentUserData, setCurrentUserData] = useState(userDefinedData);
+    const [currentUserData, setCurrentUserData] = useState(userObject);
+
+    const [currentCallData, setCurrentCallData] = useState(callObject);
 
     const [currentCallUID, setCurrentCallUID] = useState('');
 
@@ -455,6 +457,25 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         f7.sheet.close(`.${id}`);
 
+        setCurrentUserData({
+            username: null,
+            displayName: null,
+            displayStatus: null,
+            displayPhoto: null,
+            phoneNumber: null,
+            emailAddress: null,
+        });
+
+        setCurrentCallData({
+            uid: null,
+            destination: null,
+            origin: null,
+            callStarted: 0,
+            callEnded: 0,
+            isVideoCall: false,
+            isIncoming: false,
+        });
+
     }
 
     const client: IAgoraRTCClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -497,11 +518,51 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         callObject.uid = uid;
 
+        // Create an audio track from the audio sampled by a microphone.
+        rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        // Create a video track from the video captured by a camera.
+        rtc.localVideoTrack = await AgoraRTC.createCameraVideoTrack();
+        // Publish the local audio and video tracks to the channel.
+        await rtc.client.publish([rtc.localAudioTrack, rtc.localVideoTrack]);
+
+        rtc.client.on("user-published", async (user, mediaType) => {
+            // Subscribe to a remote user.
+            await rtc.client.subscribe(user, mediaType);
+            console.log("subscribe success");
+          
+            // If the subscribed track is video.
+            if (mediaType === "video") {
+              // Get `RemoteVideoTrack` in the `user` object.
+              const remoteVideoTrack = user.videoTrack;
+              // Dynamically create a container in the form of a DIV element for playing the remote video track.
+              const playerContainer = document.createElement("div");
+              // Specify the ID of the DIV container. You can use the `uid` of the remote user.
+              playerContainer.id = user.uid.toString();
+              playerContainer.style.width = "640px";
+              playerContainer.style.height = "480px";
+              document.body.append(playerContainer);
+          
+              // Play the remote video track.
+              // Pass the DIV container and the SDK dynamically creates a player in the container for playing the remote video track.
+              remoteVideoTrack.play(playerContainer);
+          
+              // Or just pass the ID of the DIV container.
+              // remoteVideoTrack.play(playerContainer.id);
+            }
+          
+            // If the subscribed track is audio.
+            if (mediaType === "audio") {
+              // Get `RemoteAudioTrack` in the `user` object.
+              const remoteAudioTrack = user.audioTrack;
+              // Play the audio track. No need to pass any DOM element.
+              remoteAudioTrack.play();
+            }
+          });
+          
+
     }
 
     useEffect(() => {
-
-        setCurrentUserData(userDefinedData);
 
         userObject.username = userDefinedData.username;
         userObject.displayName = userDefinedData.displayName;
@@ -525,6 +586,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         callObject.callEnded = 0;
         callObject.isVideoCall = isVideoCall;
         callObject.isIncoming = isIncoming;
+
+        setCurrentUserData(userObject);
+
+        setCurrentCallData(callObject);
 
         isIncoming ? onIncomingCallHandler() : onOutgoingCallHandler();
         
@@ -590,6 +655,14 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                     </div>
     
                     {includedInViewState(
+                        [K.ModuleComponentsLibs.im.callScreen.PAUSED]
+                    ) && (
+                    <div className="call-actions" onClick={onActionsHoldHandler}>
+                        <Button large outline round text="Resume Call" color="green" />
+                    </div>
+                    )}
+
+                    {includedInViewState(
                         [K.ModuleComponentsLibs.im.callScreen.CONNECTED]
                     ) && (
                     
@@ -627,13 +700,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                     <Block inset className={`call-controls`}>
                         
                         <Button outline large
-                            id="im-solid-rounded-mute"
-                            key="im-solid-rounded-mute"
+                            id="im-solid-rounded-loudspeaker"
+                            key="im-solid-rounded-loudspeaker"
                             className="im-solid-rounded color-white"
-                            onClick={onMuteToggle} 
-                            iconIos={`f7:${!isMuteOn?'mic_fill':'mic_slash_fill'}`}
-                            iconMd={`material:${!isMuteOn?'mic':'mic_off'}`}
-                            iconAurora={`f7:${!isMuteOn?'mic_fill':'mic_slash_fill'}`}
+                            onClick={onLoudSpeakerToggle} 
+                            iconIos={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
+                            iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
+                            iconAurora={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
                             iconSize={24} 
                         />
 
@@ -653,13 +726,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         ):(
 
                         <Button outline large
-                            id="im-solid-rounded-loudspeaker"
-                            key="im-solid-rounded-loudspeaker"
+                            id="im-solid-rounded-mute"
+                            key="im-solid-rounded-mute"
                             className="im-solid-rounded color-white"
-                            onClick={onLoudSpeakerToggle} 
-                            iconIos={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
-                            iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
-                            iconAurora={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
+                            onClick={onMuteToggle} 
+                            iconIos={`f7:${!isMuteOn?'mic_fill':'mic_slash_fill'}`}
+                            iconMd={`material:${!isMuteOn?'mic':'mic_off'}`}
+                            iconAurora={`f7:${!isMuteOn?'mic_fill':'mic_slash_fill'}`}
                             iconSize={24} 
                         />
 
@@ -708,7 +781,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                                     md="material:phone_enabled"></Icon>
                         </Fab>
 
-                        <span>Call again</span>
+                        <span>Call</span>
 
                     </div>
 
@@ -721,7 +794,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                                     md="material:close"></Icon>
                         </Fab>
 
-                        <span>Cancel</span>
+                        <span>Close</span>
 
                     </div>
 

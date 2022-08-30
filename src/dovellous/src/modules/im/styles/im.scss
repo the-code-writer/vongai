@@ -196,7 +196,7 @@ div.m-b-0.fab>a {
       justify-content: space-between;
       align-items: flex-end;
       position: fixed;
-      background-color: rgba(0, 0, 0, 0.125);
+      background-color: rgba(0, 0, 0, 0);
       border-radius: 32px;
       z-index: 2;
 
@@ -290,6 +290,7 @@ div.m-b-0.fab>a {
       align-content: space-between;
       flex-direction: column;
       flex-wrap: nowrap;
+      overflow:hidden;
 
       .call-remote-user {
 
@@ -342,7 +343,7 @@ div.m-b-0.fab>a {
           margin-bottom: 32px;
           transform: translateY(-32px) scale(0.3);
           transform-origin: center bottom;
-          transition-delay: 10ms;
+          transition-delay: 1ms;
         }
 
         .fab-buttons-center a:nth-child(2) {
@@ -352,7 +353,7 @@ div.m-b-0.fab>a {
           margin-left: 32px;
           transform: translateX(-32px) scale(0.3);
           transform-origin: left center;
-          transition-delay: 100ms;
+          transition-delay: 50ms;
         }
 
         .fab-buttons-center a:nth-child(3) {
@@ -362,7 +363,7 @@ div.m-b-0.fab>a {
           margin-top: 32px;
           transform: translateY(32px) scale(0.3);
           transform-origin: center top;
-          transition-delay: 200ms;
+          transition-delay: 100ms;
         }
 
         .fab-buttons-center a:nth-child(4) {
@@ -372,7 +373,7 @@ div.m-b-0.fab>a {
           margin-right: 32px;
           transform: translateX(32px) scale(0.3);
           transform-origin: right center;
-          transition-delay: 300ms;
+          transition-delay: 150ms;
         }
 
       }
