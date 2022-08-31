@@ -25,12 +25,32 @@
   <link rel="manifest" href="./assets/manifest.33953b26.json">
   
   <!-- built styles file will be auto injected -->
-  <script type="module" crossorigin src="./assets/index.c96a2985.js"></script>
-  <link rel="stylesheet" href="./assets/index.3324ddcc.css">
+  <script type="module" crossorigin src="./assets/index.ac103b16.js"></script>
+  <link rel="stylesheet" href="./assets/index.7d4bcffe.css">
 </head>
 <body>
   <div id="app"></div>
   
   
+  <script>
+
+    //DEV
+
+    function incall(){
+      F7React.dovellousEventsEmit(
+        F7React.dovellous.konstants.ModuleComponentsLibs.im.callScreen.INCOMING,
+        {isIncomingCall: true, isVideoCall: true, userData: 
+        {
+              username: 'Jane Marry Miller',
+              phoneNumber: '+263 (77) 212 8622',
+              displayName: 'Jane Marry',
+              displayStatus: 'Hi there im using Vong.ai',
+              displayPhoto: 'http://cdn.dovellous.com/img/people/39.png',
+              emailAddress: 'jane.marry@vong.ai',
+            }}
+        );
+    }
+
+  </script>
 </body>
 </html>

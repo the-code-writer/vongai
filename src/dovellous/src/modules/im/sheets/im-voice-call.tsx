@@ -541,9 +541,12 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         // Publish the local audio and video tracks to the channel.
         await rtc.client.publish([rtc.localAudioTrack, rtc.localVideoTrack]);
 
+        const playerContainerWrapper = Dom7("#im-player-container-remote");
+
         rtc.client.on("user-published", async (user, mediaType) => {
             // Subscribe to a remote user.
             await rtc.client.subscribe(user, mediaType);
+
             console.log("subscribe success");
           
             // If the subscribed track is video.
@@ -551,13 +554,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
               // Get `RemoteVideoTrack` in the `user` object.
               const remoteVideoTrack = user.videoTrack;
 
-                //   // Dynamically create a container in the form of a DIV element for playing the remote video track.
-                //   const playerContainer = document.createElement("div");
-                //   // Specify the ID of the DIV container. You can use the `uid` of the remote user.
-                //   playerContainer.id = user.uid.toString();
-                //   playerContainer.style.width = "640px";
-                //   playerContainer.style.height = "480px";
-                //   document.body.append(playerContainer);
+                // Dynamically create a container in the form of a DIV element for playing the remote video track.
+                const playerContainer = document.createElement("div");
+                // Specify the ID of the DIV container. You can use the `uid` of the remote user.
+                playerContainer.id = user.uid.toString();
+                playerContainer.style.width = "240px";
+                playerContainer.style.height = "320px";
+                playerContainerWrapper.append(playerContainer);
           
                 // Play the remote video track.
                 // Pass the DIV container and the SDK dynamically creates a player in the container for playing the remote video track.
@@ -566,11 +569,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
           
                 // Or just pass the ID of the DIV container.
 
-                if(callParticipants.length>1){
-                    remoteVideoTrack.play('im-player-container-remote');
-                }else{
-                    remoteVideoTrack.play('im-player-container-local');
-                }
+                remoteVideoTrack.play('im-player-container-remote');
+
+                // if(callParticipants.length>1){
+                //     remoteVideoTrack.play('im-player-container-remote');
+                // }else{
+                //     remoteVideoTrack.play('im-player-container-local');
+                // }
 
                 
 
@@ -596,7 +601,53 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         });
 
+        rtc.client.on("user-unpublished", user => {
+            // Get the dynamically created DIV container.
+            const playerContainer = document.getElementById(user.uid.toString());
+            // Destroy the container.
+            playerContainer.remove();
+
+        });
+
     }
+
+    async function leaveCall() {
+        // Destroy the local audio and video tracks.
+        rtc.localAudioTrack.close();
+        rtc.localVideoTrack.close();
+      
+        // Traverse all remote users.
+        rtc.client.remoteUsers.forEach(user => {
+          // Destroy the dynamically created DIV container.
+          const playerContainer = document.getElementById(user.uid);
+          playerContainer && playerContainer.remove();
+        });
+      
+        // Leave the channel.
+        await rtc.client.leave();
+    }
+
+    {/*
+
+
+    "DISCONNECTED": Disconnected. In this state, the SDK does not automatically reconnect. This state indicates that the user is in any of the following stages:
+The user has not joined the channel by calling join.
+The user has left the channel by calling leave.
+The user has been kicked out of the channel by the Agora server or the connection has failed.
+"CONNECTING": Connecting. This state indicates that the user is calling join.
+"CONNECTED": Connected. This state indicates that the user has joined the channel and can publish or subscribe to media tracks in the channel.
+"RECONNECTING": Disconnected and reconnecting. If the connection between the SDK and the server is interrupted due to network disconnection or switching, the SDK automatically reconnects and enters this state.
+"DISCONNECTING": Disconnecting. This state indicates that the user is calling leave.
+
+    When joining a channel, the SDK may throw the following errors due to improper use of the SDK or network abnormalities:
+
+    INVALID_PARAMS: The parameters are incorrect, for example, an invalid token is provided.
+    INVALID_OPERATION: An incorrect operation. This error is usually caused by joining a channel repeatedly. Ensure that you call leave before joining a channel again.
+    OPERATION_ABORTED: The joining is aborted, which means that leave is called before the method call of join succeeds.
+    UNEXPECTED_RESPONSE: The Agora server returns an unexpected response, usually because the App ID or token authentication fails. For example, you have enabled the App Certificate but do not pass a token in join.
+    UID_CONFLICT: Multiple AgoraRTCClient objects use the same user ID.
+
+    */}
 
     useEffect(() => {
 
@@ -732,7 +783,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                     )}
 
                     {includedInViewState(
-                        [K.ModuleComponentsLibs.im.callScreen.CONNECTED]
+                        [
+                            K.ModuleComponentsLibs.im.callScreen.INCOMING,
+                            K.ModuleComponentsLibs.im.callScreen.OUTGOING,
+                            K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                        ]
                     ) && (
                     
                     <div className="call-actions" >
@@ -785,10 +840,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         <Button outline large
                             id="im-solid-rounded-loudspeaker"
                             key="im-solid-rounded-loudspeaker"
-                            className="im-solid-rounded color-white"
+                            className={`im-solid-rounded ${isCameraOn?(isFrontCamera?'color-white':'color-yellow'):'color-white'}`}
                             onClick={onFrontCameraToggle} 
                             iconIos={`f7:${isFrontCamera?'camera':'camera'}`}
-                            iconMd={`material:${isFrontCamera?'camera':'camera'}`}
+                            iconMd={`material:${isFrontCamera?'cameraswitch':'cameraswitch'}`}
                             iconAurora={`f7:${isFrontCamera?'camera':'camera'}`}
                             iconSize={24} 
                         />
