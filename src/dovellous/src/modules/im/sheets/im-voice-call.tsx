@@ -4,6 +4,7 @@ import { useStopwatch } from 'react-timer-hook';
 import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng"
 import K from "../../../libraries/app/konstants";
 import Dom7 from "dom7";
+import Blockchain from '../../../libraries/cryptography/blockchain';
 
 export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onMute,
@@ -81,6 +82,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     
     const [isMuteOn, setisMuteOn] = useState(false);
     const [isCameraOn, setIsCameraOn] = useState(isVideoCall);
+    const [isIncomingCall, setIsIncomingCall] = useState(isIncoming);
     const [isFrontCamera, setIsFrontCamera] = useState(true);
     const [isLoudSpeakerOn, setIsLoudSpeakerOn] = useState(false);
     const [isOnHold, setIsOnHold] = useState(false);
@@ -88,7 +90,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const [isCallAnswered, setIsCallAnswered] = useState(false);
     const [isCallDeclined, setIsCallDeclined] = useState(false);
     const [callHasParticipants, setCallHasParticipants] = useState(false);
-    const [callParticipants, setCallParticipants] = useState([]);
+    const [callParticipants, setCallParticipants] = useState([{participantData: userDefinedData}]);
     const [isCallInProgress, setIsCallInProgress] = useState(false);
 
     const CallTimer = useCallback(({visible}) => {
@@ -133,29 +135,27 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         },[]);
 
         return (
-          <BlockTitle medium className="im-call-timer" style={{textAlign: 'center'}}>
+          <React.Fragment>
             {visible ? (
                 <React.Fragment>
-                    <>{parseInt(days)>0 && (<span>{String(days).padStart(2, '0')}{':'}</span>)}</>
-                    <>{parseInt(hours)>0 && (<span>{String(hours).padStart(2, '0')}{':'}</span>)}</>
-                    <>{<span>{String(minutes).padStart(2, '0')}{':'}</span>}</>
-                    <>{<span>{String(seconds).padStart(2, '0')}</span>}</>
+                    <>{parseInt(days) > 0 && (String(days).padStart(2, '0')`:`)}</>
+                    <>{parseInt(hours) > 0 && (String(hours).padStart(2, '0')`:`)}</>
+                    <>{`${String(minutes).padStart(2, '0')}:`}</>
+                    <>{`${String(seconds).padStart(2, '0')}`}</>
                 </React.Fragment>
             ):(
-                <React.Fragment>
-                    <span></span>
-                </React.Fragment>
+                <React.Fragment />
             )}
-          </BlockTitle>
+          </React.Fragment>
         );
 
     },[]);
 
     const getCallData = () => {
-
+        
         return {
-            userObject: userObject,
-            callObject: callObject,
+            userObject: currentUserData,
+            callObject: currentCallData,
         }
 
     };
@@ -250,9 +250,14 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onEndCallHandler = () => {
 
-        callObject.callEnded = new Date().getTime();
+        const _currentCallData = currentCallData;
+
+        _currentCallData.callEnded = new Date().getTime();
+
+        setCurrentCallData(_currentCallData);
 
         setIsCallEnded(true);
+        setIsCallInProgress(false);
 
         setCurrentViewState(
             K.ModuleComponentsLibs.im.callScreen.ENDED
@@ -266,9 +271,14 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onEndedCallHandler = () => {
         
-        callObject.callEnded = new Date().getTime();
+        const _currentCallData = currentCallData;
+
+        _currentCallData.callEnded = new Date().getTime();
+
+        setCurrentCallData(_currentCallData);
 
         setIsCallEnded(true);
+        setIsCallInProgress(false);
 
         setCurrentViewState(
             K.ModuleComponentsLibs.im.callScreen.ENDED
@@ -316,6 +326,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         setIsCallAnswered(false);
         setIsCallDeclined(false);
+        setIsCallInProgress(false);
 
         setCurrentViewState(
             K.ModuleComponentsLibs.im.callScreen.INCOMING
@@ -329,6 +340,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         setIsCallAnswered(false);
         setIsCallDeclined(false);
+        setIsCallInProgress(false);
 
         setCurrentViewState(
             K.ModuleComponentsLibs.im.callScreen.OUTGOING
@@ -341,6 +353,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const onCallConnected = ()=>{
 
         f7.emit('startCallTimer');
+
+        setIsCallInProgress(true);
 
     }
 
@@ -366,7 +380,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             clearInterval(_dint);
         }, 2000);
 
-        console.log("::>>> CALL SUMMARY <<<::", duration);
+        console.log("::>>> CALL SUMMARY <<<::", duration, getCallData());
+
+        setIsCallInProgress(false);
 
     }
 
@@ -510,9 +526,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         rtc.client = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
 
-        const uid = await rtc.client.join(options.appId, options.channel, options.token, null);
+            const uid = rtc.client.join(options.appId, options.channel, options.token, null).then(async (uid)=>{
 
-        callObject.uid = uid;
+                callObject.uid = uid;
 
         setCurrentCallUID(uid);
 
@@ -534,20 +550,30 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             if (mediaType === "video") {
               // Get `RemoteVideoTrack` in the `user` object.
               const remoteVideoTrack = user.videoTrack;
-              // Dynamically create a container in the form of a DIV element for playing the remote video track.
-              const playerContainer = document.createElement("div");
-              // Specify the ID of the DIV container. You can use the `uid` of the remote user.
-              playerContainer.id = user.uid.toString();
-              playerContainer.style.width = "640px";
-              playerContainer.style.height = "480px";
-              document.body.append(playerContainer);
+
+                //   // Dynamically create a container in the form of a DIV element for playing the remote video track.
+                //   const playerContainer = document.createElement("div");
+                //   // Specify the ID of the DIV container. You can use the `uid` of the remote user.
+                //   playerContainer.id = user.uid.toString();
+                //   playerContainer.style.width = "640px";
+                //   playerContainer.style.height = "480px";
+                //   document.body.append(playerContainer);
           
-              // Play the remote video track.
-              // Pass the DIV container and the SDK dynamically creates a player in the container for playing the remote video track.
-              remoteVideoTrack.play(playerContainer);
+                // Play the remote video track.
+                // Pass the DIV container and the SDK dynamically creates a player in the container for playing the remote video track.
+                
+                //remoteVideoTrack.play(playerContainer);
           
-              // Or just pass the ID of the DIV container.
-              // remoteVideoTrack.play(playerContainer.id);
+                // Or just pass the ID of the DIV container.
+
+                if(callParticipants.length>1){
+                    remoteVideoTrack.play('im-player-container-remote');
+                }else{
+                    remoteVideoTrack.play('im-player-container-local');
+                }
+
+                
+
             }
           
             // If the subscribed track is audio.
@@ -557,8 +583,18 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
               // Play the audio track. No need to pass any DOM element.
               remoteAudioTrack.play();
             }
+
+            const newParticipants = [ ...callParticipants, {participantData: user} ];
+
+            setCallParticipants(newParticipants);
+
           });
-          
+
+        }).catch((agoraError)=>{
+
+            console.warn("::::: AGORA ERROR :::::", agoraError, options, import.meta.env);
+
+        });
 
     }
 
@@ -591,6 +627,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         setCurrentCallData(callObject);
 
+        setIsCameraOn(isVideoCall);
+
+        setIsIncomingCall(isIncoming);
+
         isIncoming ? onIncomingCallHandler() : onOutgoingCallHandler();
         
         startBasicCall();
@@ -618,42 +658,71 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                 style={{backgroundImage: `url(${currentUserData.displayPhoto})`}}
             >
 
-                <div className="backdrop blurry">
+                <div className="backdrop blurry" />
 
-                </div>
+                {isCameraOn && (
 
                 <div className="videos">
 
-                    <div className="remote connected" />
+                    <div id="im-player-container-remote" className="remote connected" />
 
-                    <div className="local connected" />
+                    <div id="im-player-container-local" className="local connected" />
 
+                    <div id="im-player-container-info" className="info" >
+                        <div className="display-name">{currentUserData.displayName}</div>
+                        <div className="phone-number">{currentUserData.phoneNumber}</div>
+                        <div className="call-duration">
+                                <CallTimer visible={
+                                    includedInViewState(
+                                    [
+                                        K.ModuleComponentsLibs.im.callScreen.OUTGOING,
+                                        K.ModuleComponentsLibs.im.callScreen.INCOMING,
+                                        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                                        K.ModuleComponentsLibs.im.callScreen.ENDED,
+                                    ]
+                                )} />
+                        </div>
+                    </div>
+                    
                 </div>
 
-                {/* displayName: "Rickie Howell"
-                displayPhoto: "https://cdn.dovellous.com/img/people/58.png"
-                displayStatus: "placeat alias eveniet debitis rerum eum voluptatem"
-                emailAddress: ""
-                phoneNumber: "653.701.0503"
-                username: "Troy Crona" */}
+                )}
+
+                {/* 
+                
+                <DragMove onDragMove={handleDragMove}>
+                    <div
+                        style={{
+                        transform: `translateX(${translate.x}px) translateY(${translate.y}px)`
+                        }}
+                    >
+                        <img src={logo} className="App-logo" alt="logo" />
+                    </div>
+                </DragMove>
+                
+                */}
+                
 
                 <PageContent>
-                    <div className="call-remote-user">
+                   
+                    <div className="call-remote-user" style={{visibility: isCameraOn?'hidden':'visible'}}>
                         <img src={currentUserData.displayPhoto} />
                         <BlockTitle large>{currentUserData.displayName}</BlockTitle>
                         <BlockTitle>{currentUserData.phoneNumber}</BlockTitle>
                         <BlockTitle medium >
                             {currentViewState}
                         </BlockTitle>
-                        <CallTimer visible={
-                            includedInViewState(
-                                [
-                                    K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-                                    K.ModuleComponentsLibs.im.callScreen.ENDED,
-                                ]
-                            )} />
+                        <BlockTitle medium className="im-call-timer" style={{textAlign: 'center'}}>
+                            <CallTimer visible={
+                                includedInViewState(
+                                    [
+                                        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                                        K.ModuleComponentsLibs.im.callScreen.ENDED,
+                                    ]
+                                )} />
+                        </BlockTitle>
                     </div>
-    
+                   
                     {includedInViewState(
                         [K.ModuleComponentsLibs.im.callScreen.PAUSED]
                     ) && (
@@ -693,6 +762,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         [
                             K.ModuleComponentsLibs.im.callScreen.OUTGOING,
                             K.ModuleComponentsLibs.im.callScreen.PAUSED,
+                            K.ModuleComponentsLibs.im.callScreen.CONNECTING,
                             K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                         ]
                     ) && (

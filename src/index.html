@@ -30,5 +30,25 @@
   <div id="app"></div>
   
   <script type="module" src="./js/app.js"></script>
+  <script>
+
+    //DEV
+
+    function incall(){
+      F7React.dovellousEventsEmit(
+        F7React.dovellous.konstants.ModuleComponentsLibs.im.callScreen.INCOMING,
+        {isIncomingCall: true, isVideoCall: true, userData: 
+        {
+              username: 'Jane Marry Miller',
+              phoneNumber: '+263 (77) 212 8622',
+              displayName: 'Jane Marry',
+              displayStatus: 'Hi there im using Vong.ai',
+              displayPhoto: 'http://cdn.dovellous.com/img/people/39.png',
+              emailAddress: 'jane.marry@vong.ai',
+            }}
+        );
+    }
+
+  </script>
 </body>
 </html>

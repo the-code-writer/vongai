@@ -246,9 +246,11 @@ const K = {
 				imMyStories: 'imMyStories',
 			},
 			callScreen: {
-				BUSY: 'Please wait...',
+				INITIALIZING: 'Initializing...',
+				LINE_BUSY: 'Line busy...',
 				INCOMING: 'Incoming Call...',
 				OUTGOING: 'Dialing...',
+				CONNECTING: 'Connecting...',
 				CONNECTED: 'Connected',
 				PAUSED: 'Call On Hold',
 				ENDED: 'Call Ended'
