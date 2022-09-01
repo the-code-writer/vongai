@@ -517,6 +517,29 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const startBasicCall = async () => {
 
+        // Get all audio and video devices.
+            AgoraRTC.getDevices()
+            .then(devices => {
+                const audioDevices = devices.filter(function(device){
+                    return device.kind === "audioinput";
+                });
+                const videoDevices = devices.filter(function(device){
+                    return device.kind === "videoinput";
+                });
+
+                console.warn("::::DEVICES", audioDevices, videoDevices);
+
+                var selectedMicrophoneId = audioDevices[0].deviceId;
+
+                var selectedCameraId = videoDevices[0].deviceId;
+
+                return Promise.all([
+                    AgoraRTC.createCameraVideoTrack({ cameraId: selectedCameraId }),
+                    AgoraRTC.createMicrophoneVideoTrack({ microphoneId: selectedMicrophoneId }),
+                ]);
+
+            });
+
         f7.dovellous.instance.initAgora(f7, null);
 
         f7.dovellous.instance.Libraries.Agora.agoraApp.modules.voiceCall.lib.start({});
@@ -1084,8 +1107,11 @@ The user has been kicked out of the channel by the Agora server or the connectio
                         </b>
                     </ListItem>
                 </List>
-            </Sheet>
-
+             </Sheet>
+            {/*<audio tabIndex={0} id="beep-one" controls preload="auto" >
+                <source src="audio/Output 1-2.mp3"/>
+                <source src="audio/Output 1-2.ogg"/>
+            </audio> */}
         </React.Fragment>
 
     );
