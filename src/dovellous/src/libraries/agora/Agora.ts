@@ -116,10 +116,10 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 					parent.APP_ID = agoraConfig.appId;
 					parent.PRIMARY_CERTIFICATE = agoraConfig.primaryCertificate;
-					parent.CHANNELS = agoraConfig.agora.channels;
-					parent.DEFAULT_CHANNEL = agoraConfig.channels["default"];
+					parent.CHANNELS = agoraConfig.channels;
+					parent.DEFAULT_CHANNEL = import.meta.env.VNG_AGORA_DEFAULT_CHANNEL;
 					parent.TOKENS = agoraConfig.tokens;
-					parent.DEFAULT_TOKEN = agoraConfig.tokens["default"];
+					parent.DEFAULT_TOKEN = import.meta.env.VNG_AGORA_DEFAULT_TOKEN;
 
 					await parent.generateDefaultToken();
 

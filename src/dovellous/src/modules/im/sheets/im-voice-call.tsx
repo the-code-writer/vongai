@@ -93,7 +93,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const [callParticipants, setCallParticipants] = useState([{participantData: userDefinedData}]);
     const [isCallInProgress, setIsCallInProgress] = useState(false);
 
-    const CallTimer = useCallback(({visible}) => {
+    const CallTimer = useCallback(({visible, className}) => {
 
         const {
           seconds,
@@ -136,16 +136,12 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         return (
           <React.Fragment>
-            {visible ? (
-                <React.Fragment>
+                <span className={className} style={{opacity: visible?1:0}}>
                     <>{parseInt(days) > 0 && (String(days).padStart(2, '0')`:`)}</>
                     <>{parseInt(hours) > 0 && (String(hours).padStart(2, '0')`:`)}</>
                     <>{`${String(minutes).padStart(2, '0')}:`}</>
                     <>{`${String(seconds).padStart(2, '0')}`}</>
-                </React.Fragment>
-            ):(
-                <React.Fragment />
-            )}
+                </span>
           </React.Fragment>
         );
 
@@ -520,6 +516,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     };
 
     const startBasicCall = async () => {
+
+        f7.dovellous.instance.initAgora(f7, null);
+
+        f7.dovellous.instance.Libraries.Agora.agoraApp.modules.voiceCall.lib.start({});
+        
         /**
          * Put the following code snippets here.
          */
@@ -535,9 +536,28 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         callObject.uid = uid;
 
         // Create an audio track from the audio sampled by a microphone.
-        rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+        rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(
+            {
+                encoderConfig: {
+                  sampleRate: 48000,
+                  stereo: true,
+                  bitrate: 128,
+                },
+            }
+        );
         // Create a video track from the video captured by a camera.
-        rtc.localVideoTrack = await AgoraRTC.createCameraVideoTrack();
+        rtc.localVideoTrack = await AgoraRTC.createCameraVideoTrack(
+            {
+                encoderConfig: {
+                  width: { ideal: Dom7('html').width()*.75, min: Dom7('html').width()*.5, max: Dom7('html').width() },
+                  // Specify a value range and an ideal value
+                  height: { ideal: Dom7('html').height()*.75, min: Dom7('html').height()*.5, max: Dom7('html').height() },
+                  frameRate: 15,
+                  bitrateMin: 600, 
+                  bitrateMax: 1000,
+                },
+            }
+        );
         // Publish the local audio and video tracks to the channel.
         await rtc.client.publish([rtc.localAudioTrack, rtc.localVideoTrack]);
 
@@ -711,30 +731,14 @@ The user has been kicked out of the channel by the Agora server or the connectio
 
                 <div className="backdrop blurry" />
 
-                {isCameraOn && (
+                {true && (
 
-                <div className="videos">
+                <div className={`videos ${isCameraOn?'visible':'hidden'}`} >
 
                     <div id="im-player-container-remote" className="remote connected" />
 
                     <div id="im-player-container-local" className="local connected" />
 
-                    <div id="im-player-container-info" className="info" >
-                        <div className="display-name">{currentUserData.displayName}</div>
-                        <div className="phone-number">{currentUserData.phoneNumber}</div>
-                        <div className="call-duration">
-                                <CallTimer visible={
-                                    includedInViewState(
-                                    [
-                                        K.ModuleComponentsLibs.im.callScreen.OUTGOING,
-                                        K.ModuleComponentsLibs.im.callScreen.INCOMING,
-                                        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-                                        K.ModuleComponentsLibs.im.callScreen.ENDED,
-                                    ]
-                                )} />
-                        </div>
-                    </div>
-                    
                 </div>
 
                 )}
@@ -802,7 +806,7 @@ The user has been kicked out of the channel by the Agora server or the connectio
                                     <Icon ios="f7:person_badge_plus_fill" aurora="f7:person_badge_plus_fill" md="material:person_add_alt_1" />
                                 </FabButton>
                                 <FabButton onClick={onActionsHoldHandler}>
-                                    <Icon ios="f7:pause_circle" aurora="f7:pause_circle" md="material:pause_circle_outline" />
+                                    <Icon ios="f7:pause_fill" aurora="f7:pause_fill" md="material:pause" />
                                 </FabButton>
                                 <FabButton onClick={onActionsChatHandler}>
                                     <Icon ios="f7:text_bubble_fill" aurora="f7:text_bubble_fill" md="material:chat" />
@@ -843,7 +847,7 @@ The user has been kicked out of the channel by the Agora server or the connectio
                             className={`im-solid-rounded ${isCameraOn?(isFrontCamera?'color-white':'color-yellow'):'color-white'}`}
                             onClick={onFrontCameraToggle} 
                             iconIos={`f7:${isFrontCamera?'camera':'camera'}`}
-                            iconMd={`material:${isFrontCamera?'cameraswitch':'cameraswitch'}`}
+                            iconMd={`material:${isFrontCamera?'video_camera_front':'video_camera_back'}`}
                             iconAurora={`f7:${isFrontCamera?'camera':'camera'}`}
                             iconSize={24} 
                         />
@@ -939,7 +943,7 @@ The user has been kicked out of the channel by the Agora server or the connectio
                                 <Icon 
                                     ios="f7:phone_up_fill" 
                                     aurora="f7:phone_up_fill" 
-                                    md="material:phone_enabled"></Icon>
+                                    md="material:phone_enabled" />
                         </Fab>
 
                         <span>Accept</span>
@@ -952,7 +956,7 @@ The user has been kicked out of the channel by the Agora server or the connectio
                                 <Icon 
                                     ios="f7:phone_down_fill" 
                                     aurora="f7:phone_down_fill" 
-                                    md="material:phone_enabled"></Icon>
+                                    md="material:phone_enabled" />
                         </Fab>
 
                         <span>Decline</span>
@@ -963,6 +967,53 @@ The user has been kicked out of the channel by the Agora server or the connectio
 
                 )}
 
+                <Row className={`im-call-status-overlay ${isOnHold ? 'red':'green'}`}>
+                    <Col width={90} className="info">
+                        <span className="display-name">{currentUserData.displayName}</span>
+                        <br/>
+                        <CallTimer className="display-timer" visible={
+                                    includedInViewState(
+                                    [
+                                        K.ModuleComponentsLibs.im.callScreen.OUTGOING,
+                                        K.ModuleComponentsLibs.im.callScreen.INCOMING,
+                                        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                                        K.ModuleComponentsLibs.im.callScreen.ENDED,
+                                    ]
+                                )} 
+                        />
+                    </Col>
+                    <Col width={10}>
+                        {isCameraOn ? (
+                            isOnHold ? (
+                                <Icon size={24} 
+                                    ios={`f7:${isIncomingCall?'videocam':'videocam'}`} 
+                                    aurora={`f7:${isIncomingCall?'videocam':'videocam'}`} 
+                                    md={`material:${isIncomingCall?'pause_circle_outline':'pause_circle_outline'}`} 
+                                />
+                            ):(
+                                <Icon size={24} 
+                                    ios={`f7:${isIncomingCall?'videocam_fill':'videocam_fill'}`} 
+                                    aurora={`f7:${isIncomingCall?'videocam_fill':'videocam_fill'}`} 
+                                    md={`material:${isIncomingCall?'videocam':'videocam'}`} 
+                                />
+                            )
+                        ):(
+                            isOnHold ? (
+                                <Icon size={24} 
+                                    ios={`f7:${isIncomingCall?'phone_arrow_down_left':'phone_arrow_up_right'}`} 
+                                    aurora={`f7:${isIncomingCall?'phone_arrow_down_left':'phone_arrow_up_right'}`} 
+                                    md={`material:${isIncomingCall?'phone_paused':'phone_paused'}`} 
+                                />
+                            ):(
+                                <Icon size={24} 
+                                    ios={`f7:${isIncomingCall?'phone_fill_arrow_down_left':'phone_fill_arrow_up_right'}`} 
+                                    aurora={`f7:${isIncomingCall?'phone_fill_arrow_down_left':'phone_fill_arrow_up_right'}`} 
+                                    md={`material:${isIncomingCall?'phone':'phone'}`} 
+                                />
+                            )
+                        )}
+                    </Col>
+                </Row>
             </Sheet>
 
             <Sheet

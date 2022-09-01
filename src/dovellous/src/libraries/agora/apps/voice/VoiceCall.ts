@@ -7,6 +7,7 @@ import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
 import { VoiceCallConfig } from "./VoiceCallConfig";
 
 import { VoiceCallError } from "./VoiceCallErrors";
+import Dom7 from 'dom7';
 
 // Parent constructor
 class VoiceCall {
@@ -22,20 +23,77 @@ class VoiceCall {
   constructor(
     DovellousEvents: ModuleBaseClasses.DovellousLibraryEvent,
     Framework7App: any,
-    defaultChannel: any | VoiceCallConfig
+    ...voiceCallconfigSettings: Array<any>
   ) {
 
     this.voiceCallEvents = DovellousEvents;
 
     this.voiceCallError = VoiceCallError;
 
-    if (defaultChannel instanceof VoiceCallConfig) {
+    if (
+      Array.isArray(voiceCallconfigSettings) && 
+      voiceCallconfigSettings.length > 0 && 
+      voiceCallconfigSettings[0] instanceof VoiceCallConfig
+    ) {
 
-      this.voiceCallconfig = defaultChannel;
+      this.voiceCallconfig = voiceCallconfigSettings[0];
 
     } else {
 
-      this.voiceCallconfig = new VoiceCallConfig(defaultChannel);
+      const _voiceCallConfig:VoiceCallConfig = {};
+
+      Object.defineProperties(_voiceCallConfig, {
+        "encoder": {
+          value: {
+            sampleRate:  48000,
+            stereo: true,    
+            bitrate: 128,
+          },
+          writable: false,
+          enumerable: true,
+          configurable: true
+        },
+        "localAudioTrack": {
+          value: {
+            volume: 50,
+          },
+          writable: false,
+          enumerable: true,
+          configurable: true
+        },
+        "remoteAudioTrack": {
+          value: {
+            volume: 50,
+          },
+          writable: false,
+          enumerable: true,
+          configurable: true
+        },
+        "videoCallConfig": {
+          value: {
+            encoding: {
+              width: { 
+                ideal: Dom7('html').width()*.75, 
+                min: Dom7('html').width()*.5, 
+                max: Dom7('html').width(),
+              },
+              height: { 
+                ideal: Dom7('html').height()*.75, 
+                min: Dom7('html').height()*.5, 
+                max: Dom7('html').height(),
+              },
+              frameRate: 15,
+              bitrateMin: 600, 
+              bitrateMax: 1000,
+            }
+          },
+          writable: false,
+          enumerable: true,
+          configurable: true
+        },
+      });
+
+      this.voiceCallconfig = new VoiceCallConfig( _voiceCallConfig );
 
     }
 
@@ -47,31 +105,9 @@ class VoiceCall {
    * param destinationId string - The destination uuid of the callee
    * return null
    */
-  async start(destinationId, isGroupCall) {
+  async start(callData) {
 
-    const sourceId = "26772128622";
-    const sourceTitle = "Douglas Maposa";
-    const sourceSubTitle = "Technical Engineer";
-
-    let _data = {
-      source: {
-        callerNumber: sourceId,
-        callerTitle: sourceTitle,
-        callerSubTitle: sourceSubTitle,
-      },
-      destination: {
-        calleeNumber: destinationId,
-        calleeTitle: "",
-        calleeSubTitle: "",
-      },
-      payload: {
-        params: arguments,
-      }
-    };
-
-    this.invokeError(3456, 'This is a mesage to test the error function', null);
-
-    return _data;
+    
 
   }
 

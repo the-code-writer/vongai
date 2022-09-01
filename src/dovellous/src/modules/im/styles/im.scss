@@ -1,3 +1,50 @@
+@-webkit-keyframes fadein {
+  from { opacity: 0.3; }
+  to { opacity: 0.7; }
+}
+
+@-moz-keyframes fadein {
+  from { opacity: 0.3; }
+  to { opacity: 0.7; }
+}
+
+@keyframes fadein {
+  from { opacity: 0.3; }
+  to { opacity: 0.7; }
+}
+
+
+@-webkit-keyframes fadeinel {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@-moz-keyframes fadeinel {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeinel {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@-webkit-keyframes fadeoutel {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@-moz-keyframes fadeoutel {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fadeoutel {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+
 .md {
   --f7-message-bubble-border-radius: 10px !important;
   --f7-message-received-bg-color: #ffffff !important;
@@ -230,7 +277,6 @@ div.m-b-0.fab>a {
     .videos{
         width: 100vw;
         height: 100vh;
-        top: 0;
         left: 0;
         right: 0;
         bottom: 0;
@@ -239,6 +285,24 @@ div.m-b-0.fab>a {
         background-size: cover;
         background-position: center;
 
+        &.visible{
+          
+          -webkit-animation: fadeinel 1.5s ease-in alternate;
+          -moz-animation: fadeinel 1.5s ease-in alternate;
+          animation: fadeinel 1.5s ease-in alternate;
+          opacity: 1;
+  
+          }
+
+        &.hidden{
+          
+            -webkit-animation: fadeoutel 1.5s ease-out alternate;
+            -moz-animation: fadeoutel 1.5s ease-out alternate;
+            animation: fadeoutel 1.5s ease-out alternate;
+            opacity: 0;
+    
+        }
+      
         .remote{
 
           position: absolute;
@@ -252,7 +316,7 @@ div.m-b-0.fab>a {
           &.connected{
             width: 100vw;
             height: 100vh;
-            background-color: rgb(0,255,0, 0.25);
+            background-color: rgb(0,0,255, 0.25);
           }
 
         }
@@ -440,6 +504,43 @@ div.m-b-0.fab>a {
       }
 
 
+    }
+
+    .im-call-status-overlay {
+      width: calc(100vw - 32px);
+      color: white;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 16px 12px 16px;
+      padding-top: 24px;
+      font-size: 16px;
+      backdrop-filter: blur(10px);
+      -webkit-animation: fadein 2s ease-in alternate infinite;
+      -moz-animation: fadein 2s ease-in alternate infinite;
+      animation: fadein 2s ease-in alternate infinite;
+
+      &.green{
+        background-color: #00CC00;
+      }
+      
+      &.red{
+        background-color: #CC0000;
+      }
+
+      .info {
+
+        .display-name{
+          font-size: 24px;
+        }
+
+        .display-timer{          
+          font-size: 14px;
+        }
+
+      }
+      
     }
 
   }

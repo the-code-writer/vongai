@@ -1,14 +1,49 @@
 
+interface VoiceCallEncoderConfigInterface {
+  sampleRate:  number;
+  stereo: boolean;    
+  bitrate: number;
+}
+
+interface VideoCallEncoderConfigInterface {
+  width: { 
+    ideal: number, 
+    min: number, 
+    max: number 
+  },
+  height: { 
+    ideal: number, 
+    min: number, 
+    max: number 
+  },
+  frameRate: number,
+  bitrateMin: number, 
+  bitrateMax: number,
+}
+
+interface VoiceCallLocalAudioTrackConfigInterface {
+  volume: number;
+}
+
+interface VoiceCallRemoteAudioTrackConfigInterface {
+  volume: number;
+}
+
+interface VideoCallConfigInterface {
+  encoder: VideoCallEncoderConfigInterface;
+}
+
 interface VoiceCallConfigInterface {
-  defaultChannel: string;
+  encoder: VoiceCallEncoderConfigInterface;
+  localAudioTrack: VoiceCallLocalAudioTrackConfigInterface;
+  remoteAudioTrack: VoiceCallRemoteAudioTrackConfigInterface;
+  videoCallConfig: {
+    encoder: VideoCallEncoderConfigInterface | string; //720p_1
+  }
 }
 
 interface AgoraConfigInterface {
-  voiceCallConfig: any,  
-}
-
-interface AgoraInterface {
-	voiceCallConfig: VoiceCallConfigInterface,
+  voiceCallConfig: VoiceCallConfigInterface,  
 }
 
 interface AgoraErrorInterface {
@@ -26,7 +61,12 @@ interface VoiceCallErrorInterface {
 
 export { 
   AgoraConfigInterface, 
-  AgoraErrorInterface, 
+  AgoraErrorInterface,
+  VoiceCallEncoderConfigInterface,
+  VoiceCallLocalAudioTrackConfigInterface,
+  VoiceCallRemoteAudioTrackConfigInterface,
+  VideoCallEncoderConfigInterface,
   VoiceCallErrorInterface, 
-  VoiceCallConfigInterface 
+  VoiceCallConfigInterface,
+  VideoCallConfigInterface,
 } 
