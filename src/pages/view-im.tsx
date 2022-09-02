@@ -128,15 +128,11 @@ export default () => {
 
   };
 
-  useEffect(()=>{
-
-    console.log("::: VIEW IM :::", currentIMTab);
-
-  },[]);
- 
   useEffect(() => {
 
     f7ready((Framework7App) => {
+      
+      console.log("::: VIEW IM :::", currentIMTab);
 
       Framework7App.dovellousEventsOn(
         K.ModuleComponentsLibs.im.callScreen.INCOMING,
@@ -144,6 +140,8 @@ export default () => {
           onIncomingVoiceCallHandler(callDataObject);
         }
       );
+
+      Framework7App.dovellous.instance.initAgora(null);
 
       StorageIM.dispatch('insertFakeMessages', null);
       StorageIM.dispatch('insertFakeStories', null);

@@ -1,10 +1,12 @@
 import {K, Snippets} from './src/libraries/app/helpers';
 
+import { f7 } from 'framework7-react';
 // import {CapacitorStorage} from './src/libraries/storage/capacitor-js-storage/CapacitorStorage';
 // import {JSONDatabaseService} from './src/libraries/storage/json-db-service/JSONDatabaseService';
 // import {Config as JSONDatabaseServiceConfig} from './src/libraries/storage/json-db-service/lib/JSONDatabaseServiceConfig';
 
 import { Agora, AgoraConfig } from './src/libraries/agora/Agora';
+
 
 // import SqliteService from './src/libraries/databases/sqlite-service';
 // import Blockchain from './src/libraries/cryptography/blockchain';
@@ -30,7 +32,7 @@ class Dovellous{
 
   }
 
-  constructor(Framework7App: any, appConfig: any){
+  constructor(f7: any, appConfig: any){
 
     const self = this;
 
@@ -38,15 +40,15 @@ class Dovellous{
 
     /* Begin Agora Library Init */
 
-    Framework7App.dovellousEventsOn(K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED, (agoraInstance: any) => {
+    f7.dovellousEventsOn(K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED, (agoraInstance: any) => {
 
       self.Libraries.Agora = agoraInstance;
     
-      Framework7App.dovellousEventsEmit(K.Events.Modules.Agora.AgoraLibEvent.MODULE_READY, agoraInstance);
+      f7.dovellousEventsEmit(K.Events.Modules.Agora.AgoraLibEvent.MODULE_READY, agoraInstance);
     
     });
 
-    agoraConfig instanceof AgoraConfig ? this.initAgora(Framework7App, agoraConfig) : null;
+    agoraConfig instanceof AgoraConfig ? this.initAgora(agoraConfig) : null;
 
     /* End Agora Library Init */
 
@@ -58,9 +60,9 @@ class Dovellous{
 	 * param agoraConfig AgoraConfig - A config file for all agora modules. This follows the correct Agora Config Interface
 	 * return null
 	 */
-  initAgora (Framework7App: any, agoraConfig: AgoraConfig) {
+  initAgora (agoraConfig: AgoraConfig) {
 
-    Agora(Framework7App, agoraConfig);
+    Agora(agoraConfig);
 
   }
 

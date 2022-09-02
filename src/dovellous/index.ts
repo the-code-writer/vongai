@@ -8,6 +8,7 @@ import moment from "moment";
 
 import './assets/styles/main.scss';
 import { eventNames } from "process";
+import Dom7 from "dom7";
 
 /**
  * Dovellous F7 Plugin for Framework7 1.0.0
@@ -113,16 +114,16 @@ const Framework7DovellousPlugin = {
             }
 
             default: {
-              console.log(this, time, args);
+              console.log(time, args);
               break;
             }
 
           }
 
+        }else{
+          console.log(args);
         }
 
-      } else {
-        console.log(args);
       }
 
     },
@@ -138,6 +139,11 @@ const Framework7DovellousPlugin = {
       app.emit(eventName, eventDetail);
 
     },
+    dovellousDomSelector(el: string) {
+      
+      return Dom7(el);
+
+    },
   },
   /* Event handlers */
   on: {
@@ -145,7 +151,7 @@ const Framework7DovellousPlugin = {
 
       var app = this;
 
-      if (app.params.dovellous.debugger) console.log("app init");
+      app.dovellousConsole("log","app init");
 
       app.emit('DOVELLOUS_READY', app.params.dovellous);
 
@@ -153,32 +159,32 @@ const Framework7DovellousPlugin = {
     pageBeforeIn: function (page: any) {
       const app = page.app;
       const $ = app.$;
-      if (app.params.dovellous.debugger) console.log("pageBeforeIn", page);
+      app.dovellousConsole("log","pageBeforeIn", page);
     },
     pageAfterIn: function (page: any) {
       const app = page.app;
       const $ = app.$;
-      if (app.params.dovellous.debugger) console.log("pageAfterIn", page);
+      app.dovellousConsole("log","pageAfterIn", page);
     },
     pageBeforeOut: function (page: any) {
       const app = page.app;
       const $ = app.$;
-      if (app.params.dovellous.debugger) console.log("pageBeforeOut", page);
+      app.dovellousConsole("log","pageBeforeOut", page);
     },
     pageAfterOut: function (page: any) {
       const app = page.app;
       const $ = app.$;
-      if (app.params.dovellous.debugger) console.log("pageAfterOut", page);
+      app.dovellousConsole("log","pageAfterOut", page);
     },
     pageInit: function (page: any) {
       const app = page.app;
       const $ = app.$;
-      if (app.params.dovellous.debugger) console.log("pageInit", page);
+      app.dovellousConsole("log","pageInit", page);
     },
     pageBeforeRemove: function (page: any) {
       const app = page.app;
       const $ = app.$;
-      if (app.params.dovellous.debugger) console.log("pageBeforeRemove", page);
+      app.dovellousConsole("log","pageBeforeRemove", page);
     },
   },
   /* Handle clicks */

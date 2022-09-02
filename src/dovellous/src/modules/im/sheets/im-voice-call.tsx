@@ -76,9 +76,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const [currentCallData, setCurrentCallData] = useState(callObject);
 
+    const [currentCallInProgressDetails, setCurrentCallInProgressDetails] = useState(null);
+    
     const [currentCallUID, setCurrentCallUID] = useState('');
 
-    const [currentViewState, setCurrentViewState] = useState(K.ModuleComponentsLibs.im.callScreen.BUSY);
+    const [currentViewState, setCurrentViewState] = useState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
     
     const [isMuteOn, setisMuteOn] = useState(false);
     const [isCameraOn, setIsCameraOn] = useState(isVideoCall);
@@ -334,6 +336,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onOutgoingCallHandler = () => {
 
+        f7.on(
+            'remote_call_connecting',
+            () => {
+                onCallConnecting(); //publish your stream
+            }
+        );
+
         setIsCallAnswered(false);
         setIsCallDeclined(false);
         setIsCallInProgress(false);
@@ -346,7 +355,30 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     };
 
-    const onCallConnected = ()=>{
+    const onCallConnecting = ()=>{
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.CONNECTING
+        );
+
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+            ( callDetails ) => {
+                setCurrentCallInProgressDetails(callDetails);
+                onCallConnected(callDetails);
+            }
+        );
+
+        f7
+        .dovellous.instance.Libraries
+        .Agora.agoraApp.modules
+        .voiceCall.lib.start(
+            getCallData() // contains play and subscribes
+        );
+
+    }
+
+    const onCallConnected = (callDetails)=>{
 
         f7.emit('startCallTimer');
 
@@ -384,14 +416,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onAnswerCallHandler = () => {
 
-        onCallConnected();
+        onCallConnecting();
 
         setIsCallAnswered(true);
         setIsCallDeclined(false);
-
-        setCurrentViewState(
-            K.ModuleComponentsLibs.im.callScreen.CONNECTED
-        );
 
         onAnswerCall(getCallData());
 
@@ -540,9 +568,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
             });
 
-        f7.dovellous.instance.initAgora(f7, null);
+        
 
-        f7.dovellous.instance.Libraries.Agora.agoraApp.modules.voiceCall.lib.start({});
+        
         
         /**
          * Put the following code snippets here.
