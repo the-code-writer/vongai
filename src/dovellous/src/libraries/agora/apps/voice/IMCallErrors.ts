@@ -4,11 +4,11 @@ import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
 
 import {AgoraError} from "../../lib/AgoraError";
 
-const VoiceCallError: AgoraTypeInterfaces.VoiceCallErrorInterface = {
+const IMCallError: AgoraTypeInterfaces.IMCallErrorInterface = {
 
   throwError: (errorMessage: any) : void => {
 
-    throw new Error(`Voice Call Error: ${errorMessage}`);
+    throw new Error(`IM Call Error: ${errorMessage}`);
 
   },
 
@@ -18,7 +18,7 @@ const VoiceCallError: AgoraTypeInterfaces.VoiceCallErrorInterface = {
 
     const err = new AgoraError(errorCode, agoraError);
 
-    const voiceCallError: AgoraTypeInterfaces.AgoraErrorInterface = {
+    const imCallError: AgoraTypeInterfaces.AgoraErrorInterface = {
       status: err.statusCode,
       message: err.message,
       messageDescription: Array.isArray(args)?
@@ -27,10 +27,10 @@ const VoiceCallError: AgoraTypeInterfaces.VoiceCallErrorInterface = {
       error: err
     }
 
-    return voiceCallError;
+    return imCallError;
 
   }
 
 }
 
-export { VoiceCallError }
+export { IMCallError }

@@ -4,7 +4,7 @@ import RtcEngine from 'react-native-agora';
 
 import {K, ModuleBaseClasses} from "../app/helpers";
 
-import { VoiceCallConfig, VoiceCall } from "./apps/voice/VoiceCall";
+import { IMCallConfig, IMCall } from "./apps/voice/IMCall";
 import { VideoCallConfig, VideoCall } from "./apps/video/VideoCall";
 import { InstantMessagingConfig, InstantMessaging } from "./apps/instant-messaging/InstantMessaging";
 import { LiveStreamingConfig, LiveStreaming } from "./apps/live-streaming/LiveStreaming";
@@ -12,7 +12,7 @@ import { WhiteBoardConfig, WhiteBoard } from "./apps/white-board/WhiteBoard";
 
 interface AgoraInterface {
   videoCall: VideoCallConfig,
-  voiceCall: VoiceCallConfig,
+  imCall: IMCallConfig,
   instantMessaging:InstantMessagingConfig,
   liveStreaming:LiveStreamingConfig,
   whiteBoard: WhiteBoardConfig
@@ -24,7 +24,7 @@ class AgoraConfig implements AgoraInterface{
   channels: any;
   tokens: any;
   videoCall: VideoCallConfig;
-  voiceCall: VoiceCallConfig;
+  imCall: IMCallConfig;
   instantMessaging:InstantMessagingConfig;
   liveStreaming:LiveStreamingConfig;
   whiteBoard: WhiteBoardConfig;
@@ -36,7 +36,7 @@ class AgoraConfig implements AgoraInterface{
     channels: any,
     tokens: any,
     videoCall: VideoCallConfig,
-    voiceCall: VoiceCallConfig,
+    imCall: IMCallConfig,
     instantMessaging:InstantMessagingConfig,
     liveStreaming:LiveStreamingConfig,
     whiteBoard: WhiteBoardConfig
@@ -46,7 +46,7 @@ class AgoraConfig implements AgoraInterface{
     this.channels = channels;
     this.tokens = tokens;
     this.videoCall = videoCall;
-    this.voiceCall = voiceCall;
+    this.imCall = imCall;
     this.instantMessaging = instantMessaging;
     this.liveStreaming = liveStreaming;    
     this.whiteBoard = whiteBoard;
@@ -64,7 +64,7 @@ const AgoraLibrary = ModuleBaseClasses.Class.extend({
     channels: any,
     tokens: any,
     videoCall: VideoCallConfig | AgoraConfig,
-    voiceCall: VoiceCallConfig,
+    imCall: IMCallConfig,
     instantMessaging:InstantMessagingConfig,
     liveStreaming:LiveStreamingConfig,
     whiteBoard: WhiteBoardConfig 
@@ -77,7 +77,7 @@ const AgoraLibrary = ModuleBaseClasses.Class.extend({
     if (videoCall instanceof AgoraConfig) {
       options = videoCall;
     } else {
-      options = new AgoraConfig(appId, primaryCertificate, channels, tokens, voiceCall, videoCall, instantMessaging, liveStreaming, whiteBoard);
+      options = new AgoraConfig(appId, primaryCertificate, channels, tokens, imCall, videoCall, instantMessaging, liveStreaming, whiteBoard);
     }
 
 		this.events = events;
@@ -104,7 +104,7 @@ const AgoraLibrary = ModuleBaseClasses.Class.extend({
 			TOKENS: {},
 			DEFAULT_TOKEN: "",
 
-			initModules: async (app: any, F7: Framework7, options: { appId: string; primaryCertificate: string; agora: { channels: {}; }; channels: { [x: string]: string; }; tokens: { [x: string]: string; }; voiceCall: { moduleName: string; }; videoCall: { moduleName: string; }; instantMessaging: { moduleName: string; }; liveStreaming: { moduleName: string; }; whiteBoard: { moduleName: string; }; }) => {
+			initModules: async (app: any, F7: Framework7, options: { appId: string; primaryCertificate: string; agora: { channels: {}; }; channels: { [x: string]: string; }; tokens: { [x: string]: string; }; imCall: { moduleName: string; }; videoCall: { moduleName: string; }; instantMessaging: { moduleName: string; }; liveStreaming: { moduleName: string; }; whiteBoard: { moduleName: string; }; }) => {
 
         parent.F7 = F7;
 
@@ -123,7 +123,7 @@ const AgoraLibrary = ModuleBaseClasses.Class.extend({
 
         await parent.generateDefaultChannel();
 
-				await parent.voiceCall.init(app, options.voiceCall);
+				await parent.imCall.init(app, options.imCall);
 
 				await parent.videoCall.init(app, options.videoCall);
 
@@ -160,29 +160,29 @@ const AgoraLibrary = ModuleBaseClasses.Class.extend({
 
 			},
 
-			voiceCall: {
+			imCall: {
 
 				isReady: false,
 
         lib: {},
 
 				params: {
-					moduleName: "VoiceCall",
+					moduleName: "IMCall",
 				},
 
 				init: async (app: any, options: { moduleName: string; }) => { 
 					
-					parent.voiceCall.params = options;
+					parent.imCall.params = options;
 
-          parent.voiceCall.lib = new VoiceCall(parent.params.events, parent.F7, options);
-          parent.voiceCall.isReady = true;
+          parent.imCall.lib = new IMCall(parent.params.events, parent.F7, options);
+          parent.imCall.isReady = true;
           
-					parent.params.events[K.Events.Modules.Agora.VoiceCall.ON_APP_INIT]([
+					parent.params.events[K.Events.Modules.Agora.IMCall.ON_APP_INIT]([
 						app,
 						options
 					]);
 
-          return parent.voiceCall;
+          return parent.imCall;
 
 				},
 			},

@@ -84,7 +84,7 @@ export default () => {
 
   };
   
-  const onVoiceCallHandler = (userData: any) => {
+  const onIMCallHandler = (userData: any) => {
 
     console.log(":::ON VOICE CALL HANDLER:::", userData); 
 
@@ -102,17 +102,17 @@ export default () => {
       }
     };
 
-    onIncomingVoiceCallHandler(callDataObject);
+    onIncomingIMCallHandler(callDataObject);
 
   };
   
-  const onIncomingVoiceCallHandler = (callDataObject: any) => {
+  const onIncomingIMCallHandler = (callDataObject: any) => {
 
     console.log(":::ON INCOMING VOICE CALL HANDLER !!! :::", callDataObject); 
 
     setCallDataObject(callDataObject);
 
-    f7.sheet.open('.im-voice-call-sheet-modal');
+    f7.sheet.open('.im-im-call-sheet-modal');
 
   };
   
@@ -137,7 +137,7 @@ export default () => {
       Framework7App.dovellousEventsOn(
         K.ModuleComponentsLibs.im.callScreen.INCOMING,
         (callDataObject: any)=>{
-          onIncomingVoiceCallHandler(callDataObject);
+          onIncomingIMCallHandler(callDataObject);
         }
       );
 
@@ -176,7 +176,7 @@ export default () => {
         id={`im-user-profile-summary`}
         userData={imUserData}
         onChat={onChatHandler}
-        onVoiceCall={onVoiceCallHandler}
+        onIMCall={onIMCallHandler}
         onVideoCall={onVideoCallHandler}
         onContactInfo={onContactInfoHandler}
         /> 

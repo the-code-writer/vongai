@@ -1,7 +1,7 @@
 import { Block, Button, Link, Navbar, NavRight, NavTitle, PageContent, Segmented, Sheet } from "framework7-react";
 import React from "react";
 
-export default ({ id, userData, onChat, onVoiceCall, onVideoCall, onContactInfo }) => {
+export default ({ id, userData, onChat, onIMCall, onVideoCall, onContactInfo }) => {
 
     return (
         <Sheet
@@ -29,7 +29,7 @@ export default ({ id, userData, onChat, onVoiceCall, onVideoCall, onContactInfo 
                 <Block inset>
                 <Segmented raised tag="p" className="im-contact-info">
                     <Button sheetClose text="Chat" onClick={()=>onChat(userData)} iconIos="f7:text_bubble_fill" iconMd="material:chat" iconAurora="f7:text_bubble_fill" iconSize={32} />
-                    <Button sheetClose text="Voice" onClick={()=>onVoiceCall(userData)} iconIos="f7:phone_fill" iconMd="material:call" iconAurora="f7:phone_fill" iconSize={32} />
+                    <Button sheetClose text="Voice" onClick={()=>onIMCall(userData)} iconIos="f7:phone_fill" iconMd="material:call" iconAurora="f7:phone_fill" iconSize={32} />
                     <Button sheetClose text="Video" onClick={()=>onVideoCall(userData)} iconIos="f7:videocam_fill" iconMd="material:videocam" iconAurora="f7:videocam_fill" iconSize={32} />
                     <Button sheetClose text="Info" onClick={()=>onContactInfo(userData)} iconIos="f7:person_crop_rectangle_fill" iconMd="material:perm_contact_calendar" iconAurora="f7:person_crop_rectangle_fill" iconSize={32} />
                 </Segmented>

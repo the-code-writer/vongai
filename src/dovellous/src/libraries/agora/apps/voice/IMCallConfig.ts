@@ -1,21 +1,21 @@
 import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
 
-export class VoiceCallConfig implements AgoraTypeInterfaces.VoiceCallConfigInterface {
-  encoder: AgoraTypeInterfaces.VoiceCallEncoderConfigInterface ;
-  localAudioTrack: AgoraTypeInterfaces.VoiceCallLocalAudioTrackConfigInterface;
-  remoteAudioTrack: AgoraTypeInterfaces.VoiceCallRemoteAudioTrackConfigInterface;
+export class IMCallConfig implements AgoraTypeInterfaces.IMCallConfigInterface {
+  encoder: AgoraTypeInterfaces.IMCallEncoderConfigInterface ;
+  localAudioTrack: AgoraTypeInterfaces.IMCallLocalAudioTrackConfigInterface;
+  remoteAudioTrack: AgoraTypeInterfaces.IMCallRemoteAudioTrackConfigInterface;
   videoCallConfig: {
     encoder: AgoraTypeInterfaces.VideoCallEncoderConfigInterface | string;
   }
   constructor(
-    _encoder: AgoraTypeInterfaces.VoiceCallEncoderConfigInterface | AgoraTypeInterfaces.VoiceCallConfigInterface,
-    _localAudioTrack?: AgoraTypeInterfaces.VoiceCallLocalAudioTrackConfigInterface,
-    _remoteAudioTrack?: AgoraTypeInterfaces.VoiceCallRemoteAudioTrackConfigInterface,
+    _encoder: AgoraTypeInterfaces.IMCallEncoderConfigInterface | AgoraTypeInterfaces.IMCallConfigInterface,
+    _localAudioTrack?: AgoraTypeInterfaces.IMCallLocalAudioTrackConfigInterface,
+    _remoteAudioTrack?: AgoraTypeInterfaces.IMCallRemoteAudioTrackConfigInterface,
     _videoCallConfig?: AgoraTypeInterfaces.VideoCallConfigInterface,
   ) {
 
     if( typeof _encoder === "object" && _encoder.hasOwnProperty('encoder')){
-      const _config: AgoraTypeInterfaces.VoiceCallConfigInterface = _encoder;
+      const _config: AgoraTypeInterfaces.IMCallConfigInterface = _encoder;
       this.encoder = _config.encoder;
       this.localAudioTrack = _config.localAudioTrack;
       this.remoteAudioTrack = _config.remoteAudioTrack;

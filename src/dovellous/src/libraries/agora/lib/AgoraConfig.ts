@@ -1,23 +1,29 @@
-import { VoiceCallConfig } from "../apps/voice/VoiceCallConfig";
+import * as AgoraTypeInterfaces from "./AgoraTypeInterfaces";
 
-export interface AgoraConfigInterface {
+import { IMCallConfig } from "../apps/voice/IMCall";
 
-  voiceCall: VoiceCallConfig,
-  
+class AgoraConfig implements AgoraTypeInterfaces.AgoraConfigInterface {
+	appId: any;
+	primaryCertificate: any;
+	channels: any;
+	tokens: any;
+	imCallConfig: IMCallConfig;
+	static events: any;
+
+	constructor(
+		appId: any,
+		primaryCertificate: any,
+		channels: any,
+		tokens: any,
+		imCallConfig: IMCallConfig
+	) {
+		this.appId = appId;
+		this.primaryCertificate = primaryCertificate;
+		this.channels = channels;
+		this.tokens = tokens;
+		this.imCallConfig = imCallConfig;
+	}
+
 }
 
-export class Config implements AgoraConfigInterface {
-
-  voiceCall: VoiceCallConfig;
-
-  constructor(
-
-    voiceCall: VoiceCallConfig,
-
-  ) {
-    
-    this.voiceCall = voiceCall;
-
-  }
-
-}
+export {AgoraConfig}

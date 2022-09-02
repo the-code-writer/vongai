@@ -1,13 +1,13 @@
 import {K, Snippets} from "../../../app/helpers";
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
 
-import { VoiceCallError } from "./VoiceCallErrors";
-import { Config, VoiceCallConfig } from "./VoiceCallConfig";
+import { IMCallError } from "./IMCallErrors";
+import { Config, IMCallConfig } from "./IMCallConfig";
 
 // Parent constructor
-class VoiceCall {
+class IMCall {
 
-  config: VoiceCallConfig;
+  config: IMCallConfig;
 
   framework7Component: any;
 
@@ -51,5 +51,5 @@ class VoiceCall {
 	}
 }
 
-export {VoiceCallConfig, VoiceCall}
+export {IMCallConfig, IMCall}
 

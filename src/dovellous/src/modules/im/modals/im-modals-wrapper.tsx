@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import IMVoiceCall from "../sheets/im-voice-call";
+import IMIMCall from "../sheets/im-call-screen-sheet-modal";
 
 export default ({callDataObject}) => {
 
@@ -10,7 +10,7 @@ export default ({callDataObject}) => {
 
     };
 
-    // Begin Voice Call Actions
+    // Begin IM Call Actions
 
     const onMuteHandler = (userData)=>{
 
@@ -112,16 +112,16 @@ export default ({callDataObject}) => {
     }, [callDataObject])
     
    
-    // End Voice Call Actions
+    // End IM Call Actions
 
     return (
 
         <React.Fragment>
 
-            <IMVoiceCall 
-                id={`im-voice-call-sheet-modal`} 
-                key={`im-voice-call-sheet-modal`} 
-                className={`im-voice-call-sheet-modal`}
+            <IMIMCall 
+                id={`im-im-call-sheet-modal`} 
+                key={`im-im-call-sheet-modal`} 
+                className={`im-im-call-sheet-modal`}
                 isVideoCall={callData.isVideoCall} 
                 isIncoming={callData.isIncomingCall}
                 userDefinedData={callData.userData}

@@ -1,7 +1,7 @@
-import { Block, BlockTitle, Button, Col, f7, Fab, FabButton, FabButtons, Icon, Link, List, ListItem, Navbar, NavRight, NavTitle, PageContent, Row, Segmented, Sheet } from "framework7-react";
+import { Block, BlockTitle, Button, Col, f7, f7ready, Fab, FabButton, FabButtons, Icon, Link, List, ListItem, Navbar, NavRight, NavTitle, PageContent, Row, Segmented, Sheet } from "framework7-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useStopwatch } from 'react-timer-hook';
-import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng"
+
 import K from "../../../libraries/app/konstants";
 import Dom7 from "dom7";
 import Blockchain from '../../../libraries/cryptography/blockchain';
@@ -372,13 +372,17 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         f7
         .dovellous.instance.Libraries
         .Agora.agoraApp.modules
-        .voiceCall.lib.start(
+        .imCall.lib.start(
             getCallData() // contains play and subscribes
         );
 
     }
 
     const onCallConnected = (callDetails)=>{
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.CONNECTED
+        );
 
         f7.emit('startCallTimer');
 
@@ -420,6 +424,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         setIsCallAnswered(true);
         setIsCallDeclined(false);
+        setIsCallInProgress(false);
 
         onAnswerCall(getCallData());
 
@@ -518,197 +523,61 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     }
 
-    const client: IAgoraRTCClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+    const init = async () => {
 
-    interface RTCInterface {
-        client: IAgoraRTCClient | null,
-        localAudioTrack: any,
-        localVideoTrack: any
-    }
-    
-    const rtc:RTCInterface  = {
-        // For the local client.
-        client: null,
-        // For the local audio and video tracks.
-        localAudioTrack: null,
-        localVideoTrack: null,
-    };
+        if(
+            f7.dovellous.instance.Libraries.Agora === null || 
+            typeof f7.dovellous.instance.Libraries.Agora === "undefined"
+        ){
 
-    const options = {
-        // Pass your app ID here.
-        appId: import.meta.env.VNG_AGORA_APP_ID,
-        // Set the channel name.
-        channel: import.meta.env.VNG_AGORA_DEFAULT_CHANNEL,
-        // Pass a token if your project enables the App Certificate.
-        token: import.meta.env.VNG_AGORA_TOKEN,
-    };
+            //Check if not already connecting
 
-    const startBasicCall = async () => {
-
-        // Get all audio and video devices.
-            AgoraRTC.getDevices()
-            .then(devices => {
-                const audioDevices = devices.filter(function(device){
-                    return device.kind === "audioinput";
-                });
-                const videoDevices = devices.filter(function(device){
-                    return device.kind === "videoinput";
-                });
-
-                console.warn("::::DEVICES", audioDevices, videoDevices);
-
-                var selectedMicrophoneId = audioDevices[0].deviceId;
-
-                var selectedCameraId = videoDevices[0].deviceId;
-
-                return Promise.all([
-                    AgoraRTC.createCameraVideoTrack({ cameraId: selectedCameraId }),
-                    AgoraRTC.createMicrophoneVideoTrack({ microphoneId: selectedMicrophoneId }),
-                ]);
-
+            f7.dovellous.instance.initAgora({
+                appId: 'string',
+                primaryCertificate: 'ertertert',
+                channels: [],
+                tokens: [],
+                voiceCallConfig: { moduleName: 'string;' },
             });
 
-        
+            init();
 
-        
-        
-        /**
-         * Put the following code snippets here.
-         */
+        }else{
 
-        rtc.client = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
+            f7.on(
+                K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
+                (res)=>{
+                    console.error(":::::::::: AgoraLibEvent.MODULE_LOADED :::::::::::", res);
+                }
+            );
 
-            const uid = rtc.client.join(options.appId, options.channel, options.token, null).then(async (uid)=>{
+            f7.on(
+                K.Events.Modules.Agora.IMCall.ON_APP_INIT,
+                (res)=>{
+                    console.error(":::::::::: IMCall.ON_APP_INIT :::::::::::", res);
 
-                callObject.uid = uid;
+                    f7.dovellous.instance.Libraries.Agora.app.imCall.lib.start()
 
-        setCurrentCallUID(uid);
+                }
+            );
 
-        callObject.uid = uid;
+        }
 
-        // Create an audio track from the audio sampled by a microphone.
-        rtc.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(
-            {
-                encoderConfig: {
-                  sampleRate: 48000,
-                  stereo: true,
-                  bitrate: 128,
-                },
-            }
-        );
-        // Create a video track from the video captured by a camera.
-        rtc.localVideoTrack = await AgoraRTC.createCameraVideoTrack(
-            {
-                encoderConfig: {
-                  width: { ideal: Dom7('html').width()*.75, min: Dom7('html').width()*.5, max: Dom7('html').width() },
-                  // Specify a value range and an ideal value
-                  height: { ideal: Dom7('html').height()*.75, min: Dom7('html').height()*.5, max: Dom7('html').height() },
-                  frameRate: 15,
-                  bitrateMin: 600, 
-                  bitrateMax: 1000,
-                },
-            }
-        );
-        // Publish the local audio and video tracks to the channel.
-        await rtc.client.publish([rtc.localAudioTrack, rtc.localVideoTrack]);
-
-        const playerContainerWrapper = Dom7("#im-player-container-remote");
-
-        rtc.client.on("user-published", async (user, mediaType) => {
-            // Subscribe to a remote user.
-            await rtc.client.subscribe(user, mediaType);
-
-            console.log("subscribe success");
-          
-            // If the subscribed track is video.
-            if (mediaType === "video") {
-              // Get `RemoteVideoTrack` in the `user` object.
-              const remoteVideoTrack = user.videoTrack;
-
-                // Dynamically create a container in the form of a DIV element for playing the remote video track.
-                const playerContainer = document.createElement("div");
-                // Specify the ID of the DIV container. You can use the `uid` of the remote user.
-                playerContainer.id = user.uid.toString();
-                playerContainer.style.width = "240px";
-                playerContainer.style.height = "320px";
-                playerContainerWrapper.append(playerContainer);
-          
-                // Play the remote video track.
-                // Pass the DIV container and the SDK dynamically creates a player in the container for playing the remote video track.
-                
-                //remoteVideoTrack.play(playerContainer);
-          
-                // Or just pass the ID of the DIV container.
-
-                remoteVideoTrack.play('im-player-container-remote');
-
-                // if(callParticipants.length>1){
-                //     remoteVideoTrack.play('im-player-container-remote');
-                // }else{
-                //     remoteVideoTrack.play('im-player-container-local');
-                // }
-
-                
-
-            }
-          
-            // If the subscribed track is audio.
-            if (mediaType === "audio") {
-              // Get `RemoteAudioTrack` in the `user` object.
-              const remoteAudioTrack = user.audioTrack;
-              // Play the audio track. No need to pass any DOM element.
-              remoteAudioTrack.play();
-            }
-
-            const newParticipants = [ ...callParticipants, {participantData: user} ];
-
-            setCallParticipants(newParticipants);
-
-          });
-
-        }).catch((agoraError)=>{
-
-            console.warn("::::: AGORA ERROR :::::", agoraError, options, import.meta.env);
-
-        });
-
-        rtc.client.on("user-unpublished", user => {
-            // Get the dynamically created DIV container.
-            const playerContainer = document.getElementById(user.uid.toString());
-            // Destroy the container.
-            playerContainer.remove();
-
-        });
-
-    }
-
-    async function leaveCall() {
-        // Destroy the local audio and video tracks.
-        rtc.localAudioTrack.close();
-        rtc.localVideoTrack.close();
-      
-        // Traverse all remote users.
-        rtc.client.remoteUsers.forEach(user => {
-          // Destroy the dynamically created DIV container.
-          const playerContainer = document.getElementById(user.uid);
-          playerContainer && playerContainer.remove();
-        });
-      
-        // Leave the channel.
-        await rtc.client.leave();
+        console.error(":::::::::: CALL DATA INIT READY :::::::::::", getCallData());
+  
     }
 
     {/*
 
 
     "DISCONNECTED": Disconnected. In this state, the SDK does not automatically reconnect. This state indicates that the user is in any of the following stages:
-The user has not joined the channel by calling join.
-The user has left the channel by calling leave.
-The user has been kicked out of the channel by the Agora server or the connection has failed.
-"CONNECTING": Connecting. This state indicates that the user is calling join.
-"CONNECTED": Connected. This state indicates that the user has joined the channel and can publish or subscribe to media tracks in the channel.
-"RECONNECTING": Disconnected and reconnecting. If the connection between the SDK and the server is interrupted due to network disconnection or switching, the SDK automatically reconnects and enters this state.
-"DISCONNECTING": Disconnecting. This state indicates that the user is calling leave.
+    The user has not joined the channel by calling join.
+    The user has left the channel by calling leave.
+    The user has been kicked out of the channel by the Agora server or the connection has failed.
+    "CONNECTING": Connecting. This state indicates that the user is calling join.
+    "CONNECTED": Connected. This state indicates that the user has joined the channel and can publish or subscribe to media tracks in the channel.
+    "RECONNECTING": Disconnected and reconnecting. If the connection between the SDK and the server is interrupted due to network disconnection or switching, the SDK automatically reconnects and enters this state.
+    "DISCONNECTING": Disconnecting. This state indicates that the user is calling leave.
 
     When joining a channel, the SDK may throw the following errors due to improper use of the SDK or network abnormalities:
 
@@ -755,10 +624,8 @@ The user has been kicked out of the channel by the Agora server or the connectio
 
         isIncoming ? onIncomingCallHandler() : onOutgoingCallHandler();
         
-        startBasicCall();
+        init();
 
-        console.log(":::::::::: CALL DATA :::::::::::", getCallData());
-        
     }, [userDefinedData]);
 
     return (

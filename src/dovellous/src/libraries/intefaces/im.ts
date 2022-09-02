@@ -31,4 +31,4 @@
     text: string; 
   }
 
-  export {VoiceCallConfigInterface, DF7Icon, DeliveryStatus, MessageType, ListViewMessage}
+  export {IMCallConfigInterface, DF7Icon, DeliveryStatus, MessageType, ListViewMessage}

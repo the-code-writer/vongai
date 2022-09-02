@@ -2,7 +2,7 @@ import { AgoraError } from "./lib/AgoraErrors";
 
 import { Config, AgoraConfig } from "./lib/AgoraConfig";
 
-import { VoiceCall } from "./apps/voice/VoiceCall";
+import { IMCall } from "./apps/voice/IMCall";
 
 import { VideoCall } from "./apps/video/VideoCall";
 
@@ -11,7 +11,7 @@ import { InstantMessaging } from "./apps/instant-messaging/InstantMessaging";
 import { LiveStreaming } from "./apps/live-streaming/LiveStreaming";
 
 import { WhiteBoard } from "./apps/white-board/WhiteBoard";
-import { VoiceCallConfig } from "./apps/voice/VoiceCallConfig";
+import { IMCallConfig } from "./apps/voice/IMCallConfig";
 import { VideoCallConfig } from "./apps/video/VideoCallConfig";
 import { InstantMessagingConfig } from "./apps/instant-messaging/InstantMessagingConfig";
 import { LiveStreamingConfig } from "./apps/live-streaming/LiveStreamingConfig";
@@ -21,7 +21,7 @@ export class Agora {
   
   private readonly config: AgoraConfig;
 
-  public voiceCall: VoiceCall;
+  public imCall: IMCall;
   public videoCall: VideoCall;
   public instantMessaging: InstantMessaging;
   public liveStreaming: LiveStreaming;
@@ -33,7 +33,7 @@ export class Agora {
    */
 
   constructor(
-    authentication: VoiceCallConfig | Config,
+    authentication: IMCallConfig | Config,
     firestore: VideoCallConfig,
     messaging: InstantMessagingConfig,
     storage: LiveStreamingConfig,
@@ -57,9 +57,9 @@ export class Agora {
 
   }
 
-  private initVoiceCall() {
-    this.voiceCall = new VoiceCall(
-      this.config.voiceCall
+  private initIMCall() {
+    this.imCall = new IMCall(
+      this.config.imCall
     );
   }
 
@@ -87,9 +87,9 @@ export class Agora {
     );
   }
 
-  public voiceCallStart(): {} {
+  public imCallStart(): {} {
 
-    return this.voiceCall.startCall();
+    return this.imCall.startCall();
 
   }
 

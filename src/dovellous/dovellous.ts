@@ -56,7 +56,7 @@ class Dovellous{
 
   /**
 	 * Initializes the Agora Library:
-   * May require these params appId, primaryCertificate, channels, tokens, voiceCall, videoCall, instantMessaging, liveStreaming, whiteBoard
+   * May require these params appId, primaryCertificate, channels, tokens, imCall, videoCall, instantMessaging, liveStreaming, whiteBoard
 	 * param agoraConfig AgoraConfig - A config file for all agora modules. This follows the correct Agora Config Interface
 	 * return null
 	 */

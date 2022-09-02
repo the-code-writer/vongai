@@ -1,37 +1,13 @@
 import { K, ModuleBaseClasses } from "../app/helpers";
-
+import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng" 
 import * as AgoraTypeInterfaces from "./lib/AgoraTypeInterfaces";
-
-import { VoiceCallConfig, VoiceCall } from "./apps/voice/VoiceCall";
-
-class AgoraConfig implements AgoraTypeInterfaces.AgoraConfigInterface {
-	appId: any;
-	primaryCertificate: any;
-	channels: any;
-	tokens: any;
-	voiceCallConfig: VoiceCallConfig;
-	static events: any;
-
-	constructor(
-		appId: any,
-		primaryCertificate: any,
-		channels: any,
-		tokens: any,
-		voiceCallConfig: VoiceCallConfig
-	) {
-		this.appId = appId;
-		this.primaryCertificate = primaryCertificate;
-		this.channels = channels;
-		this.tokens = tokens;
-		this.voiceCallConfig = voiceCallConfig;
-	}
-
-}
-
+import { AgoraConfig } from './lib/AgoraConfig';
+import { IMCallConfig, IMCall } from "./apps/voice/IMCall";
+import { f7 } from "framework7-react";
 
 type AgoraOptions = {
-	agoraConfig: AgoraConfig
-} & ModuleBaseClasses.DovellousModuleOptions
+	config: AgoraConfig
+} & ModuleBaseClasses.DovellousModuleOptions;
 
 class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 	
@@ -42,12 +18,11 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 	constructor(
 		events: any,
-		Framework7App: any,
 		appId?: any,
 		primaryCertificate?: any,
 		channels?: any,
 		tokens?: any,
-		voiceCallConfig?: VoiceCallConfig | AgoraConfig
+		imCallConfig?: IMCallConfig | AgoraConfig
 	) {
 
 		super();
@@ -56,82 +31,73 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 		
 		self.events = events;
 
-		if (voiceCallConfig instanceof AgoraConfig) {
+		if (imCallConfig instanceof AgoraConfig) {
 
-			self.options.agoraConfig = voiceCallConfig;
+			self.options.config = imCallConfig;
 
 		} else {
 
-			self.options.agoraConfig = new AgoraConfig(appId, primaryCertificate, channels, tokens, voiceCallConfig);
+			self.options.config = new AgoraConfig(
+				appId, 
+				primaryCertificate, 
+				channels, 
+				tokens, 
+				imCallConfig
+			);
 
 		}
 
-		self.modules = self.init(events, Framework7App, self.options.agoraConfig);
+		self.modules = (function () {
 
-		self.modules.initModules(self, Framework7App, self.options.agoraConfig);
-
-	}
-
-	init(dovellousEvents: any | null, Framework7App: any | null, agoraConfig: VoiceCallConfig | AgoraConfig | null) {
-
-		this.modules = (function () {
-
-			let parent = {
+			const parent = {
 
 				isLoaded: false,
 
-				DovellousEvents: {},
+				events: {},
+
+				agoraLibrary: {},
+
+				agoraRTC: <AgoraTypeInterfaces.RTCInterface>{},
+
+				agoraClient: <IAgoraRTCClient>{},
 
 				agoraConfig: {},
 
-				Framework7App: {
-					dovellousEventsEmit: (eventName: string, eventDetails: any)=>{},
-					dovellousEventsOn: (eventName: string, eventDetails: any)=>{},
-				},
-
-				RTC_ENGINE: {},
-				APP_ID: "",
-				PRIMARY_CERTIFICATE: "",
-				CHANNELS: {},
-				DEFAULT_CHANNEL: "",
-				TOKENS: {},
-				DEFAULT_TOKEN: "",
+				agoraOptions: {},
 
 				initModules: async (
-					app: any,
-					Framework7App: any,
-					agoraConfig: {
-						appId: string;
-						primaryCertificate: string;
-						agora: {
-							channels: {};
-						};
-						channels: { [x: string]: string; };
-						tokens: { [x: string]: string; };
-						voiceCallConfig: { moduleName: string; };
-					}
+					agoraLibrary: any
 				) => {
 
-					parent.Framework7App = Framework7App;
+					parent.agoraLibrary = agoraLibrary;
 
-					parent.APP_ID = agoraConfig.appId;
-					parent.PRIMARY_CERTIFICATE = agoraConfig.primaryCertificate;
-					parent.CHANNELS = agoraConfig.channels;
-					parent.DEFAULT_CHANNEL = import.meta.env.VNG_AGORA_DEFAULT_CHANNEL;
-					parent.TOKENS = agoraConfig.tokens;
-					parent.DEFAULT_TOKEN = import.meta.env.VNG_AGORA_DEFAULT_TOKEN;
+					parent.events = agoraLibrary.events;
 
-					await parent.generateDefaultToken();
+					parent.agoraOptions = agoraLibrary.options;
 
-					await parent.generateDefaultChannel();
+					parent.agoraConfig = agoraLibrary.options.config;
 
-					await parent.voiceCall.init(app, agoraConfig.voiceCallConfig);
+					parent.agoraClient = AgoraRTC.createClient(
+						{ 
+							mode: "rtc", 
+							codec: "vp8" 
+						}
+					);
 
-					parent.Framework7App.dovellousEventsEmit(
+					parent.agoraRTC = {
+						// For the local client.
+						client: null,
+						// For the local audio and video tracks.
+						localAudioTrack: null,
+						localVideoTrack: null,
+					};
+
+					await parent.imCall.init();
+
+					f7.emit(
 						K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
 						{
-							agoraApp: app,
-							agoraModules: parent
+							app: parent
 						}
 					);
 
@@ -139,57 +105,27 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 				},
 
-				generateDefaultToken: async () => {
-
-					let _token: string = K.Events.Modules.Agora.AgoraDefaults.DEFAULT_TOKEN;
-
-					//call ajax and retrieve token
-
-					parent.DEFAULT_TOKEN = _token;
-
-				},
-
-				generateDefaultChannel: async () => {
-
-					let _channel: string = K.Events.Modules.Agora.AgoraDefaults.DEFAULT_CHANNEL;
-
-					//call ajax and retrieve channel
-
-					parent.DEFAULT_CHANNEL = _channel;
-
-				},
-
-				voiceCall: {
+				imCall: {
 
 					isReady: false,
 
 					lib: {},
 
-					voiceCallConfig: {
-						moduleName: "VoiceCall",
-					},
+					init: async () => {
 
-					init: async (app: any, voiceCallConfig: { moduleName: string; }) => {
+						parent.imCall.lib = new IMCall(parent);
 
-						parent.voiceCall.voiceCallConfig = voiceCallConfig;
-
-						parent.voiceCall.lib = new VoiceCall(
-							parent.DovellousEvents, 
-							parent.Framework7App, 
-							voiceCallConfig
-						);
-
-						parent.Framework7App.dovellousEventsEmit(
-							K.Events.Modules.Agora.VoiceCall.ON_APP_INIT,
+						f7.emit(
+							K.Events.Modules.Agora.IMCall.ON_APP_INIT,
 							{
-								agoraApp: app,
-								voiceCallApp: parent.voiceCall,
+								agoraApp:  parent,
+								imCallApp: parent.imCall,
 							}
 						);
 
-						parent.voiceCall.isReady = true;
+						parent.imCall.isReady = true;
 
-						return parent.voiceCall;
+						return parent.imCall;
 
 					},
 
@@ -201,8 +137,34 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 		})();
 
-		return this.modules;
+		self.modules.initModules(self);
 
+	}
+
+	getDevices(){
+		
+        // Get all audio and video devices.
+		AgoraRTC.getDevices()
+		.then(devices => {
+			const audioDevices = devices.filter(function(device){
+				return device.kind === "audioinput";
+			});
+			const videoDevices = devices.filter(function(device){
+				return device.kind === "videoinput";
+			});
+
+			console.warn("::::DEVICES", audioDevices, videoDevices);
+
+			var selectedMicrophoneId = audioDevices[0].deviceId;
+
+			var selectedCameraId = videoDevices[0].deviceId;
+
+			return Promise.all([
+				AgoraRTC.createCameraVideoTrack({ cameraId: selectedCameraId }),
+				AgoraRTC.createMicrophoneVideoTrack({ microphoneId: selectedMicrophoneId }),
+			]);
+
+		});
 	}
 
 }

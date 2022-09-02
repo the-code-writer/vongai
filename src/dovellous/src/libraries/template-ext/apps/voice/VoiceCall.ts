@@ -1,11 +1,11 @@
-import { VoiceCallError } from "./VoiceCallErrors";
-import { Config, VoiceCallConfig } from "./VoiceCallConfig";
+import { IMCallError } from "./IMCallErrors";
+import { Config, IMCallConfig } from "./IMCallConfig";
 
-export class VoiceCall {
-  private readonly config: VoiceCallConfig;
+export class IMCall {
+  private readonly config: IMCallConfig;
 
   /**
-   * VoiceCall Constructor
+   * IMCall Constructor
    * @param database .
    */
 

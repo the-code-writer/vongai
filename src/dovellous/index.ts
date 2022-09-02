@@ -71,7 +71,7 @@ const Framework7DovellousPlugin = {
         },
         channels: [],
         tokens: [],
-        voiceCallConfig: { 
+        imCallConfig: { 
           moduleName: '', 
         }
       }

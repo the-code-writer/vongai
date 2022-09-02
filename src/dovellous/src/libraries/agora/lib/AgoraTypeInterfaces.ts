@@ -1,5 +1,5 @@
 
-interface VoiceCallEncoderConfigInterface {
+interface IMCallEncoderConfigInterface {
   sampleRate:  number;
   stereo: boolean;    
   bitrate: number;
@@ -21,11 +21,11 @@ interface VideoCallEncoderConfigInterface {
   bitrateMax: number,
 }
 
-interface VoiceCallLocalAudioTrackConfigInterface {
+interface IMCallLocalAudioTrackConfigInterface {
   volume: number;
 }
 
-interface VoiceCallRemoteAudioTrackConfigInterface {
+interface IMCallRemoteAudioTrackConfigInterface {
   volume: number;
 }
 
@@ -33,17 +33,17 @@ interface VideoCallConfigInterface {
   encoder: VideoCallEncoderConfigInterface;
 }
 
-interface VoiceCallConfigInterface {
-  encoder: VoiceCallEncoderConfigInterface;
-  localAudioTrack: VoiceCallLocalAudioTrackConfigInterface;
-  remoteAudioTrack: VoiceCallRemoteAudioTrackConfigInterface;
+interface IMCallConfigInterface {
+  encoder: IMCallEncoderConfigInterface;
+  localAudioTrack: IMCallLocalAudioTrackConfigInterface;
+  remoteAudioTrack: IMCallRemoteAudioTrackConfigInterface;
   videoCallConfig: {
     encoder: VideoCallEncoderConfigInterface | string; //720p_1
   }
 }
 
 interface AgoraConfigInterface {
-  voiceCallConfig: VoiceCallConfigInterface,  
+  imCallConfig: IMCallConfigInterface,  
 }
 
 interface AgoraErrorInterface {
@@ -53,20 +53,26 @@ interface AgoraErrorInterface {
   error: Error
 }
 
-interface VoiceCallErrorInterface {
+interface IMCallErrorInterface {
   throwError: Function;
   composeError: Function;
 }
 
+interface RTCInterface {
+  client: IAgoraRTCClient | null,
+  localAudioTrack: any,
+  localVideoTrack: any
+}
 
 export { 
   AgoraConfigInterface, 
   AgoraErrorInterface,
-  VoiceCallEncoderConfigInterface,
-  VoiceCallLocalAudioTrackConfigInterface,
-  VoiceCallRemoteAudioTrackConfigInterface,
+  IMCallEncoderConfigInterface,
+  IMCallLocalAudioTrackConfigInterface,
+  IMCallRemoteAudioTrackConfigInterface,
   VideoCallEncoderConfigInterface,
-  VoiceCallErrorInterface, 
-  VoiceCallConfigInterface,
+  IMCallErrorInterface, 
+  IMCallConfigInterface,
   VideoCallConfigInterface,
+  RTCInterface,
 } 

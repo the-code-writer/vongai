@@ -18,4 +18,4 @@ export abstract class NestedError extends Error {
   }
 }
 
-export class VoiceCallError extends NestedError {}
+export class IMCallError extends NestedError {}
