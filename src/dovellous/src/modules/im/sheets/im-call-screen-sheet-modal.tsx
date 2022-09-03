@@ -1,10 +1,11 @@
-import { Block, BlockTitle, Button, Col, f7, f7ready, Fab, FabButton, FabButtons, Icon, Link, List, ListItem, Navbar, NavRight, NavTitle, PageContent, Row, Segmented, Sheet } from "framework7-react";
+import { Block, BlockTitle, Button, Col, f7, Fab, FabButton, FabButtons, Icon, List, ListItem, PageContent, Row, Sheet } from "framework7-react";
 import React, { useCallback, useEffect, useState } from "react";
 import { useStopwatch } from 'react-timer-hook';
 
 import K from "../../../libraries/app/konstants";
 import Dom7 from "dom7";
-import Blockchain from '../../../libraries/cryptography/blockchain';
+
+import song from '../../../../assets/aud/incoming-classic.mp3';
 
 export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onMute,
@@ -94,6 +95,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const [callHasParticipants, setCallHasParticipants] = useState(false);
     const [callParticipants, setCallParticipants] = useState([{participantData: userDefinedData}]);
     const [isCallInProgress, setIsCallInProgress] = useState(false);
+
+    const [ringingTone, setRingingTone] = useState(new Audio(song));
 
     const CallTimer = useCallback(({visible, className}) => {
 
@@ -322,6 +325,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onIncomingCallHandler = () => {
 
+        ringingTone.loop = true;
+        
+        ringingTone.play();
+        
         setIsCallAnswered(false);
         setIsCallDeclined(false);
         setIsCallInProgress(false);
@@ -420,6 +427,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onAnswerCallHandler = () => {
 
+        ringingTone.pause();
+
         onCallConnecting();
 
         setIsCallAnswered(true);
@@ -431,6 +440,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     };
 
     const onDeclineCallHandler = () => {
+
+        ringingTone.pause();
 
         setIsCallAnswered(false);
         setIsCallDeclined(true);
@@ -526,21 +537,20 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const init = async () => {
 
         if(
-            f7.dovellous.instance.Libraries.Agora === null || 
-            typeof f7.dovellous.instance.Libraries.Agora === "undefined"
+            f7.dovellous.instance.Libraries.Agora === null
         ){
 
             //Check if not already connecting
 
-            f7.dovellous.instance.initAgora({
-                appId: 'string',
-                primaryCertificate: 'ertertert',
-                channels: [],
-                tokens: [],
-                voiceCallConfig: { moduleName: 'string;' },
-            });
+            // f7.dovellous.instance.initAgora({
+            //     appId: 'string',
+            //     primaryCertificate: 'ertertert',
+            //     channels: [],
+            //     tokens: [],
+            //     voiceCallConfig: { moduleName: 'string;' },
+            // });
 
-            init();
+            //init();
 
         }else{
 
