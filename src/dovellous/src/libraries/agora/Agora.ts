@@ -18,11 +18,11 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 	constructor(
 		events: any,
-		appId?: any,
+		appId?: any | AgoraTypeInterfaces.AgoraConfigInterface,
 		primaryCertificate?: any,
 		channels?: any,
 		tokens?: any,
-		imCallConfig?: IMCallConfig | AgoraConfig
+		imCallConfig?: AgoraTypeInterfaces.IMCallConfigInterface
 	) {
 
 		super();
@@ -31,9 +31,9 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 		
 		self.events = events;
 
-		if (imCallConfig instanceof AgoraConfig) {
+		if (appId instanceof AgoraConfig) {
 
-			self.options.config = imCallConfig;
+			self.options.config = appId;
 
 		} else {
 
@@ -161,7 +161,7 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 			return Promise.all([
 				AgoraRTC.createCameraVideoTrack({ cameraId: selectedCameraId }),
-				AgoraRTC.createMicrophoneVideoTrack({ microphoneId: selectedMicrophoneId }),
+				AgoraRTC.createMicrophoneAudioTrack({ microphoneId: selectedMicrophoneId }),
 			]);
 
 		});
@@ -179,11 +179,11 @@ ModuleBaseClasses.DovellousEventDispatcher(K.Events.Modules.Agora);
  */
 const AgoraLibEvent: ModuleBaseClasses.DovellousLibraryEvent = new ModuleBaseClasses.DovellousLibraryEvent(K.Events.Modules.Agora.AgoraLibEvent.NAME);
 
-const Agora = (Framework7App: any, AgoraConfigOptions: AgoraConfig) => {
+const Agora = (AgoraConfigOptions: AgoraConfig) => {
 	/**
 	 * @type {ModuleBaseClasses.DovellousLibrary}
 	 */
-	return new AgoraLibrary(AgoraLibEvent, Framework7App, AgoraConfigOptions);
+	return new AgoraLibrary(AgoraLibEvent, AgoraConfigOptions);
 
 };
 

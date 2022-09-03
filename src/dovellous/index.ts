@@ -1,14 +1,13 @@
 import { Dovellous } from "./dovellous";
 import { K, Snippets } from "./src/libraries/app/helpers";
-
 import { StorageIM } from "./src/modules/im/store/im-store";
 import { StorageContacts } from "./src/modules/im/store/contacts-store";
 
 import moment from "moment";
 
-import './assets/styles/main.scss';
-import { eventNames } from "process";
 import Dom7 from "dom7";
+
+import './assets/styles/main.scss';
 
 /**
  * Dovellous F7 Plugin for Framework7 1.0.0
@@ -36,17 +35,17 @@ const Framework7DovellousPlugin = {
   It will be executed in the very beginning of class initilization (when we create new instance of the class)
   */
   create() {
+
     const app = this;
     const $ = app.$;
     // extend app methods with debugger methods when app instance just created
 
-    const dovellousInstance = new Dovellous(app, app.params.dovellous);
+    const dovellousInstance = new Dovellous(app.params.dovellous);
 
     app.dovellous = {
       konstants: K,
       helpers: Snippets,
       instance: dovellousInstance,
-      domSelector: $,
       enableDebug: function () {
         app.params.dovellous.debugger = true;
       },
@@ -63,16 +62,40 @@ const Framework7DovellousPlugin = {
   params: {
     dovellous: {
       debugger: true,
-      agoraConfig: {
+      agora: {
         appId: '',
         primaryCertificate: '',
-        agora: {
-          channels: {},
-        },
         channels: [],
         tokens: [],
-        imCallConfig: { 
-          moduleName: '', 
+        imCallConfig: {
+          encoder: {
+              sampleRate:  48000,
+              stereo: true,    
+              bitrate: 128,
+          },
+          localAudioTrack: {
+            volume: 50,
+          },
+          remoteAudioTrack: {
+            volume: 50,
+          },
+          videoCallConfig: {
+            encoding: {
+                width: { 
+                  ideal: Dom7('html').width()*.75, 
+                  min: Dom7('html').width()*.5, 
+                  max: Dom7('html').width(),
+                },
+                height: { 
+                  ideal: Dom7('html').height()*.75, 
+                  min: Dom7('html').height()*.5, 
+                  max: Dom7('html').height(),
+                },
+                frameRate: 15,
+                bitrateMin: 600, 
+                bitrateMax: 1000,
+            }
+          }
         }
       }
     },

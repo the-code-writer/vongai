@@ -43,7 +43,11 @@ interface IMCallConfigInterface {
 }
 
 interface AgoraConfigInterface {
-  imCallConfig: IMCallConfigInterface,  
+  appId: any;
+	primaryCertificate?: any;
+	channels?: any;
+	tokens?: any;
+	imCallConfig?: IMCallConfigInterface; 
 }
 
 interface AgoraErrorInterface {

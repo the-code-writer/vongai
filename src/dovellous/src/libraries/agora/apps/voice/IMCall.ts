@@ -1,5 +1,7 @@
 import { K, Snippets } from "../../../app/helpers";
 
+import Dom7 from 'dom7';
+
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
 
 import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
@@ -7,14 +9,13 @@ import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
 import { IMCallConfig } from "./IMCallConfig";
 
 import { IMCallError } from "./IMCallErrors";
-import Dom7 from 'dom7';
 
 // Parent constructor
 class IMCall {
 
   imCallEvents: ModuleBaseClasses.DovellousLibraryEvent;
 
-  imCallError: AgoraTypeInterfaces.IMCallErrorInterface;
+  imCallError:  AgoraTypeInterfaces.IMCallErrorInterface;
 
   imCallconfig: AgoraTypeInterfaces.IMCallConfigInterface;
 
