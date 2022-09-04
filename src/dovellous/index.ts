@@ -1,5 +1,6 @@
 import { Dovellous } from "./dovellous";
-import { K, Snippets } from "./src/libraries/app/helpers";
+import { K } from "./src/libraries/app/helpers";
+import { Snippets } from "./src/libraries/app/helpers";
 import { StorageIM } from "./src/modules/im/store/im-store";
 import { StorageContacts } from "./src/modules/im/store/contacts-store";
 
@@ -40,7 +41,7 @@ const Framework7DovellousPlugin = {
     const $ = app.$;
     // extend app methods with debugger methods when app instance just created
 
-    const dovellousInstance = new Dovellous(app.params.dovellous);
+    const dovellousInstance = new Dovellous(app);
 
     app.dovellous = {
       konstants: K,
@@ -63,37 +64,37 @@ const Framework7DovellousPlugin = {
     dovellous: {
       debugger: true,
       agora: {
-        appId: '',
-        primaryCertificate: '',
-        channels: [],
-        tokens: [],
+        appId: K.Env.AGORA_APP_ID,
+        primaryCertificate: K.Env.AGORA_PRIMARY_CERTIFICATE,
+        channels: K.Env.AGORA_CHANNELS,
+        channelDefault: K.Env.AGORA_DEFAULT_CHANNEL,
         imCallConfig: {
           encoder: {
-              sampleRate:  48000,
-              stereo: true,    
-              bitrate: 128,
+              sampleRate:  parseInt(K.Env.AGORA_AUDIO_SAMPLE_RATE),
+              stereo: parseInt(K.Env.AGORA_AUDIO_STEREO),    
+              bitrate: parseInt(K.Env.AGORA_AUDIO_BITRATE),
           },
           localAudioTrack: {
-            volume: 50,
+            volume: parseInt(K.Env.AGORA_LOCAL_AUDIO_TRACK_VOLUME),
           },
           remoteAudioTrack: {
-            volume: 50,
+            volume: parseInt(K.Env.AGORA_REMOTE_AUDIO_TRACK_VOLUME),
           },
-          videoCallConfig: {
-            encoding: {
+          videoSettings: {
+            encoding: K.Env.AGORA_VIDEO_SETTINGS_ENCODING_PRESET || {
                 width: { 
-                  ideal: Dom7('html').width()*.75, 
-                  min: Dom7('html').width()*.5, 
-                  max: Dom7('html').width(),
+                  ideal: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_WIDTH)*.75, 
+                  min: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_WIDTH)*.5, 
+                  max: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_WIDTH),
                 },
                 height: { 
-                  ideal: Dom7('html').height()*.75, 
-                  min: Dom7('html').height()*.5, 
-                  max: Dom7('html').height(),
+                  ideal: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_HEIGHT)*.75, 
+                  min: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_HEIGHT)*.5, 
+                  max: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_HEIGHT),
                 },
-                frameRate: 15,
-                bitrateMin: 600, 
-                bitrateMax: 1000,
+                frameRate:  parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_FRAMERATE),
+                bitrateMin: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_BIT_MIN), 
+                bitrateMax: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_BIT_MAX),
             }
           }
         }

@@ -141,29 +141,17 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 	}
 
-	getDevices(){
+	getDevices(eventCallBackFunction){
 		
         // Get all audio and video devices.
-		AgoraRTC.getDevices()
-		.then(devices => {
+		AgoraRTC.getDevices().then(devices => {
 			const audioDevices = devices.filter(function(device){
 				return device.kind === "audioinput";
 			});
 			const videoDevices = devices.filter(function(device){
 				return device.kind === "videoinput";
 			});
-
-			console.warn("::::DEVICES", audioDevices, videoDevices);
-
-			var selectedMicrophoneId = audioDevices[0].deviceId;
-
-			var selectedCameraId = videoDevices[0].deviceId;
-
-			return Promise.all([
-				AgoraRTC.createCameraVideoTrack({ cameraId: selectedCameraId }),
-				AgoraRTC.createMicrophoneAudioTrack({ microphoneId: selectedMicrophoneId }),
-			]);
-
+			eventCallBackFunction(audioDevices, videoDevices);
 		});
 	}
 

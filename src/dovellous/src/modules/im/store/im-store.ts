@@ -1048,7 +1048,7 @@ const StorageIM = createStore({
 
           const randInt = faker.mersenne.rand(3,0);          
           
-          console.log('::: STORIES PAYLOAD ::: ####', randInt, storiesPayload);
+          //console.log('::: STORIES PAYLOAD ::: ####', randInt, storiesPayload);
 
           switch(randInt){
 

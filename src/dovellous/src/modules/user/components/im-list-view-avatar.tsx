@@ -63,11 +63,11 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                     Snippets.files.lib.readFile(
                         `${path}/${fileName}`,
                         (imageData: any) => {
-                            console.log("::READ FILE::", `${path}/${fileName}`, imageData);
+                            //console.log("::READ FILE::", `${path}/${fileName}`, imageData);
                             callBack(imageData);
                         },
                         (error: any) => {
-                            console.log("::READ ERROR::", `${path}/${fileName}`, error);
+                            //console.log("::READ ERROR::", `${path}/${fileName}`, error);
                         }
                     );
                 }
@@ -119,7 +119,7 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                         }
                     );
                 } catch (e) {
-                    console.warn( "::IMAGE DATA ERROR :: loadImageFromLocalFileSystem ::", e );
+                    //console.warn( "::IMAGE DATA ERROR :: loadImageFromLocalFileSystem ::", e );
                 }
 
                 if (!locallyLoaded) {
@@ -154,7 +154,7 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                     };
 
                     baseImage.onerror = (error) => {
-                        console.log("::IMAGE LOAD ERROR ::", error);
+                        //console.log("::IMAGE LOAD ERROR ::", error);
                     };
 
                     baseImage.src = src;

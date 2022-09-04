@@ -1,4 +1,4 @@
-import { f7 } from 'framework7-react';
+//import { f7 } from 'framework7-react';
 import { K, Snippets } from './src/libraries/app/helpers';
 import { Agora, AgoraConfig } from './src/libraries/agora/Agora';
 
@@ -32,8 +32,10 @@ class Dovellous{
 
   }
 
-  constructor(appConfig: any){
-
+  constructor(f7: any, ){
+    
+    const appConfig: any = f7.params.dovellous;
+    
     const self = this;
 
     const agoraConfig: AgoraConfig = appConfig.agora;
