@@ -9,6 +9,7 @@ import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
 import { IMCallConfig } from "./IMCallConfig";
 
 import { IMCallError } from "./IMCallErrors";
+import AgoraRTC from "agora-rtc-sdk-ng";
 
 // Parent constructor
 class IMCall {
@@ -74,7 +75,7 @@ class IMCall {
           enumerable: true,
           configurable: true
         },
-        "videoCallConfig": {
+        "videoSettings": {
           value: {
             encoding: {
               width: { 
@@ -104,6 +105,8 @@ class IMCall {
 
     this.AgoraInstance = Agora;
 
+    this.init();
+
   }
   
   /**
@@ -111,9 +114,9 @@ class IMCall {
    * param destinationId string - The destination uuid of the callee
    * return null
    */
-  async init(callData) {
+  async init() {
 
-    this.AgoraInstance.xxx.agoraRTC.client = AgoraRTC.createClient(
+    this.AgoraInstance.agoraRTC.client = AgoraRTC.createClient(
       { 
         mode: "rtc", 
         codec: "h264" 
@@ -127,57 +130,61 @@ class IMCall {
    * param destinationId string - The destination uuid of the callee
    * return null
    */
-  async connect(callData) {
+  async connect(callData: any, callID: any) {
 
-    const uid = this.AgoraInstance.xxx.agoraRTC.client.join(
-      options.appId, 
-      options.channel, 
-      options.token, 
-      null
+    this.AgoraInstance.agoraRTC.client.join(
+      this.AgoraInstance.agoraOptions.appId, 
+      this.AgoraInstance.agoraOptions.channel, 
+      this.AgoraInstance.agoraOptions.token, 
+      callID ?? null
     ).then(async (uid)=>{
 
-      console.error(":::::: AGORA UID :::::: ", uid);
+      console.error(":::::: AGORA UID :::::: ", uid, this.AgoraInstance.agoraOptions);
       
       // Create an audio track from the audio sampled by a microphone.
-      
-      this.AgoraInstance.xxx.agoraRTC.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(
+ 
+      this.AgoraInstance.agoraRTC.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(
         {
           encoderConfig: {
-            sampleRate: 48000,
-            stereo: true,
-            bitrate: 128,
+            sampleRate: this.imCallconfig.encoder.sampleRate,
+            stereo: this.imCallconfig.encoder.stereo,
+            bitrate: this.imCallconfig.encoder.bitrate,
           },
         }
       );
+
+      if(callData.isVideo){
       
-      // Create a video track from the video captured by a camera.
-      this.AgoraInstance.xxx.agoraRTC.localVideoTrack = await AgoraRTC.createCameraVideoTrack(
-        {
-          encoderConfig: {
-            width: { 
-              ideal: Dom7('html').width()*.75, 
-              min: Dom7('html').width()*.5, 
-              max: Dom7('html').width() 
+        // Create a video track from the video captured by a camera.
+        this.AgoraInstance.agoraRTC.localVideoTrack = await AgoraRTC.createCameraVideoTrack(
+          {
+            encoderConfig: {
+              width: { 
+                ideal: this.imCallconfig.videoSettings.encoding.width*.75, 
+                min: this.imCallconfig.videoSettings.encoding.width*.5, 
+                max: this.imCallconfig.videoSettings.encoding.width 
+              },
+              height: { 
+                ideal: this.imCallconfig.videoSettings.encoding.height*.75, 
+                min: this.imCallconfig.videoSettings.encoding.height*.5, 
+                max: this.imCallconfig.videoSettings.encoding.height
+              },
+              frameRate: this.imCallconfig.videoSettings.encoding.frameRate,
+              bitrateMin: this.imCallconfig.videoSettings.encoding.bitrateMin,
+              bitrateMax: this.imCallconfig.videoSettings.encoding.bitrateMax,
             },
-            height: { 
-              ideal: Dom7('html').height()*.75, 
-              min: Dom7('html').height()*.5, 
-              max: Dom7('html').height() 
-            },
-            frameRate: 15,
-            bitrateMin: 600,
-            bitrateMax: 1000,
-          },
-        }
-      );
+          }
+        );
+
+      }
 
       this.framework7.emit(
         K.ModuleComponentsLibs.im.callScreen.CONNECTED,
         {
           uid: uid,
           callData: callData,
-          localAudioTrack: this.AgoraInstance.xxx.agoraRTC.localAudioTrack,
-          localVideoTrack: this.AgoraInstance.xxx.agoraRTC.localVideoTrack,
+          localAudioTrack: this.AgoraInstance.agoraRTC.localAudioTrack,
+          localVideoTrack: callData.isVideo ? this.AgoraInstance.agoraRTC.localVideoTrack : null,
         }
       );
 
@@ -188,18 +195,18 @@ class IMCall {
 
   async disconnect() {
     // Destroy the local audio and video tracks.
-    this.AgoraInstance.xxx.agoraRTC.localAudioTrack.close();
-    this.AgoraInstance.xxx.agoraRTC.localVideoTrack.close();
+    this.AgoraInstance.agoraRTC.localAudioTrack.close();
+    this.AgoraInstance.agoraRTC.localVideoTrack.close();
   
     // Traverse all remote users.
-    this.AgoraInstance.xxx.agoraRTC.client.remoteUsers.forEach(user => {
+    this.AgoraInstance.agoraRTC.client.remoteUsers.forEach(user => {
       // Destroy the dynamically created DIV container.
       const playerContainer = document.getElementById(user.uid);
       playerContainer && playerContainer.remove();
     });
   
     // Leave the channel.
-    await this.AgoraInstance.xxx.agoraRTC.client.leave();
+    await this.AgoraInstance.agoraRTC.client.leave();
 }
 
   throwError(message: string): void {

@@ -24,6 +24,12 @@ import { Agora, AgoraConfig } from './src/libraries/agora/Agora';
 
 class Dovellous{
 
+  Frameworks = {
+
+    Framework7: null
+
+  }
+
   Libraries = {
 
     Agora: null,
@@ -33,6 +39,8 @@ class Dovellous{
   }
 
   constructor(f7: any, ){
+
+    this.Frameworks.Framework7 = f7;
     
     const self = this;
 
@@ -45,11 +53,11 @@ class Dovellous{
       f7.emit(K.Events.Modules.Agora.AgoraLibEvent.MODULE_READY, agoraInstance);
     
     });
-
+    
     if(f7.params.dovellous.hasOwnProperty('agora')){
-      
-      f7.params.dovellous.agora instanceof AgoraConfig ? this.initAgora(f7) : null;
-
+    
+      f7.params.dovellous.agora instanceof AgoraConfig ? this.initAgora() : null;
+    
     }
 
     /* End Agora Library Init */
@@ -62,10 +70,10 @@ class Dovellous{
 	 * param agoraConfig AgoraConfig - A config file for all agora modules. This follows the correct Agora Config Interface
 	 * return null
 	 */
-  initAgora (f7: any) {
+  initAgora () {
 
-    Agora(f7);
-
+    Agora(this.Frameworks.Framework7);
+    
   }
 
 }

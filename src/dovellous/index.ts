@@ -23,6 +23,7 @@ import './assets/styles/main.scss';
  */
 
 const Framework7DovellousPlugin = {
+
   // Module Name
   name: "Framework7 Dovellous Plugin",
   /* Install callback
@@ -68,6 +69,8 @@ const Framework7DovellousPlugin = {
         primaryCertificate: K.Env.AGORA_PRIMARY_CERTIFICATE,
         channels: K.Env.AGORA_CHANNELS,
         channelDefault: K.Env.AGORA_DEFAULT_CHANNEL,
+        clientMode: K.Env.AGORA_CLIENT_MODE,
+        clientCodec: K.Env.AGORA_CLIENT_CODEC,
         imCallConfig: {
           encoder: {
               sampleRate:  parseInt(K.Env.AGORA_AUDIO_SAMPLE_RATE),

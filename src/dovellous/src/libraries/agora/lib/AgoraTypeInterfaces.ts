@@ -29,7 +29,7 @@ interface IMCallRemoteAudioTrackConfigInterface {
   volume: number;
 }
 
-interface VideoCallConfigInterface {
+interface videoSettingsInterface {
   encoder: VideoCallEncoderConfigInterface;
 }
 
@@ -37,8 +37,8 @@ interface IMCallConfigInterface {
   encoder: IMCallEncoderConfigInterface;
   localAudioTrack: IMCallLocalAudioTrackConfigInterface;
   remoteAudioTrack: IMCallRemoteAudioTrackConfigInterface;
-  videoCallConfig: {
-    encoder: VideoCallEncoderConfigInterface | string; //720p_1
+  videoSettings: {
+    encoding: VideoCallEncoderConfigInterface | string; //720p_1
   }
 }
 
@@ -77,6 +77,6 @@ export {
   VideoCallEncoderConfigInterface,
   IMCallErrorInterface, 
   IMCallConfigInterface,
-  VideoCallConfigInterface,
+  videoSettingsInterface,
   RTCInterface,
 } 
