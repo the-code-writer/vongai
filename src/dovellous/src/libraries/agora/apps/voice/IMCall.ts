@@ -13,6 +13,8 @@ import { IMCallError } from "./IMCallErrors";
 // Parent constructor
 class IMCall {
 
+  framework7: any;
+
   imCallEvents: ModuleBaseClasses.DovellousLibraryEvent;
 
   imCallError:  AgoraTypeInterfaces.IMCallErrorInterface;
@@ -22,9 +24,12 @@ class IMCall {
   AgoraInstance: any;
 
   constructor(
+    Framework7: any,
     Agora: any,
     ...imCallconfigSettings: Array<any>
   ) {
+
+    this.framework7 = Framework7;
 
     this.imCallEvents = Agora.events;
 
@@ -108,7 +113,12 @@ class IMCall {
    */
   async init(callData) {
 
-    this.AgoraInstance.xxx.agoraRTC.client = AgoraRTC.createClient({ mode: "rtc", codec: "h264" });
+    this.AgoraInstance.xxx.agoraRTC.client = AgoraRTC.createClient(
+      { 
+        mode: "rtc", 
+        codec: "h264" 
+      }
+    );
     
   }
   
@@ -119,8 +129,12 @@ class IMCall {
    */
   async connect(callData) {
 
-    
-    const uid = this.AgoraInstance.xxx.agoraRTC.client.join(options.appId, options.channel, options.token, null).then(async (uid)=>{
+    const uid = this.AgoraInstance.xxx.agoraRTC.client.join(
+      options.appId, 
+      options.channel, 
+      options.token, 
+      null
+    ).then(async (uid)=>{
 
       console.error(":::::: AGORA UID :::::: ", uid);
       
@@ -154,6 +168,16 @@ class IMCall {
             bitrateMin: 600,
             bitrateMax: 1000,
           },
+        }
+      );
+
+      this.framework7.emit(
+        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+        {
+          uid: uid,
+          callData: callData,
+          localAudioTrack: this.AgoraInstance.xxx.agoraRTC.localAudioTrack,
+          localVideoTrack: this.AgoraInstance.xxx.agoraRTC.localVideoTrack,
         }
       );
 

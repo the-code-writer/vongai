@@ -721,7 +721,16 @@ const StorageIM = createStore({
         },
       ];
 
-      setInterval(()=>{
+      let messagesCount = 0;
+
+      let messagesInterval = setInterval(()=>{
+
+        messagesCount++;
+
+        if(messagesCount>12){
+          clearInterval(messagesInterval);
+          return;
+        }
 
         const message = {};
 

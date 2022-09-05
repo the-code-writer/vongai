@@ -295,10 +295,14 @@ const K = {
 				LINE_BUSY: 'Line busy...',
 				INCOMING: 'Incoming Call...',
 				OUTGOING: 'Dialing...',
+				RE_CONNECTING: 'Reconnecting...',
 				CONNECTING: 'Connecting...',
 				CONNECTED: 'Connected',
 				PAUSED: 'Call On Hold',
-				ENDED: 'Call Ended'
+				ENDED: 'Call Ended',
+				NETWORK_CHANGE: 'Network Change',
+				PARTICIPANT_JOINED: 'Participant Joined',
+				PARTICIPANT_LEFT: 'Participant Left'
 			}
 		}
 	}

@@ -34,11 +34,7 @@ class Dovellous{
 
   constructor(f7: any, ){
     
-    const appConfig: any = f7.params.dovellous;
-    
     const self = this;
-
-    const agoraConfig: AgoraConfig = appConfig.agora;
 
     /* Begin Agora Library Init */
 
@@ -50,7 +46,11 @@ class Dovellous{
     
     });
 
-    agoraConfig instanceof AgoraConfig ? this.initAgora(appConfig.agora) : null;
+    if(f7.params.dovellous.hasOwnProperty('agora')){
+      
+      f7.params.dovellous.agora instanceof AgoraConfig ? this.initAgora(f7) : null;
+
+    }
 
     /* End Agora Library Init */
 
@@ -62,9 +62,9 @@ class Dovellous{
 	 * param agoraConfig AgoraConfig - A config file for all agora modules. This follows the correct Agora Config Interface
 	 * return null
 	 */
-  initAgora (agoraConfig: AgoraConfig) {
+  initAgora (f7: any) {
 
-    Agora(agoraConfig);
+    Agora(f7);
 
   }
 

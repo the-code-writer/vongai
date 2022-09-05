@@ -46,7 +46,7 @@ interface AgoraConfigInterface {
   appId: any;
 	primaryCertificate?: any;
 	channels?: any;
-	tokens?: any;
+	defaultChannel?: any;
 	imCallConfig?: IMCallConfigInterface; 
 }
 

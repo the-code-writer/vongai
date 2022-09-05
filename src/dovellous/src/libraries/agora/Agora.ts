@@ -3,7 +3,6 @@ import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng"
 import * as AgoraTypeInterfaces from "./lib/AgoraTypeInterfaces";
 import { AgoraConfig } from './lib/AgoraConfig';
 import { IMCallConfig, IMCall } from "./apps/voice/IMCall";
-import { f7 } from "framework7-react";
 
 type AgoraOptions = {
 	config: AgoraConfig
@@ -17,11 +16,12 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 	declare events:  any;
 
 	constructor(
+		f7: any,
 		events: any,
 		appId?: any | AgoraTypeInterfaces.AgoraConfigInterface,
 		primaryCertificate?: any,
 		channels?: any,
-		tokens?: any,
+		defaultChannel?: any,
 		imCallConfig?: AgoraTypeInterfaces.IMCallConfigInterface
 	) {
 
@@ -31,19 +31,33 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 		
 		self.events = events;
 
-		if (appId instanceof AgoraConfig) {
+		if(!appId || appId === null || typeof appId === "undefined"){
 
-			self.options.config = appId;
+			const appConfig: any = f7.params.dovellous;
 
-		} else {
+			if(appConfig.hasOwnProperty('agora')){
 
-			self.options.config = new AgoraConfig(
-				appId, 
-				primaryCertificate, 
-				channels, 
-				tokens, 
-				imCallConfig
-			);
+			}
+    
+			self.options.config = appConfig.agora;		
+
+		}else{
+
+			if (appId instanceof AgoraConfig) {
+
+				self.options.config = appId;
+
+			} else {
+
+				self.options.config = new AgoraConfig(
+					appId, 
+					primaryCertificate, 
+					channels, 
+					defaultChannel, 
+					imCallConfig
+				);
+
+			}
 
 		}
 
@@ -92,7 +106,7 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 						localVideoTrack: null,
 					};
 
-					await parent.imCall.init();
+					await parent.imCall.init(f7);
 
 					f7.emit(
 						K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
@@ -111,9 +125,9 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 					lib: {},
 
-					init: async () => {
+					init: async (f7: any) => {
 
-						parent.imCall.lib = new IMCall(parent);
+						parent.imCall.lib = new IMCall(f7, parent);
 
 						f7.emit(
 							K.Events.Modules.Agora.IMCall.ON_APP_INIT,
@@ -167,11 +181,11 @@ ModuleBaseClasses.DovellousEventDispatcher(K.Events.Modules.Agora);
  */
 const AgoraLibEvent: ModuleBaseClasses.DovellousLibraryEvent = new ModuleBaseClasses.DovellousLibraryEvent(K.Events.Modules.Agora.AgoraLibEvent.NAME);
 
-const Agora = (AgoraConfigOptions: AgoraConfig) => {
+const Agora = (Framework7:any ) => {
 	/**
 	 * @type {ModuleBaseClasses.DovellousLibrary}
 	 */
-	return new AgoraLibrary(AgoraLibEvent, AgoraConfigOptions);
+	return new AgoraLibrary(Framework7, AgoraLibEvent);
 
 };
 
