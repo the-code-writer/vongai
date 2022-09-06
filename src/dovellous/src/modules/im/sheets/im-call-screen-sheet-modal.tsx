@@ -63,6 +63,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         callDuration: number,
         isVideoCall: boolean;
         isIncoming: boolean;
+        dialAttempts: any;
     }
 
     const callObject: CallDataObject = {
@@ -75,6 +76,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         callDuration: 0,
         isVideoCall: false,
         isIncoming: false,
+        dialAttempts: [],
     }
 
     const [currentUserData, setCurrentUserData] = useState(userObject);
@@ -99,6 +101,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const [callHasParticipants, setCallHasParticipants] = useState(false);
     const [callParticipants, setCallParticipants] = useState([{participantData: userDefinedData}]);
     const [isCallInProgress, setIsCallInProgress] = useState(false);
+    const [callRedialAttempts, setCallRedialAttempts] = useState([]);
 
     const [ringingTone, setRingingTone] = useState(new Audio(song));
 
@@ -376,6 +379,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             K.ModuleComponentsLibs.im.callScreen.OUTGOING
         );
 
+        setCallRedialAttempts([...callRedialAttempts, new Date().getTime()]);
+
         onOutgoingCall(getCallData());
 
     };
@@ -428,6 +433,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         f7.emit('stopCallTimer');
 
         const _currentCallData = currentCallData;
+
+        _currentCallData.dialAttempts = callRedialAttempts;
 
         _currentCallData.callEnded = new Date().getTime();
 
@@ -601,29 +608,31 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
   
     }
 
-    {/*
-
-
-    "DISCONNECTED": Disconnected. In this state, the SDK does not automatically reconnect. This state indicates that the user is in any of the following stages:
-    The user has not joined the channel by calling join.
-    The user has left the channel by calling leave.
-    The user has been kicked out of the channel by the Agora server or the connection has failed.
-    "CONNECTING": Connecting. This state indicates that the user is calling join.
-    "CONNECTED": Connected. This state indicates that the user has joined the channel and can publish or subscribe to media tracks in the channel.
-    "RECONNECTING": Disconnected and reconnecting. If the connection between the SDK and the server is interrupted due to network disconnection or switching, the SDK automatically reconnects and enters this state.
-    "DISCONNECTING": Disconnecting. This state indicates that the user is calling leave.
-
-    When joining a channel, the SDK may throw the following errors due to improper use of the SDK or network abnormalities:
-
-    INVALID_PARAMS: The parameters are incorrect, for example, an invalid token is provided.
-    INVALID_OPERATION: An incorrect operation. This error is usually caused by joining a channel repeatedly. Ensure that you call leave before joining a channel again.
-    OPERATION_ABORTED: The joining is aborted, which means that leave is called before the method call of join succeeds.
-    UNEXPECTED_RESPONSE: The Agora server returns an unexpected response, usually because the App ID or token authentication fails. For example, you have enabled the App Certificate but do not pass a token in join.
-    UID_CONFLICT: Multiple AgoraRTCClient objects use the same user ID.
-
-    */}
+    const resetState = () => {
+        setCurrentUserData(userObject);
+        setCurrentCallData(callObject);
+        setCurrentConnectedCallDetails(null);
+        setCurrentCallUID('');
+        setCurrentViewState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
+        setisMuteOn(false);
+        setIsCameraOn(isVideoCall);
+        setIsIncomingCall(isIncoming);
+        setIsFrontCamera(true);
+        setIsLoudSpeakerOn(false);
+        setIsOnHold(false);
+        setIsCallEnded(false);
+        setIsCallAnswered(false);
+        setIsCallDeclined(false);
+        setCallHasParticipants(false);
+        setCallParticipants([{participantData: userDefinedData}]);
+        setIsCallInProgress(false);
+        setCallRedialAttempts([]);
+        setRingingTone(new Audio(song));
+    }
 
     useEffect(() => {
+
+        resetState();
 
         userObject.username = userDefinedData.username;
         userObject.displayName = userDefinedData.displayName;
