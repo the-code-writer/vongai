@@ -431,7 +431,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         _currentCallData.callEnded = new Date().getTime();
 
-        _currentCallData.callDuration = Math.ceil((_currentCallData.callEnded - _currentCallData.callAnswered)/1000);
+        _currentCallData.callDuration = Math.floor((_currentCallData.callEnded - _currentCallData.callAnswered)/1000);
 
         setCurrentCallData(_currentCallData);
 
