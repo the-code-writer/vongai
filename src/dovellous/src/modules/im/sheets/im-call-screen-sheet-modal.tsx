@@ -5,7 +5,7 @@ import { useStopwatch } from 'react-timer-hook';
 import K from "../../../libraries/app/konstants";
 import Dom7 from "dom7";
 
-import song from '../../../../assets/aud/incoming-classic.mp3';
+import song from '../../../../assets/aud/incoming-2.mp3';
 
 export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onMute,
