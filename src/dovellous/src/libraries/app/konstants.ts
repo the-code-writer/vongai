@@ -300,6 +300,7 @@ const K = {
 				RE_CONNECTING: 'Reconnecting...',
 				CONNECTING: 'Connecting...',
 				CONNECTED: 'Connected',
+				DISCONNECTED: 'Disconnected',
 				PAUSED: 'Call On Hold',
 				ENDED: 'Call Ended',
 				NETWORK_CHANGE: 'Network Change',

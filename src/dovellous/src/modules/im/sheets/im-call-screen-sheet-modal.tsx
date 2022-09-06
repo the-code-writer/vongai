@@ -58,7 +58,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         destination: CallDestinationObject | null;
         origin: CallOriginObject | null;
         callStarted: number;
-        callEnded: number;
+        callAnswered: number,
+        callEnded: number,
+        callDuration: number,
         isVideoCall: boolean;
         isIncoming: boolean;
     }
@@ -68,7 +70,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         destination: null,
         origin: null,
         callStarted: 0,
+        callAnswered: 0,
         callEnded: 0,
+        callDuration: 0,
         isVideoCall: false,
         isIncoming: false,
     }
@@ -77,7 +81,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const [currentCallData, setCurrentCallData] = useState(callObject);
 
-    const [currentCallInProgressDetails, setCurrentCallInProgressDetails] = useState(null);
+    const [currentConnectedCallDetails, setCurrentConnectedCallDetails] = useState(null);
     
     const [currentCallUID, setCurrentCallUID] = useState('');
 
@@ -158,6 +162,18 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             userObject: currentUserData,
             callObject: currentCallData,
         }
+
+    };
+
+    const getCallID = () => {
+        
+        return new Date().getTime();
+
+    };
+
+    const getCallToken = () => {
+        
+        return import.meta.env.VNG_AGORA_TOKEN;
 
     };
 
@@ -250,35 +266,47 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     };
 
     const onEndCallHandler = () => {
+        
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.DISCONNECTED, () => {
 
-        const _currentCallData = currentCallData;
+                setCurrentConnectedCallDetails(null);
 
-        _currentCallData.callEnded = new Date().getTime();
+                const _currentCallData = currentCallData;
 
-        setCurrentCallData(_currentCallData);
+                _currentCallData.callEnded = new Date().getTime();
+        
+                _currentCallData.callDuration = Math.ceil((_currentCallData.callEnded - _currentCallData.callStarted)/100);
+        
+                setCurrentCallData(_currentCallData);
+        
+                setCurrentCallData(_currentCallData);
 
-        setIsCallEnded(true);
-        setIsCallInProgress(false);
+                setIsCallEnded(true);
+                setIsCallInProgress(false);
 
-        setCurrentViewState(
-            K.ModuleComponentsLibs.im.callScreen.ENDED
+                setCurrentViewState(
+                    K.ModuleComponentsLibs.im.callScreen.ENDED
+                );
+
+                onCallDisConnected();
+
+                onEndCall(getCallData());
+
+            }
         );
 
-        onCallDisConnected();
-
-        onEndCall(getCallData());
+        f7
+        .dovellous.instance.Libraries
+        .Agora.app
+        .imCall.lib.disconnect();
 
     };
 
     const onEndedCallHandler = () => {
         
-        const _currentCallData = currentCallData;
-
-        _currentCallData.callEnded = new Date().getTime();
-
-        setCurrentCallData(_currentCallData);
-
         setIsCallEnded(true);
+
         setIsCallInProgress(false);
 
         setCurrentViewState(
@@ -370,22 +398,24 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         f7.on(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-            ( callDetails ) => {
-                setCurrentCallInProgressDetails(callDetails);
-                onCallConnected(callDetails);
+            ( connectedCallDetails ) => {
+                setCurrentConnectedCallDetails(connectedCallDetails);
+                onCallConnected(connectedCallDetails);
             }
         );
 
         f7
         .dovellous.instance.Libraries
-        .Agora.agoraApp.modules
-        .imCall.lib.start(
-            getCallData() // contains play and subscribes
+        .Agora.app
+        .imCall.lib.connect(
+            getCallData(),
+            getCallID(),
+            getCallToken()
         );
 
     }
 
-    const onCallConnected = (callDetails)=>{
+    const onCallConnected = (connectedCallDetails)=>{
 
         setCurrentViewState(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED
@@ -400,8 +430,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const onCallDisConnected = ()=>{
 
         f7.emit('stopCallTimer');
-
-        const duration = Dom7('.im-call-timer').text();
 
         const _dint = setInterval(()=>{
 
@@ -419,7 +447,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             clearInterval(_dint);
         }, 2000);
 
-        console.log("::>>> CALL SUMMARY <<<::", duration, getCallData());
+        console.log("::>>> CALL SUMMARY <<<::", getCallData());
 
         setIsCallInProgress(false);
 
@@ -428,6 +456,12 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const onAnswerCallHandler = () => {
 
         ringingTone.pause();
+
+        const _currentCallData = currentCallData;
+
+        _currentCallData.callAnswered = new Date().getTime();
+
+        setCurrentCallData(_currentCallData);
 
         onCallConnecting();
 
@@ -527,7 +561,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             destination: null,
             origin: null,
             callStarted: 0,
+            callAnswered: 0,
             callEnded: 0,
+            callDuration: 0,
             isVideoCall: false,
             isIncoming: false,
         });
@@ -540,17 +576,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             f7.dovellous.instance.Libraries.Agora === null
         ){
 
-            //Check if not already connecting
-
-            // f7.dovellous.instance.initAgora({
-            //     appId: 'string',
-            //     primaryCertificate: 'ertertert',
-            //     channels: [],
-            //     tokens: [],
-            //     voiceCallConfig: { moduleName: 'string;' },
-            // });
-
-            //init();
+            //alert('Could not start Agora  Services');
 
         }else{
 
@@ -770,8 +796,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         {isCameraOn ? (
 
                         <Button outline large
-                            id="im-solid-rounded-loudspeaker"
-                            key="im-solid-rounded-loudspeaker"
+                            id="im-solid-rounded-switch-camera"
+                            key="im-solid-rounded-switch-camera"
                             className={`im-solid-rounded ${isCameraOn?(isFrontCamera?'color-white':'color-yellow'):'color-white'}`}
                             onClick={onFrontCameraToggle} 
                             iconIos={`f7:${isFrontCamera?'camera':'camera'}`}

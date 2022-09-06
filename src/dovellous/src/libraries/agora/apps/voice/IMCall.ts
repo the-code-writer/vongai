@@ -130,17 +130,17 @@ class IMCall {
    * param destinationId string - The destination uuid of the callee
    * return null
    */
-  async connect(callData: any, callID: any) {
+  async connect(callData: any, callID: any, callToken: any) {
 
+      console.error(":::::: AGORA UID :::::: ", callData, Snippets.encryption.md5(callID), callToken, this.AgoraInstance.agoraOptions);
+      
     this.AgoraInstance.agoraRTC.client.join(
-      this.AgoraInstance.agoraOptions.appId, 
-      this.AgoraInstance.agoraOptions.channel, 
-      this.AgoraInstance.agoraOptions.token, 
-      callID ?? null
+      this.AgoraInstance.agoraOptions.config.appId, 
+      this.AgoraInstance.agoraOptions.config.channelDefault, 
+      callToken ?? null, 
+      Snippets.encryption.md5(callID) ?? null
     ).then(async (uid)=>{
 
-      console.error(":::::: AGORA UID :::::: ", uid, this.AgoraInstance.agoraOptions);
-      
       // Create an audio track from the audio sampled by a microphone.
  
       this.AgoraInstance.agoraRTC.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(
@@ -195,8 +195,8 @@ class IMCall {
 
   async disconnect() {
     // Destroy the local audio and video tracks.
-    this.AgoraInstance.agoraRTC.localAudioTrack.close();
-    this.AgoraInstance.agoraRTC.localVideoTrack.close();
+    this.AgoraInstance.agoraRTC.localAudioTrack !== null ? this.AgoraInstance.agoraRTC.localAudioTrack.close() : null;
+    this.AgoraInstance.agoraRTC.localVideoTrack !== null ? this.AgoraInstance.agoraRTC.localVideoTrack.close() : null;
   
     // Traverse all remote users.
     this.AgoraInstance.agoraRTC.client.remoteUsers.forEach(user => {
@@ -207,6 +207,11 @@ class IMCall {
   
     // Leave the channel.
     await this.AgoraInstance.agoraRTC.client.leave();
+
+    this.framework7.emit(
+      K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
+    );
+
 }
 
   throwError(message: string): void {
