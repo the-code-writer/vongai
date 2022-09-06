@@ -272,16 +272,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                 setCurrentConnectedCallDetails(null);
 
-                const _currentCallData = currentCallData;
-
-                _currentCallData.callEnded = new Date().getTime();
-        
-                _currentCallData.callDuration = Math.ceil((_currentCallData.callEnded - _currentCallData.callAnswered)/1000);
-        
-                setCurrentCallData(_currentCallData);
-        
-                setCurrentCallData(_currentCallData);
-
                 setIsCallEnded(true);
                 setIsCallInProgress(false);
 
@@ -425,11 +415,25 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         setIsCallInProgress(true);
 
+        const _currentCallData = currentCallData;
+
+        _currentCallData.callAnswered = new Date().getTime();
+
+        setCurrentCallData(_currentCallData);
+
     }
 
     const onCallDisConnected = ()=>{
 
         f7.emit('stopCallTimer');
+
+        const _currentCallData = currentCallData;
+
+        _currentCallData.callEnded = new Date().getTime();
+
+        _currentCallData.callDuration = Math.ceil((_currentCallData.callEnded - _currentCallData.callAnswered)/1000);
+
+        setCurrentCallData(_currentCallData);
 
         const _dint = setInterval(()=>{
 
@@ -456,12 +460,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const onAnswerCallHandler = () => {
 
         ringingTone.pause();
-
-        const _currentCallData = currentCallData;
-
-        _currentCallData.callAnswered = new Date().getTime();
-
-        setCurrentCallData(_currentCallData);
 
         onCallConnecting();
 
