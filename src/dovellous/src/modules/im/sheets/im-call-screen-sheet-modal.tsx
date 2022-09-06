@@ -387,6 +387,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onCallConnecting = ()=>{
 
+        ringingTone.pause();
+
         setCurrentViewState(
             K.ModuleComponentsLibs.im.callScreen.CONNECTING
         );
@@ -411,6 +413,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     }
 
     const onCallConnected = (connectedCallDetails)=>{
+
+        ringingTone.pause();
 
         setCurrentViewState(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED
@@ -465,8 +469,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     }
 
     const onAnswerCallHandler = () => {
-
-        ringingTone.pause();
 
         onCallConnecting();
 

@@ -88,7 +88,7 @@ const MainApplication = () => {
 
       }
       
-      if(!import.meta.env.PROD){
+      if(import.meta.env){
 
         window.F7React = F7React;
 

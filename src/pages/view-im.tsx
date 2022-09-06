@@ -84,12 +84,12 @@ export default () => {
 
   };
   
-  const onIMCallHandler = (userData: any) => {
+  const onIMCallHandler = (userData: any, isVideoCall: boolean) => {
 
     console.log(":::ON VOICE CALL HANDLER:::", userData); 
 
     const callDataObject = {
-      isVideoCall: false,
+      isVideoCall: isVideoCall,
       isIncomingCall: false,
       userData: 
       {
@@ -98,7 +98,7 @@ export default () => {
         displayName: userData.displayName,
         displayStatus: userData.text,
         displayPhoto: userData.avatar,
-        emailAddress: '',
+        emailAddress: userData.emailAddress ?? '',
       }
     };
 
