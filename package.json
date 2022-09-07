@@ -88,6 +88,7 @@
     "node-json-db": "^2.1.1",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
+    "react-audio-visualizers": "^0.1.1",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^3.1.4",
     "react-infinite-scroller": "^1.2.6",
@@ -162,8 +163,8 @@
     "app-release-win": "cd android && gradlew clean && gradlew :app:bundleRelease",
     "clean-gradle": "rm -r android/build ; rm -r android/app/src/release/res ; rm -r android/app/build/intermediates ; watchman watch-del-all ; npm start -- --reset-cache",
     "clean-gradle-win": "del -r android/build /F /Q ; del -r android/app/src/release/res /F /Q ; del -r android/app/build/intermediates /F /Q ; watchman watch-del-all ; npm start -- --reset-cache",
-    "cache-clean" : "npm cache clean --force",
-    "clean-cache" : "npm run cache-clean",
+    "cache-clean": "npm cache clean --force",
+    "clean-cache": "npm run cache-clean",
     "fix-perms": "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser"
   },
   "browserslist": {
