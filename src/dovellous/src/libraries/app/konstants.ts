@@ -305,7 +305,10 @@ const K = {
 				ENDED: 'Call Ended',
 				NETWORK_CHANGE: 'Network Change',
 				PARTICIPANT_JOINED: 'Participant Joined',
-				PARTICIPANT_LEFT: 'Participant Left'
+				PARTICIPANT_LEFT: 'Participant Left',
+				START_TIMER: 'StartCallTimer',
+				PAUSE_TIMER: 'PauseCallTimer',
+				STOP_TIMER: 'StopCallTimer',
 			}
 		}
 	}

@@ -420,7 +420,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             K.ModuleComponentsLibs.im.callScreen.CONNECTED
         );
 
-        f7.emit('startCallTimer');
+        f7.emit(K.ModuleComponentsLibs.im.callScreen.START_TIMER);
 
         setIsCallInProgress(true);
 
@@ -434,9 +434,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onCallDisConnected = ()=>{
 
+<<<<<<< Updated upstream
         ringingTone.pause();
 
         f7.emit('stopCallTimer');
+=======
+        f7.emit(K.ModuleComponentsLibs.im.callScreen.STOP_TIMER);
+>>>>>>> Stashed changes
 
         const _currentCallData = currentCallData;
 
@@ -447,22 +451,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         _currentCallData.callDuration = Math.floor((_currentCallData.callEnded - _currentCallData.callAnswered)/1000);
 
         setCurrentCallData(_currentCallData);
-
-        const _dint = setInterval(()=>{
-
-            Dom7('.im-call-timer').hide()
-
-            setTimeout(()=>{
-                
-            Dom7('.im-call-timer').show()
-
-            },300)
-
-        }, 350);
-
-        setTimeout(()=>{
-            clearInterval(_dint);
-        }, 2000);
 
         console.log("::>>> CALL SUMMARY <<<::", getCallData());
 
@@ -575,6 +563,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             callDuration: 0,
             isVideoCall: false,
             isIncoming: false,
+            dialAttempts: 0,
         });
 
     }
@@ -591,14 +580,14 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
             f7.on(
                 K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
-                (res)=>{
+                (res: any)=>{
                     console.error(":::::::::: AgoraLibEvent.MODULE_LOADED :::::::::::", res);
                 }
             );
 
             f7.on(
                 K.Events.Modules.Agora.IMCall.ON_APP_INIT,
-                (res)=>{
+                (res: any)=>{
                     console.error(":::::::::: IMCall.ON_APP_INIT :::::::::::", res);
 
                     f7.dovellous.instance.Libraries.Agora.app.imCall.lib.start()
