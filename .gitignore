@@ -52,3 +52,4 @@ resources/windows/splash
 # Production build
 www/
 !www/index.html
+*.rar

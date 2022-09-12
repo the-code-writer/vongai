@@ -434,13 +434,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onCallDisConnected = ()=>{
 
-<<<<<<< Updated upstream
         ringingTone.pause();
 
-        f7.emit('stopCallTimer');
-=======
         f7.emit(K.ModuleComponentsLibs.im.callScreen.STOP_TIMER);
->>>>>>> Stashed changes
 
         const _currentCallData = currentCallData;
 
@@ -697,32 +693,14 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                 )}
 
-                {/* 
-                
-                <DragMove onDragMove={handleDragMove}>
-                    <div
-                        style={{
-                        transform: `translateX(${translate.x}px) translateY(${translate.y}px)`
-                        }}
-                    >
-                        <img src={logo} className="App-logo" alt="logo" />
-                    </div>
-                </DragMove>
-                
-                */}
-                
-
                 <PageContent>
                    
                     <div className="call-remote-user" style={{visibility: isCameraOn?'hidden':'visible'}}>
                         <img src={currentUserData.displayPhoto} />
                         <BlockTitle large>{currentUserData.displayName}</BlockTitle>
-                        <BlockTitle>{currentUserData.phoneNumber}</BlockTitle>
-                        <BlockTitle medium >
-                            {currentViewState}
-                        </BlockTitle>
-                        <BlockTitle medium className="im-call-timer" style={{textAlign: 'center'}}>
-                            <CallTimer visible={
+                        <BlockTitle medium>{currentViewState}</BlockTitle>
+                        <BlockTitle medium style={{textAlign: 'center'}}>
+                            <CallTimer className={``} visible={
                                 includedInViewState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.CONNECTED,
@@ -742,8 +720,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                     {includedInViewState(
                         [
-                            K.ModuleComponentsLibs.im.callScreen.INCOMING,
-                            K.ModuleComponentsLibs.im.callScreen.OUTGOING,
                             K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                         ]
                     ) && (
@@ -864,7 +840,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                                     md="material:phone_enabled"></Icon>
                         </Fab>
 
-                        <span>Call</span>
+                        <span>{`Call ${isIncomingCall?'back':'again'}`}</span>
 
                     </div>
 
@@ -921,6 +897,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                 )}
 
+                {isCameraOn && (
+
                 <Row className={`im-call-status-overlay ${isOnHold ? 'red':'green'}`}>
                     <Col width={90} className="info">
                         <span className="display-name">{currentUserData.displayName}</span>
@@ -968,6 +946,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         )}
                     </Col>
                 </Row>
+
+                )}
+
             </Sheet>
 
             <Sheet
