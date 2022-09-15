@@ -148,7 +148,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         return (
           <React.Fragment>
-                <span className={className} style={{opacity: visible?1:0}}>
+                <span className={className} style={{height: visible?'100%':'0px', opacity: visible?1:0}}>
                     <>{parseInt(days) > 0 && (String(days).padStart(2, '0')`:`)}</>
                     <>{parseInt(hours) > 0 && (String(hours).padStart(2, '0')`:`)}</>
                     <>{`${String(minutes).padStart(2, '0')}:`}</>
@@ -420,8 +420,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             K.ModuleComponentsLibs.im.callScreen.CONNECTED
         );
 
-        f7.emit(K.ModuleComponentsLibs.im.callScreen.START_TIMER);
-
         setIsCallInProgress(true);
 
         const _currentCallData = currentCallData;
@@ -429,6 +427,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         _currentCallData.callAnswered = new Date().getTime();
 
         setCurrentCallData(_currentCallData);
+
+        f7.emit(K.ModuleComponentsLibs.im.callScreen.START_TIMER);
 
     }
 
@@ -698,7 +698,15 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                     <div className="call-remote-user" style={{visibility: isCameraOn?'hidden':'visible'}}>
                         <img src={currentUserData.displayPhoto} />
                         <BlockTitle large>{currentUserData.displayName}</BlockTitle>
-                        <BlockTitle medium>{currentViewState}</BlockTitle>
+                        {includedInViewState(
+                                    [
+                                        K.ModuleComponentsLibs.im.callScreen.INCOMING,
+                                        K.ModuleComponentsLibs.im.callScreen.OUTGOING,
+                                    ]
+                        ) && (
+                            <BlockTitle medium style={{textAlign: 'center'}}>{currentUserData.phoneNumber}</BlockTitle>
+                        )}
+                        <BlockTitle medium style={{textAlign: 'center'}}>{currentViewState}</BlockTitle>
                         <BlockTitle medium style={{textAlign: 'center'}}>
                             <CallTimer className={``} visible={
                                 includedInViewState(
@@ -897,33 +905,45 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                 )}
 
-                {isCameraOn && (
-
-                <Row className={`im-call-status-overlay ${isOnHold ? 'red':'green'}`}>
-                    <Col width={90} className="info">
-                        <span className="display-name">{currentUserData.displayName}</span>
-                        <br/>
-                        <CallTimer className="display-timer" visible={
-                                    includedInViewState(
+                {isCameraOn && includedInViewState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.OUTGOING,
                                         K.ModuleComponentsLibs.im.callScreen.INCOMING,
                                         K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                                         K.ModuleComponentsLibs.im.callScreen.ENDED,
                                     ]
+                                ) && (
+
+                <div className={`im-call-status-overlay ${!isCallInProgress ? 'black' : isOnHold ? 'red':'green'}`}>
+                    <div className="info">
+                        <span className="display-name">{currentUserData.displayName}</span>
+                        {includedInViewState(
+                                    [
+                                        K.ModuleComponentsLibs.im.callScreen.INCOMING,
+                                        K.ModuleComponentsLibs.im.callScreen.OUTGOING,
+                                    ]
+                        ) && (
+                            <span className="display-number">{currentUserData.phoneNumber}</span>
+                        )}
+                        <CallTimer className="display-timer" visible={
+                                    includedInViewState(
+                                    [
+                                        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                                        K.ModuleComponentsLibs.im.callScreen.ENDED,
+                                    ]
                                 )} 
                         />
-                    </Col>
-                    <Col width={10}>
+                    </div>
+                    <div className="status">
                         {isCameraOn ? (
                             isOnHold ? (
-                                <Icon size={24} 
+                                <Icon 
                                     ios={`f7:${isIncomingCall?'videocam':'videocam'}`} 
                                     aurora={`f7:${isIncomingCall?'videocam':'videocam'}`} 
                                     md={`material:${isIncomingCall?'pause_circle_outline':'pause_circle_outline'}`} 
                                 />
                             ):(
-                                <Icon size={24} 
+                                <Icon  
                                     ios={`f7:${isIncomingCall?'videocam_fill':'videocam_fill'}`} 
                                     aurora={`f7:${isIncomingCall?'videocam_fill':'videocam_fill'}`} 
                                     md={`material:${isIncomingCall?'videocam':'videocam'}`} 
@@ -931,21 +951,24 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                             )
                         ):(
                             isOnHold ? (
-                                <Icon size={24} 
+                                <Icon 
                                     ios={`f7:${isIncomingCall?'phone_arrow_down_left':'phone_arrow_up_right'}`} 
                                     aurora={`f7:${isIncomingCall?'phone_arrow_down_left':'phone_arrow_up_right'}`} 
                                     md={`material:${isIncomingCall?'phone_paused':'phone_paused'}`} 
                                 />
                             ):(
-                                <Icon size={24} 
+                                <Icon 
                                     ios={`f7:${isIncomingCall?'phone_fill_arrow_down_left':'phone_fill_arrow_up_right'}`} 
                                     aurora={`f7:${isIncomingCall?'phone_fill_arrow_down_left':'phone_fill_arrow_up_right'}`} 
                                     md={`material:${isIncomingCall?'phone':'phone'}`} 
                                 />
                             )
                         )}
-                    </Col>
-                </Row>
+                        <div className="display-state">
+                            {currentViewState}
+                        </div>
+                    </div>
+                </div>
 
                 )}
 

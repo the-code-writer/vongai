@@ -516,6 +516,12 @@ div.m-b-0.fab>a {
       padding: 24px 16px 12px 16px;
       padding-top: 24px;
       font-size: 16px;
+      display: flex;
+      flex-wrap: nowrap;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: stretch;
+      align-content: stretch;
       backdrop-filter: blur(10px);
       -webkit-animation: fadein 2s ease-in alternate infinite;
       -moz-animation: fadein 2s ease-in alternate infinite;
@@ -529,16 +535,54 @@ div.m-b-0.fab>a {
         background-color: #CC0000;
       }
 
+      &.black{
+        background-color: #000000;
+      }
+
       .info {
 
         .display-name{
           font-size: 24px;
         }
 
-        .display-timer{          
-          font-size: 14px;
+        .display-number{          
+          font-size: 18px;
         }
 
+        .display-timer{          
+          font-size: 18px;
+        }
+
+      }
+
+      .status {
+
+        i.icon{
+          font-size: 32px;
+          width: 32px;
+          height: 32px;
+        }
+
+        .display-state{          
+          font-size: 18px;
+        }
+
+      }
+
+      div {
+        display: flex;
+        flex-wrap: nowrap;
+        flex-direction: column;
+        justify-content: space-between;
+        align-content: space-between;
+      }
+      
+      div:first-of-type {
+        align-items: flex-start;
+      }
+      
+      div:last-of-type {
+        align-items: flex-end;
       }
       
     }
