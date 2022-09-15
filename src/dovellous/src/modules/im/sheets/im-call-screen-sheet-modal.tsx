@@ -1,11 +1,12 @@
 import { Block, BlockTitle, Button, Col, f7, Fab, FabButton, FabButtons, Icon, List, ListItem, PageContent, Row, Sheet } from "framework7-react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useStopwatch } from 'react-timer-hook';
 
 import K from "../../../libraries/app/konstants";
 import Dom7 from "dom7";
 
 import song from '../../../../assets/aud/incoming-4.mp3';
+import { element } from "prop-types";
 
 export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onMute,
@@ -364,6 +365,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onOutgoingCallHandler = () => {
 
+        if(isCameraOn){
+            setUpLocalVideoStream();
+        }
+
         f7.on(
             'remote_call_connecting',
             () => {
@@ -384,6 +389,49 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         onOutgoingCall(getCallData());
 
     };
+
+    const imPlayerContainerRemoteVideoElement = useRef(null);
+    const imPlayerContainerLocalVideoElement = useRef(null);
+
+    const setUpLocalVideoStream = () => {
+         
+        console.warn("::>>> setUpLocalVideoStream <<<::", 1);
+        
+        //imPlayerContainerLocalVideoElement.current = document.querySelector("#im-player-container-local-video-element");
+
+        window.navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+
+                imPlayerContainerLocalVideoElement.current.srcObject = stream;
+                imPlayerContainerLocalVideoElement.current.onloadedmetadata = (e) => {
+                    imPlayerContainerLocalVideoElement.current.play();
+                };
+                
+                imPlayerContainerRemoteVideoElement.current.srcObject = stream;
+                imPlayerContainerRemoteVideoElement.current.onloadedmetadata = (e) => {
+                    imPlayerContainerRemoteVideoElement.current.play();
+                };
+                
+            })
+            .catch(error => {
+                alert('You have to enable the mic and the camera', error);
+            });
+
+    }
+
+    const stopUpLocalVideoStream = () => {
+
+        var stream = imPlayerContainerLocalVideoElement.current.srcObject;
+        var tracks = stream.getTracks();
+      
+        for (var i = 0; i < tracks.length; i++) {
+          var track = tracks[i];
+          track.stop();
+        }
+      
+        imPlayerContainerLocalVideoElement.current.srcObject = null;
+      
+    }
 
     const onCallConnecting = ()=>{
 
@@ -451,6 +499,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         console.log("::>>> CALL SUMMARY <<<::", getCallData());
 
         setIsCallInProgress(false);
+
+        stopUpLocalVideoStream();
 
     }
 
@@ -685,9 +735,19 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                 <div className={`videos ${isCameraOn?'visible':'hidden'}`} >
 
-                    <div id="im-player-container-remote" className="remote connected" />
+                    <div id="im-player-container-remote" className={`remote ${isCallInProgress?'connected':'not-connected'}`} >
+                    <video 
+                            ref={imPlayerContainerRemoteVideoElement} 
+                            autoPlay={true} id="im-player-container-remote-video-element"
+                            style={{width: "100%"}} />
+                    </div>
 
-                    <div id="im-player-container-local" className="local connected" />
+                    <div id="im-player-container-local" className={`local ${isCallInProgress?'connected':'not-connected'}`} >
+                        <video 
+                            ref={imPlayerContainerLocalVideoElement} 
+                            autoPlay={true} id="im-player-container-local-video-element"
+                            style={{width: "100%"}} />
+                    </div>
 
                 </div>
 

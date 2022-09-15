@@ -86,7 +86,7 @@ export default () => {
   
   const onIMCallHandler = (userData: any, isVideoCall: boolean) => {
 
-    console.log(":::ON VOICE CALL HANDLER:::", userData); 
+    console.log(":::ON CALL HANDLER:::", userData); 
 
     const callDataObject = {
       isVideoCall: isVideoCall,

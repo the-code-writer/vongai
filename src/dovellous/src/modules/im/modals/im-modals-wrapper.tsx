@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import IMIMCall from "../sheets/im-call-screen-sheet-modal";
+import IMCall from "../sheets/im-call-screen-sheet-modal";
 
 export default ({callDataObject}) => {
 
@@ -118,7 +118,7 @@ export default ({callDataObject}) => {
 
         <React.Fragment>
 
-            <IMIMCall 
+            <IMCall 
                 id={`im-im-call-sheet-modal`} 
                 key={`im-im-call-sheet-modal`} 
                 className={`im-im-call-sheet-modal`}
