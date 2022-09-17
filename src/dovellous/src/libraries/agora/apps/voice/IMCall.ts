@@ -9,6 +9,7 @@ import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
 import { IMCallConfig } from "./IMCallConfig";
 
 import { IMCallError } from "./IMCallErrors";
+
 import AgoraRTC from "agora-rtc-sdk-ng";
 
 // Parent constructor
@@ -130,16 +131,25 @@ class IMCall {
    * param destinationId string - The destination uuid of the callee
    * return null
    */
-  async connect(callData: any, callID: any, callToken: any) {
+  async connect(callData: any) {
 
-      console.error(":::::: AGORA UID :::::: ", callData, Snippets.encryption.md5(callID), callToken, this.AgoraInstance.agoraOptions);
-      
+      console.warn(
+        ":::::: AGORA CONNECT CALL :::::: ", 
+        callData, 
+        this.AgoraInstance.agoraOptions
+      );
+
+      this.framework7.emit(
+        K.ModuleComponentsLibs.im.callScreen.CONNECTING,
+        callData
+      );
+
     this.AgoraInstance.agoraRTC.client.join(
       this.AgoraInstance.agoraOptions.config.appId, 
-      this.AgoraInstance.agoraOptions.config.channelDefault, 
-      callToken ?? null, 
-      Snippets.encryption.md5(callID) ?? null
-    ).then(async (uid)=>{
+      callData.callChannel ?? this.AgoraInstance.agoraOptions.config.channelDefault, 
+      callData.callToken,
+      callData.callID
+    ).then(async (uid: any)=>{
 
       // Create an audio track from the audio sampled by a microphone.
  
@@ -190,7 +200,6 @@ class IMCall {
 
     });
 
-
   }
 
   async disconnect() {
@@ -199,7 +208,7 @@ class IMCall {
     this.AgoraInstance.agoraRTC.localVideoTrack !== null ? this.AgoraInstance.agoraRTC.localVideoTrack.close() : null;
   
     // Traverse all remote users.
-    this.AgoraInstance.agoraRTC.client.remoteUsers.forEach(user => {
+    this.AgoraInstance.agoraRTC.client.remoteUsers.forEach((user: any) => {
       // Destroy the dynamically created DIV container.
       const playerContainer = document.getElementById(user.uid);
       playerContainer && playerContainer.remove();

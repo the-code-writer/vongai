@@ -86,7 +86,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const [currentConnectedCallDetails, setCurrentConnectedCallDetails] = useState(null);
     
-    const [currentCallUID, setCurrentCallUID] = useState('');
+    const [currentCallUID, setCurrentCallUID] = useState('CALL_0');
 
     const [currentViewState, setCurrentViewState] = useState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
     
@@ -110,9 +110,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const imPlayerContainerRemoteVideoElement = useRef(null);
     const imPlayerContainerLocalVideoElement = useRef(null);
 
-    const [audioInputSelect, setAudioInputSelect] = useState([{}]);
-    const [audioOutputSelect, setAudioOutputSelect] = useState([{}]);
-    const [videoSelect, setVideoSelect] = useState([{}]);
+    const [mediaDevicesList, setMediaDevicesList] = useState([{}]);
 
 
     const CallTimer = useCallback(({visible, className}) => {
@@ -174,23 +172,15 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         return {
             userObject : currentUserData,
             callObject : currentCallData,
-            callDevices: {
-                audioInput : audioInputSelect,
-                audioOutput: audioOutputSelect,
-                video: videoSelect
-            },
+            callDevices: mediaDevicesList,
             callID: currentCallUID
         }
 
     };
 
     const setCallID = () => {
-        
-        const _currentCallID = `CALL_${new Date().getTime()}`;
 
-        setCurrentCallUID(_currentCallID);
-
-        return _currentCallID;
+        setCurrentCallUID(`CALL_${new Date().getTime()}`);
 
     };
 
@@ -443,39 +433,44 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         imPlayerContainerRemoteVideoElement.current.onloadedmetadata = (e: any) => {
             imPlayerContainerRemoteVideoElement.current.play();
         };
-
-        // Refresh button list in case labels have become available
-        return window.navigator.mediaDevices.enumerateDevices();
       
     }
     
     const devicesAvailable = (deviceInfos: any) => {
 
+        const _mediaDevices = {
+            audio: {
+                input: {},
+                output: {}
+            },
+            video: {
+                input: {},
+                output: {}
+            },
+            other: {}
+        }
+
         for (let i = 0; i !== deviceInfos.length; ++i) {
 
             const deviceInfo = deviceInfos[i];
-
-            const deviceId = deviceInfo.deviceId;
-
-            const deviceDataObj = {label: 'default', id: deviceId, info: deviceInfo};
             
             if (deviceInfo.kind === 'audioinput') {
-                const audioInputSelectText = deviceInfo.label || `Microphone ${audioInputSelect.length + 1}`;
-                deviceDataObj.label = audioInputSelectText;
-                setAudioInputSelect([...audioInputSelect, deviceDataObj]);
+                deviceInfo.name = deviceInfo.label || `Microphone ${audioInputSelect.length + 1}`;
+                _mediaDevices.audio.input[deviceInfo.deviceId] = deviceInfo;
             } else if (deviceInfo.kind === 'audiooutput') {
-                const audioOutputSelectText = deviceInfo.label || `Speaker ${audioOutputSelect.length + 1}`;
-                deviceDataObj.label = audioOutputSelectText;
-                setAudioOutputSelect([...audioOutputSelect, deviceDataObj]);
+                deviceInfo.name = deviceInfo.label || `Speaker ${audioOutputSelect.length + 1}`;
+                _mediaDevices.audio.output[deviceInfo.deviceId] = deviceInfo;
             } else if (deviceInfo.kind === 'videoinput') {
-                const videoSelectText = deviceInfo.label || `Camera ${videoSelect.length + 1}`;
-                deviceDataObj.label = videoSelectText;
-                setVideoSelect([...videoSelect, deviceDataObj])
+                deviceInfo.name = deviceInfo.label || `Camera ${Object.keys(_mediaDevices.video.input).length + 1}`;
+                _mediaDevices.video.input[deviceInfo.deviceId] = deviceInfo;
             } else {
-                console.log('Some other kind of source/device: ', deviceInfo);
+                deviceInfo.name = deviceInfo.label || `Media ${Object.keys(_mediaDevices.other[deviceInfo.kind??'type']).length + 1}`;
+                _mediaDevices.other[deviceInfo.deviceId] = deviceInfo;
             }
 
         }
+
+        setMediaDevicesList(_mediaDevices);
 
     }      
 
@@ -719,7 +714,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         setCurrentUserData(userObject);
         setCurrentCallData(callObject);
         setCurrentConnectedCallDetails(null);
-        setCurrentCallUID('');
+        setCurrentCallUID('CALL_X');
         setCurrentViewState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
         setisMuteOn(false);
         setIsCameraOn(isVideoCall);
@@ -739,10 +734,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     useEffect(() => {
 
-        setCallID();
-        
         resetState();
 
+        setCallID();
+        
         window.navigator.mediaDevices
             .enumerateDevices()
             .then(devicesAvailable)
