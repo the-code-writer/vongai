@@ -535,7 +535,7 @@ div.m-b-0.fab>a {
       left: 0;
       right: 0;
       padding: 24px 16px 12px 16px;
-      padding-top: 24px;
+      padding-top: 32px;
       font-size: 16px;
       display: flex;
       flex-wrap: nowrap;
@@ -564,14 +564,17 @@ div.m-b-0.fab>a {
 
         .display-name{
           font-size: 24px;
+          font-weight: 200;
         }
 
         .display-number{          
-          font-size: 18px;
+          font-size: 16px;
+          font-weight: 200;
         }
 
         .display-timer{          
-          font-size: 18px;
+          font-size: 16px;
+          font-weight: 200;
         }
 
       }
@@ -579,13 +582,14 @@ div.m-b-0.fab>a {
       .status {
 
         i.icon{
-          font-size: 32px;
-          width: 32px;
-          height: 32px;
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
         }
 
         .display-state{          
-          font-size: 18px;
+          font-size: 16px;
+          font-weight: 200;
         }
 
       }
