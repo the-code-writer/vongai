@@ -106,6 +106,15 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const [ringingTone, setRingingTone] = useState(new Audio(song));
 
+    
+    const imPlayerContainerRemoteVideoElement = useRef(null);
+    const imPlayerContainerLocalVideoElement = useRef(null);
+
+    const [audioInputSelect, setAudioInputSelect] = useState([{}]);
+    const [audioOutputSelect, setAudioOutputSelect] = useState([{}]);
+    const [videoSelect, setVideoSelect] = useState([{}]);
+
+
     const CallTimer = useCallback(({visible, className}) => {
 
         const {
@@ -163,15 +172,25 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const getCallData = () => {
         
         return {
-            userObject: currentUserData,
-            callObject: currentCallData,
+            userObject : currentUserData,
+            callObject : currentCallData,
+            callDevices: {
+                audioInput : audioInputSelect,
+                audioOutput: audioOutputSelect,
+                video: videoSelect
+            },
+            callID: currentCallUID
         }
 
     };
 
-    const getCallID = () => {
+    const setCallID = () => {
         
-        return new Date().getTime();
+        const _currentCallID = `CALL_${new Date().getTime()}`;
+
+        setCurrentCallUID(_currentCallID);
+
+        return _currentCallID;
 
     };
 
@@ -221,7 +240,12 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onCameraToggle = () => {
 
-        isCameraOn ? onCameraOffHandler() : onCameraOnHandler();
+        if(isCameraOn){            
+            onCameraOffHandler()
+        }else{
+            onCameraOnHandler();
+            setUpLocalVideoStream(true, true);
+        }
 
     };
 
@@ -366,7 +390,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const onOutgoingCallHandler = () => {
 
         if(isCameraOn){
-            setUpLocalVideoStream();
+            setUpLocalVideoStream(true, true);
         }
 
         f7.on(
@@ -390,47 +414,92 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     };
 
-    const imPlayerContainerRemoteVideoElement = useRef(null);
-    const imPlayerContainerLocalVideoElement = useRef(null);
-
-    const setUpLocalVideoStream = () => {
+    const setUpLocalVideoStream = (audioSource: any, videoSource: any) => {
          
-        console.warn("::>>> setUpLocalVideoStream <<<::", 1);
-        
-        //imPlayerContainerLocalVideoElement.current = document.querySelector("#im-player-container-local-video-element");
+        const constraints = {
+            audio: {deviceId: audioSource ? audioSource.deviceId ?? audioSource : undefined},
+            video: {deviceId: videoSource ? videoSource.deviceId ?? videoSource : undefined}
+          };
 
-        window.navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then(stream => {
-
-                imPlayerContainerLocalVideoElement.current.srcObject = stream;
-                imPlayerContainerLocalVideoElement.current.onloadedmetadata = (e) => {
-                    imPlayerContainerLocalVideoElement.current.play();
-                };
-                
-                imPlayerContainerRemoteVideoElement.current.srcObject = stream;
-                imPlayerContainerRemoteVideoElement.current.onloadedmetadata = (e) => {
-                    imPlayerContainerRemoteVideoElement.current.play();
-                };
-                
-            })
-            .catch(error => {
-                alert('You have to enable the mic and the camera', error);
-            });
+        window.navigator.mediaDevices.getUserMedia(constraints)
+            .then(streamAvailable)
+            .then(devicesAvailable)
+            .catch(streamHandleError);
 
     }
 
+    const streamAvailable = (stream: any) => {
+
+        window.stream = stream;
+        
+        imPlayerContainerLocalVideoElement.current.srcObject = window.stream;
+
+        imPlayerContainerLocalVideoElement.current.onloadedmetadata = (e: any) => {
+            imPlayerContainerLocalVideoElement.current.play();
+        };
+                
+        imPlayerContainerRemoteVideoElement.current.srcObject = window.stream;
+
+        imPlayerContainerRemoteVideoElement.current.onloadedmetadata = (e: any) => {
+            imPlayerContainerRemoteVideoElement.current.play();
+        };
+
+        // Refresh button list in case labels have become available
+        return window.navigator.mediaDevices.enumerateDevices();
+      
+    }
+    
+    const devicesAvailable = (deviceInfos: any) => {
+
+        for (let i = 0; i !== deviceInfos.length; ++i) {
+
+            const deviceInfo = deviceInfos[i];
+
+            const deviceId = deviceInfo.deviceId;
+
+            const deviceDataObj = {label: 'default', id: deviceId, info: deviceInfo};
+            
+            if (deviceInfo.kind === 'audioinput') {
+                const audioInputSelectText = deviceInfo.label || `Microphone ${audioInputSelect.length + 1}`;
+                deviceDataObj.label = audioInputSelectText;
+                setAudioInputSelect([...audioInputSelect, deviceDataObj]);
+            } else if (deviceInfo.kind === 'audiooutput') {
+                const audioOutputSelectText = deviceInfo.label || `Speaker ${audioOutputSelect.length + 1}`;
+                deviceDataObj.label = audioOutputSelectText;
+                setAudioOutputSelect([...audioOutputSelect, deviceDataObj]);
+            } else if (deviceInfo.kind === 'videoinput') {
+                const videoSelectText = deviceInfo.label || `Camera ${videoSelect.length + 1}`;
+                deviceDataObj.label = videoSelectText;
+                setVideoSelect([...videoSelect, deviceDataObj])
+            } else {
+                console.log('Some other kind of source/device: ', deviceInfo);
+            }
+
+        }
+
+    }      
+
+    const streamHandleError = (error) => {
+        console.log('Please check your devices. Stream Error: navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+    }      
+
     const stopUpLocalVideoStream = () => {
 
-        var stream = imPlayerContainerLocalVideoElement.current.srcObject;
-        var tracks = stream.getTracks();
-      
-        for (var i = 0; i < tracks.length; i++) {
-          var track = tracks[i];
-          track.stop();
+        const stream = imPlayerContainerLocalVideoElement.current.srcObject;
+
+        if(stream !== null){
+
+            var tracks = stream.getTracks();
+        
+            for (var i = 0; i < tracks.length; i++) {
+                var track = tracks[i];
+                track.stop();
+            }
+        
+            imPlayerContainerLocalVideoElement.current.srcObject = null;
+
         }
-      
-        imPlayerContainerLocalVideoElement.current.srcObject = null;
-      
+        
     }
 
     const onCallConnecting = ()=>{
@@ -454,7 +523,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         .Agora.app
         .imCall.lib.connect(
             getCallData(),
-            getCallID(),
             getCallToken()
         );
 
@@ -643,7 +711,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         }
 
-        console.error(":::::::::: CALL DATA INIT READY :::::::::::", getCallData());
+        console.log(":::::::::: CALL DATA INIT READY :::::::::::", getCallData());
   
     }
 
@@ -671,7 +739,14 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     useEffect(() => {
 
+        setCallID();
+        
         resetState();
+
+        window.navigator.mediaDevices
+            .enumerateDevices()
+            .then(devicesAvailable)
+            .catch(streamHandleError);
 
         userObject.username = userDefinedData.username;
         userObject.displayName = userDefinedData.displayName;
@@ -705,7 +780,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         setIsIncomingCall(isIncoming);
 
         isIncoming ? onIncomingCallHandler() : onOutgoingCallHandler();
-        
+
         init();
 
     }, [userDefinedData]);
