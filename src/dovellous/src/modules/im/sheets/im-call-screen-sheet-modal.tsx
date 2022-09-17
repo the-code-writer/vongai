@@ -231,7 +231,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const onCameraToggle = () => {
 
         if(isCameraOn){            
-            onCameraOffHandler()
+            onCameraOffHandler();
+            stopLocalVideoStream(true, true);
         }else{
             onCameraOnHandler();
             setUpLocalVideoStream(true, true);
@@ -478,13 +479,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         console.log('Please check your devices. Stream Error: navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
     }      
 
-    const stopUpLocalVideoStream = () => {
+    const stopLocalVideoStream = () => {
 
-        const stream = imPlayerContainerLocalVideoElement.current.srcObject;
+        if(window.stream !== null && typeof window.stream !== "undefined"){
 
-        if(stream !== null){
-
-            var tracks = stream.getTracks();
+            var tracks = window.stream.getTracks();
         
             for (var i = 0; i < tracks.length; i++) {
                 var track = tracks[i];
@@ -901,9 +900,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                             key="im-solid-rounded-loudspeaker"
                             className="im-solid-rounded color-white"
                             onClick={onLoudSpeakerToggle} 
-                            iconIos={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
+                            iconIos={`f7:${isLoudSpeakerOn?'speaker_slash_fill':'speaker_2_fill'}`}
                             iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
-                            iconAurora={`f7:${isLoudSpeakerOn?'speaker_2_fill':'speaker_slash_fill'}`}
+                            iconAurora={`f7:${isLoudSpeakerOn?'speaker_slash_fill':'speaker_2_fill'}`}
                             iconSize={24} 
                         />
 
@@ -940,9 +939,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                             key="im-solid-rounded-camera"
                             className="im-solid-rounded color-white"
                             onClick={onCameraToggle} 
-                            iconIos={`f7:${isCameraOn?'videocam_fill':'videocam'}`}
-                            iconMd={`material:${isCameraOn?'videocam':'videocam_off'}`}
-                            iconAurora={`f7:${isCameraOn?'videocam_fill':'videocam'}`}
+                            iconIos={`f7:${isCameraOn?'videocam':'videocam_fill'}`}
+                            iconMd={`material:${isCameraOn?'videocam_off':'videocam'}`}
+                            iconAurora={`f7:${isCameraOn?'videocam':'videocam_fill'}`}
                             iconSize={24} 
                         />
 
