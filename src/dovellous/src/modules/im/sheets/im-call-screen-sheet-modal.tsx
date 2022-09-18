@@ -232,10 +232,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         if(isCameraOn){            
             onCameraOffHandler();
-            stopLocalVideoStream(true, true);
+            stopLocalVideoStream();
         }else{
             onCameraOnHandler();
-            setUpLocalVideoStream(true, true);
+            setUpLocalVideoStream();
         }
 
     };
@@ -383,7 +383,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const onOutgoingCallHandler = () => {
 
         if(isCameraOn){
-            setUpLocalVideoStream(true, true);
+            setUpLocalVideoStream();
         }
 
         f7.on(
@@ -407,12 +407,14 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     };
 
-    const setUpLocalVideoStream = (audioSource: any, videoSource: any) => {
+    const setUpLocalVideoStream = () => {
          
         const constraints = {
-            audio: {deviceId: audioSource ? audioSource.deviceId ?? audioSource : undefined},
-            video: {deviceId: videoSource ? videoSource.deviceId ?? videoSource : undefined}
+            audio: {deviceId: currentMediaDeviceAudioSinkID},
+            video: {deviceId: currentMediaDeviceAudioSinkID}
           };
+
+        console.log("::: setUpLocalVideoStream :::", constraints);
 
         window.navigator.mediaDevices.getUserMedia(constraints)
             .then(streamAvailable)
