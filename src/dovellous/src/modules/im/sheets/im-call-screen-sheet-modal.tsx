@@ -226,6 +226,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         setIsFrontCamera(!isFrontCamera);
 
+        switchVideoSinkId();
+
     };
 
     const onCameraToggle = () => {
@@ -411,14 +413,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
          
         const constraints = {
             audio: {deviceId: currentMediaDeviceAudioSinkID},
-            video: {deviceId: currentMediaDeviceAudioSinkID}
+            video: {deviceId: currentMediaDeviceVideoSinkID}
           };
 
         console.log("::: setUpLocalVideoStream :::", constraints);
 
         window.navigator.mediaDevices.getUserMedia(constraints)
             .then(streamAvailable)
-            .then(devicesAvailable)
             .catch(streamHandleError);
 
     }
@@ -475,7 +476,15 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         }
 
+        setCurrentMediaDeviceAudioSinkID(Object.keys(_mediaDevices.audio.output)[0]);
+        setCurrentMediaDeviceAudioSinkIndex(0);
+
+        setCurrentMediaDeviceVideoSinkID(Object.keys(_mediaDevices.video.input)[0]);
+        setCurrentMediaDeviceVideoSinkIndex(0);
+
         setMediaDevicesList(_mediaDevices);
+
+        console.log("::: devicesAvailable :::", _mediaDevices);
 
     }      
 
@@ -531,26 +540,46 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     // Attach video output device to video element using device/sink ID.
     const switchVideoSinkId = (currentVideoSinkId: any) => {
 
-        const videoSinkIds = Object.keys(mediaDevicesList.video.input);
-
         if(currentVideoSinkId === null || typeof currentVideoSinkId === "undefined"){
+            
+            const videoSinkIds = Object.keys(mediaDevicesList.video.input);
 
-            if(currentMediaDeviceVideoSinkIndex === 1){
-                setCurrentMediaDeviceVideoSinkIndex(0);
-                currentVideoSinkId = videoSinkIds[0];
+            let _currentMediaDeviceVideoSinkIndex: number = currentMediaDeviceVideoSinkIndex;
+
+            console.log("::: videoSinkIds, _currentMediaDeviceVideoSinkIndex :::", videoSinkIds, _currentMediaDeviceVideoSinkIndex, (_currentMediaDeviceVideoSinkIndex + 1) , videoSinkIds.length);
+
+            if((_currentMediaDeviceVideoSinkIndex + 1) === videoSinkIds.length){
+
+                _currentMediaDeviceVideoSinkIndex = 0;
+
             }else{
-                setCurrentMediaDeviceVideoSinkIndex(1);
-                currentVideoSinkId = videoSinkIds[1];
+
+                _currentMediaDeviceVideoSinkIndex++;
+
             }
+
+            setCurrentMediaDeviceVideoSinkIndex(_currentMediaDeviceVideoSinkIndex);
+
+            currentVideoSinkId = videoSinkIds[_currentMediaDeviceVideoSinkIndex];
     
         }
 
-      setCurrentMediaDeviceVideoSinkID(currentVideoSinkId);
+        setCurrentMediaDeviceVideoSinkID(currentVideoSinkId);
+
+        setTimeout(()=>{
+
+            console.log("::: setUpLocalVideoStream :::", currentVideoSinkId, currentMediaDeviceVideoSinkID);
+
+            setUpLocalVideoStream();
+
+        },100);
 
     };
 
     const streamHandleError = (error) => {
-        console.log('Please check your devices. Stream Error: navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+
+        console.log('Please check your devices. Stream Error: navigator.MediaDevices.getUserMedia error: ', error);
+
     }      
 
     const stopLocalVideoStream = () => {
@@ -574,9 +603,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         ringingTone.pause();
 
-        setCurrentViewState(
-            K.ModuleComponentsLibs.im.callScreen.CONNECTING
-        );
+        setCurrentViewState( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
 
         f7.on(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED,
@@ -628,15 +655,25 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         _currentCallData.callEnded = new Date().getTime();
 
-        _currentCallData.callDuration = Math.floor((_currentCallData.callEnded - _currentCallData.callAnswered)/1000);
+        if(_currentCallData.callAnswered > 0){
+
+            _currentCallData.callDuration = Math.floor(
+                (_currentCallData.callEnded - _currentCallData.callAnswered)/1000
+            );
+    
+        }else{
+
+            _currentCallData.callDuration = 0;
+    
+        }
 
         setCurrentCallData(_currentCallData);
 
-        console.log("::>>> CALL SUMMARY <<<::", getCallData());
-
         setIsCallInProgress(false);
 
-        stopUpLocalVideoStream();
+        stopLocalVideoStream();
+
+        console.log("::: CALL SUMMARY :::", getCallData());
 
     }
 
@@ -645,7 +682,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         onCallConnecting();
 
         setIsCallAnswered(true);
+
         setIsCallDeclined(false);
+
         setIsCallInProgress(false);
 
         onAnswerCall(getCallData());
@@ -657,11 +696,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         ringingTone.pause();
 
         setIsCallAnswered(false);
+
         setIsCallDeclined(true);
 
-        setCurrentViewState(
-            K.ModuleComponentsLibs.im.callScreen.ENDED
-        );
+        setCurrentViewState( K.ModuleComponentsLibs.im.callScreen.ENDED );
 
         onDeclineCall(getCallData());
 
@@ -836,6 +874,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         callObject.callStarted = new Date().getTime();
         callObject.callEnded = 0;
+        callObject.callDuration = 0;
         callObject.isVideoCall = isVideoCall;
         callObject.isIncoming = isIncoming;
 
@@ -851,7 +890,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         init();
 
-    }, [userDefinedData]);
+    }, 
+    [userDefinedData]
+    );
 
     return (
 
