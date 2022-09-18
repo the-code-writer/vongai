@@ -416,11 +416,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             video: {deviceId: currentMediaDeviceVideoSinkID}
           };
 
-        console.log("::: setUpLocalVideoStream :::", constraints);
-
         window.navigator.mediaDevices.getUserMedia(constraints)
             .then(streamAvailable)
             .catch(streamHandleError);
+
+        console.log("::: setUpLocalVideoStream :::", constraints);
 
     }
 
@@ -540,6 +540,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     // Attach video output device to video element using device/sink ID.
     const switchVideoSinkId = (currentVideoSinkId: any) => {
 
+        stopLocalVideoStream();
+
         if(currentVideoSinkId === null || typeof currentVideoSinkId === "undefined"){
             
             const videoSinkIds = Object.keys(mediaDevicesList.video.input);
@@ -567,8 +569,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         setCurrentMediaDeviceVideoSinkID(currentVideoSinkId);
 
         setTimeout(()=>{
-
-            console.log("::: setUpLocalVideoStream :::", currentVideoSinkId, currentMediaDeviceVideoSinkID);
 
             setUpLocalVideoStream();
 
@@ -1010,10 +1010,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                     
                     <Block inset className={`call-controls`}>
                         
-                        <Button outline large
+                        <Button outline large 
+                            disabled={Object.keys(mediaDevicesList.audio.output).length<2}
                             id="im-solid-rounded-loudspeaker"
                             key="im-solid-rounded-loudspeaker"
-                            className="im-solid-rounded color-white"
+                            className={`im-solid-rounded color-white ${Object.keys(mediaDevicesList.audio.output).length<2?'disabled':''}`}
                             onClick={onLoudSpeakerToggle} 
                             iconIos={`f7:${isLoudSpeakerOn?'speaker_slash_fill':'speaker_2_fill'}`}
                             iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
@@ -1023,10 +1024,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                         {isCameraOn ? (
 
-                        <Button outline large
+                        <Button outline large disabled={Object.keys(mediaDevicesList.video.input).length<2}
                             id="im-solid-rounded-switch-camera"
                             key="im-solid-rounded-switch-camera"
-                            className={`im-solid-rounded ${isCameraOn?(isFrontCamera?'color-white':'color-yellow'):'color-white'}`}
+                            className={`im-solid-rounded ${isCameraOn?(isFrontCamera?'color-white':'color-yellow'):'color-white'}  ${Object.keys(mediaDevicesList.video.input).length<2?'disabled':''}`}
                             onClick={onFrontCameraToggle} 
                             iconIos={`f7:${isFrontCamera?'camera':'camera'}`}
                             iconMd={`material:${isFrontCamera?'video_camera_front':'video_camera_back'}`}
@@ -1050,9 +1051,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         )}
 
                         <Button outline large
+                            disabled={Object.keys(mediaDevicesList.video.input).length<2}
                             id="im-solid-rounded-camera"
                             key="im-solid-rounded-camera"
-                            className="im-solid-rounded color-white"
+                            className={`im-solid-rounded color-white  ${Object.keys(mediaDevicesList.video.input).length<2?'disabled':''}`}
                             onClick={onCameraToggle} 
                             iconIos={`f7:${isCameraOn?'videocam':'videocam_fill'}`}
                             iconMd={`material:${isCameraOn?'videocam_off':'videocam'}`}
