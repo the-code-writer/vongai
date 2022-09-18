@@ -260,6 +260,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         isLoudSpeakerOn ? onLoudSpeakerOffHandler() : onLoudSpeakerOnHandler();
 
+        switchAudioSinkId();
+
     };
 
     const onLoudSpeakerOnHandler = () => {
@@ -474,6 +476,76 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         setMediaDevicesList(_mediaDevices);
 
     }      
+
+    const [currentMediaDeviceAudioSinkID, setCurrentMediaDeviceAudioSinkID] = useState('current');
+
+    const [currentMediaDeviceVideoSinkID, setCurrentMediaDeviceVideoSinkID] = useState('current');
+
+    const [currentMediaDeviceAudioSinkIndex, setCurrentMediaDeviceAudioSinkIndex] = useState(0);
+
+    const [currentMediaDeviceVideoSinkIndex, setCurrentMediaDeviceVideoSinkIndex] = useState(0);
+
+    // Attach audio output device to video element using device/sink ID.
+    const switchAudioSinkId = (currentAudioSinkId: any) => {
+
+        const audioSinkIds = Object.keys(mediaDevicesList.audio.output);
+
+        if(currentAudioSinkId === null || typeof currentAudioSinkId === "undefined"){
+
+            if(currentMediaDeviceAudioSinkIndex === 1){
+                setCurrentMediaDeviceAudioSinkIndex(0);
+                currentAudioSinkId = audioSinkIds[0];
+            }else{
+                setCurrentMediaDeviceAudioSinkIndex(1);
+                currentAudioSinkId = audioSinkIds[1];
+            }
+    
+        }
+
+        setCurrentMediaDeviceAudioSinkID(currentAudioSinkId);
+
+      if (typeof imPlayerContainerLocalVideoElement.current.sinkId !== 'undefined') {
+        imPlayerContainerLocalVideoElement.current.setSinkId(currentAudioSinkId)
+            .then(() => {
+              console.log(`Success, audio output device attached: ${currentAudioSinkId}`);
+            })
+            .catch(error => {
+              let errorMessage = error;
+              if (error.name === 'SecurityError') {
+                errorMessage = `You need to use HTTPS for selecting audio output device: ${error}`;
+              }
+              console.error("Error", currentAudioSinkId, error);
+              // Jump back to first output device in the list as it's the default.
+              setCurrentMediaDeviceAudioSinkIndex(0);
+            });
+      } else {
+
+        console.warn("Error", currentAudioSinkId, 'Browser does not support output device selection.');
+
+      }
+
+    };
+
+    // Attach video output device to video element using device/sink ID.
+    const switchVideoSinkId = (currentVideoSinkId: any) => {
+
+        const videoSinkIds = Object.keys(mediaDevicesList.video.input);
+
+        if(currentVideoSinkId === null || typeof currentVideoSinkId === "undefined"){
+
+            if(currentMediaDeviceVideoSinkIndex === 1){
+                setCurrentMediaDeviceVideoSinkIndex(0);
+                currentVideoSinkId = videoSinkIds[0];
+            }else{
+                setCurrentMediaDeviceVideoSinkIndex(1);
+                currentVideoSinkId = videoSinkIds[1];
+            }
+    
+        }
+
+      setCurrentMediaDeviceVideoSinkID(currentVideoSinkId);
+
+    };
 
     const streamHandleError = (error) => {
         console.log('Please check your devices. Stream Error: navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
