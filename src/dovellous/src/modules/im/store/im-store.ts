@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { faker } from '@faker-js/faker';
 import { createStore } from 'framework7/lite';
-
+import K from '../../../libraries/app/konstants';
+import { f7 } from 'framework7-react';
+ 
 const StorageIM = createStore({
 
   state: {
@@ -232,6 +234,40 @@ const StorageIM = createStore({
 
     /*----- End Instant Messenger State Variables -----*/
 
+    imDevices: {
+      audio: {
+        input: {
+
+        },
+        output: {
+
+        }
+      },
+      video: {
+        input: {
+
+        },
+        output: {
+          
+        }
+      }
+    },
+
+    imDeviceCurrentAudioOutput: {
+      index: 0,
+      id: "default"
+    },
+
+    imDeviceCurrentAudioInput: {
+      index: 0,
+      id: "default"
+    },
+
+    imDeviceCurrentVideoInput: {
+      index: 0,
+      id: "default"
+    }
+
   },
   getters: {
 
@@ -357,6 +393,22 @@ const StorageIM = createStore({
 
     imListBots({ state }) {
       return state.imListBots;
+    },
+
+    imDevices({ state }) {
+      return state.imDevices;
+    },
+
+    imDeviceCurrentAudioOutput({ state }) {
+      return state.imDeviceCurrentAudioOutput;
+    },
+
+    imDeviceCurrentAudioInput({ state }) {
+      return state.imDeviceCurrentAudioInput;
+    },
+
+    imDeviceCurrentVideoInput({ state }) {
+      return state.imDeviceCurrentVideoInput;
     },
 
     /*----- End Instant Messenger Getters -----*/
@@ -1129,7 +1181,92 @@ const StorageIM = createStore({
 
       }
 
+    },
+
+    enumerateDevices({state}, data){
+
+      window.navigator.mediaDevices
+                .enumerateDevices()
+                .then((deviceInfos)=>{
+                  const mediaDevices = {
+                    audio: {
+                        input: {},
+                        output: {}
+                    },
+                    video: {
+                        input: {},
+                        output: {}
+                    },
+                    other: {}
+                }
+        
+                for (let i = 0; i !== deviceInfos.length; ++i) {
+        
+                    const deviceInfo = deviceInfos[i];
+                    
+                    if (deviceInfo.kind === 'audioinput') {
+                        deviceInfo["name"] = deviceInfo.label || `Microphone ${mediaDevices.audio.input.length + 1}`;
+                        mediaDevices.audio.input[deviceInfo.deviceId] = deviceInfo;
+                    } else if (deviceInfo.kind === 'audiooutput') {
+                        deviceInfo["name"] = deviceInfo.label || `Speaker ${mediaDevices.audio.input.length + 1}`;
+                        mediaDevices.audio.output[deviceInfo.deviceId] = deviceInfo;
+                    } else if (deviceInfo.kind === 'videoinput') {
+                        deviceInfo["name"] = deviceInfo.label || `Camera ${Object.keys(mediaDevices.video.input).length + 1}`;
+                        mediaDevices.video.input[deviceInfo.deviceId] = deviceInfo;
+                    } else {
+                        deviceInfo["name"] = deviceInfo.label || `Media ${Object.keys(mediaDevices.other[deviceInfo.kind??'type']).length + 1}`;
+                        mediaDevices.other[deviceInfo.deviceId] = deviceInfo;
+                    }
+        
+                }
+                  state.imDevices = mediaDevices;
+                  f7.emit(K.ModuleComponentsLibs.im.callScreen.DEVICES_ENUMERATED, mediaDevices)
+                })
+                .catch((streamHandleError)=>{
+                  console.warn("::: streamHandleError :::", streamHandleError)
+                });
+
+
+
+    },
+
+    
+    setIMDeviceCurrentAudioOutput({ state }, data) {
+      state.imDeviceCurrentAudioOutput = data.value;
+      if(data.hasOwnProperty('callBackFunction') && typeof data.callBackFunction === "function"){
+        setTimeout(()=>{
+          data.callBackFunction({
+            status: data.value === state.imDeviceCurrentAudioOutput, 
+            value:  data.value
+          });
+        },100);
+      }
+    },
+
+    setIMDeviceCurrentAudioInput({ state }, data) {
+      state.imDeviceCurrentAudioInput = data.value;
+      if(data.hasOwnProperty('callBackFunction') && typeof data.callBackFunction === "function"){
+        setTimeout(()=>{
+          data.callBackFunction({
+            status: data.value === state.imDeviceCurrentAudioInput, 
+            value:  data.value
+          });
+        },100);
+      }
+    },
+
+    setIMDeviceCurrentVideoInput({ state }, data: any) {
+      state.imDeviceCurrentVideoInput = data.value;
+      if(data.hasOwnProperty('callBackFunction') && typeof data.callBackFunction === "function"){
+        setTimeout(()=>{
+          data.callBackFunction({
+            status: data.value === state.imDeviceCurrentVideoInput, 
+            value:  data.value
+          });
+        },100);
+      }
     }
+
 
     /*----- End Instant Messenger Setters Actions -----*/
 

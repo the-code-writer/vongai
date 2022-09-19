@@ -293,6 +293,7 @@ const K = {
 				imMyStories: 'imMyStories',
 			},
 			callScreen: {
+				DEVICES_ENUMERATED: 'Device enumerated',
 				INITIALIZING: 'Initializing...',
 				LINE_BUSY: 'Line busy...',
 				INCOMING: 'Incoming Call...',

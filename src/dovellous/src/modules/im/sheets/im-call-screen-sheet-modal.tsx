@@ -6,7 +6,8 @@ import K from "../../../libraries/app/konstants";
 import Dom7 from "dom7";
 
 import song from '../../../../assets/aud/incoming-4.mp3';
-import { element } from "prop-types";
+
+import { StorageIM, useStorageIM } from "../store/im-store";
 
 export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onMute,
@@ -110,21 +111,33 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const imPlayerContainerRemoteVideoElement = useRef(null);
     const imPlayerContainerLocalVideoElement = useRef(null);
 
-    const [mediaDevicesList, setMediaDevicesList] = useState([{
-        audio: {
-            input: {},
-            output: {}
-        },
-        video: {
-            input: {},
-            output: {}
-        },
-        other: {
-            input: {},
-            output: {}
-        },
-    }]);
+    const [imDevices, setIMDevices] = useStorageIM(
+        'imDevices', 
+        {
+            audio: {
+                input: {
+        
+                },
+                output: {
+        
+                }
+            },
+            video: {
+                input: {
+        
+                },
+                output: {
+                    
+                }
+            }
+        }
+    );
 
+    const [imDeviceCurrentAudioOutput, setIMDeviceCurrentAudioOutput] = useStorageIM('imDeviceCurrentAudioOutput', 'current');
+
+    const [imDeviceCurrentAudioInput, setIMDeviceCurrentAudioInput] = useStorageIM('imDeviceCurrentAudioOutput', 'current');
+
+    const [imDeviceCurrentVideoInput, setIMDeviceCurrentVideoInput] = useStorageIM('imDeviceCurrentVideoInput', 'default');
 
     const CallTimer = useCallback(({visible, className}) => {
 
@@ -185,15 +198,15 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         return {
             userObject : currentUserData,
             callObject : currentCallData,
-            callDevices: mediaDevicesList,
+            callDevices: imDevices,
             callID: currentCallUID
         }
 
     };
 
-    const setCallID = () => {
+    const setCallID = (callObject) => {
 
-        setCurrentCallUID(`CALL_${new Date().getTime()}`);
+        setCurrentCallUID(`CALL_${new Date().getTime()}_${callObject.origin.phoneNumber}_${callObject.destination.phoneNumber}`);
 
     };
 
@@ -425,8 +438,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const setUpLocalVideoStream = () => {
          
         const constraints = {
-            audio: {deviceId: currentMediaDeviceAudioSinkID},
-            video: {deviceId: currentMediaDeviceVideoSinkID}
+            audio: {deviceId: imDeviceCurrentAudioOutput.id},
+            video: {deviceId: imDeviceCurrentVideoInput.id}
           };
 
         window.navigator.mediaDevices.getUserMedia(constraints)
@@ -455,78 +468,67 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
       
     }
     
-    const devicesAvailable = (deviceInfos: any) => {
-
-        const _mediaDevices = {
-            audio: {
-                input: {},
-                output: {}
-            },
-            video: {
-                input: {},
-                output: {}
-            },
-            other: {}
-        }
-
-        for (let i = 0; i !== deviceInfos.length; ++i) {
-
-            const deviceInfo = deviceInfos[i];
-            
-            if (deviceInfo.kind === 'audioinput') {
-                deviceInfo.name = deviceInfo.label || `Microphone ${audioInputSelect.length + 1}`;
-                _mediaDevices.audio.input[deviceInfo.deviceId] = deviceInfo;
-            } else if (deviceInfo.kind === 'audiooutput') {
-                deviceInfo.name = deviceInfo.label || `Speaker ${audioOutputSelect.length + 1}`;
-                _mediaDevices.audio.output[deviceInfo.deviceId] = deviceInfo;
-            } else if (deviceInfo.kind === 'videoinput') {
-                deviceInfo.name = deviceInfo.label || `Camera ${Object.keys(_mediaDevices.video.input).length + 1}`;
-                _mediaDevices.video.input[deviceInfo.deviceId] = deviceInfo;
-            } else {
-                deviceInfo.name = deviceInfo.label || `Media ${Object.keys(_mediaDevices.other[deviceInfo.kind??'type']).length + 1}`;
-                _mediaDevices.other[deviceInfo.deviceId] = deviceInfo;
-            }
-
-        }
-
-        setCurrentMediaDeviceAudioSinkID(Object.keys(_mediaDevices.audio.output)[0]);
-        setCurrentMediaDeviceAudioSinkIndex(0);
-
-        setCurrentMediaDeviceVideoSinkID(Object.keys(_mediaDevices.video.input)[0]);
-        setCurrentMediaDeviceVideoSinkIndex(0);
-
-        setMediaDevicesList(_mediaDevices);
-
-        console.log("::: devicesAvailable :::", _mediaDevices);
-
-    }      
-
-    const [currentMediaDeviceAudioSinkID, setCurrentMediaDeviceAudioSinkID] = useState('current');
-
-    const [currentMediaDeviceVideoSinkID, setCurrentMediaDeviceVideoSinkID] = useState('current');
-
-    const [currentMediaDeviceAudioSinkIndex, setCurrentMediaDeviceAudioSinkIndex] = useState(0);
-
-    const [currentMediaDeviceVideoSinkIndex, setCurrentMediaDeviceVideoSinkIndex] = useState(0);
-
     // Attach audio output device to video element using device/sink ID.
-    const switchAudioSinkId = (currentAudioSinkId: any) => {
+    const switchAudioSinkId = () => {
 
-        const audioSinkIds = Object.keys(mediaDevicesList.audio.output);
+        if(imDevices.audio.hasOwnProperty('output')){
+            
+            const audioSinkIds = Object.keys(imDevices.audio.output);
 
-        if(currentAudioSinkId === null || typeof currentAudioSinkId === "undefined"){
+            let currentMediaDeviceAudioSinkIndex: number = imDeviceCurrentAudioOutput.index;
 
-            if(currentMediaDeviceAudioSinkIndex === 1){
-                setCurrentMediaDeviceAudioSinkIndex(0);
-                currentAudioSinkId = audioSinkIds[0];
+            console.log("::: audioSinkIds, currentMediaDeviceAudioSinkIndex :::", audioSinkIds, currentMediaDeviceAudioSinkIndex, (currentMediaDeviceAudioSinkIndex + 1) , audioSinkIds.length);
+
+            if((currentMediaDeviceAudioSinkIndex + 1) === audioSinkIds.length){
+
+                currentMediaDeviceAudioSinkIndex = 0;
+
             }else{
-                setCurrentMediaDeviceAudioSinkIndex(1);
-                currentAudioSinkId = audioSinkIds[1];
+
+                currentMediaDeviceAudioSinkIndex++;
+
             }
+
+            const currentAudioSinkId = audioSinkIds[currentMediaDeviceAudioSinkIndex];
+        
+            setIMDeviceCurrentAudioOutput({
+                index: currentMediaDeviceAudioSinkIndex,
+                id: currentAudioSinkId
+            });
+
+            setTimeout(()=>{
+
+                imPlayerContainerLocalVideoElement.current.setSinkId(currentAudioSinkId)
+                .then(() => {
+                console.log(`Success, audio output device attached: ${currentAudioSinkId}`);
+                })
+                .catch(error => {
+                    let errorMessage = error;
+                    if (error.name === 'SecurityError') {
+                        errorMessage = `You need to use HTTPS for selecting audio output device: ${error}`;
+                    }
+                    console.error("Error", currentAudioSinkId, error);
+                    // Jump back to first output device in the list as it's the default.                    
+                    setIMDeviceCurrentAudioOutput({
+                        index: 0,
+                        id: audioSinkIds[0]
+                    });
+
+                });
+
+            },100);
+
+        }else{
+
+            StorageIM.dispatch('enumerateDevices', null);
+            
+            setTimeout(()=>{
+                
+                switchAudioSinkId();
+            
+            },2000);
     
         }
-
-        setCurrentMediaDeviceAudioSinkID(currentAudioSinkId);
 
       if (typeof imPlayerContainerLocalVideoElement.current.sinkId !== 'undefined') {
         imPlayerContainerLocalVideoElement.current.setSinkId(currentAudioSinkId)
@@ -551,41 +553,52 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     };
 
     // Attach video output device to video element using device/sink ID.
-    const switchVideoSinkId = (currentVideoSinkId: any) => {
+    const switchVideoSinkId = () => {
 
         stopLocalVideoStream();
 
-        if(currentVideoSinkId === null || typeof currentVideoSinkId === "undefined"){
+        if(imDevices.video.hasOwnProperty('input')){
             
-            const videoSinkIds = Object.keys(mediaDevicesList.video.input);
+            const videoSinkIds = Object.keys(imDevices.video.input);
 
-            let _currentMediaDeviceVideoSinkIndex: number = currentMediaDeviceVideoSinkIndex;
+            let currentMediaDeviceVideoSinkIndex: number = imDeviceCurrentVideoInput.index;
 
-            console.log("::: videoSinkIds, _currentMediaDeviceVideoSinkIndex :::", videoSinkIds, _currentMediaDeviceVideoSinkIndex, (_currentMediaDeviceVideoSinkIndex + 1) , videoSinkIds.length);
+            console.log("::: videoSinkIds, currentMediaDeviceVideoSinkIndex :::", videoSinkIds, currentMediaDeviceVideoSinkIndex, (currentMediaDeviceVideoSinkIndex + 1) , videoSinkIds.length);
 
-            if((_currentMediaDeviceVideoSinkIndex + 1) === videoSinkIds.length){
+            if((currentMediaDeviceVideoSinkIndex + 1) === videoSinkIds.length){
 
-                _currentMediaDeviceVideoSinkIndex = 0;
+                currentMediaDeviceVideoSinkIndex = 0;
 
             }else{
 
-                _currentMediaDeviceVideoSinkIndex++;
+                currentMediaDeviceVideoSinkIndex++;
 
             }
 
-            setCurrentMediaDeviceVideoSinkIndex(_currentMediaDeviceVideoSinkIndex);
+            const currentVideoSinkId = videoSinkIds[currentMediaDeviceVideoSinkIndex];
+        
+            setIMDeviceCurrentVideoInput({
+                index: currentMediaDeviceVideoSinkIndex,
+                id: currentVideoSinkId
+            });
 
-            currentVideoSinkId = videoSinkIds[_currentMediaDeviceVideoSinkIndex];
+            setTimeout(()=>{
+
+                setUpLocalVideoStream();
+
+            },100);
+
+        }else{
+
+            StorageIM.dispatch('enumerateDevices', null);
+            
+            setTimeout(()=>{
+                
+                switchVideoSinkId();
+            
+            },2000);
     
         }
-
-        setCurrentMediaDeviceVideoSinkID(currentVideoSinkId);
-
-        setTimeout(()=>{
-
-            setUpLocalVideoStream();
-
-        },100);
 
     };
 
@@ -834,7 +847,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
   
     }
 
-    const resetState = () => {
+    const resetState = () => {        
+        StorageIM.dispatch('enumerateDevices', null);
         setCurrentUserData(userObject);
         setCurrentCallData(callObject);
         setCurrentConnectedCallDetails(null);
@@ -860,13 +874,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         resetState();
 
-        setCallID();
-        
-        window.navigator.mediaDevices
-            .enumerateDevices()
-            .then(devicesAvailable)
-            .catch(streamHandleError);
-
         userObject.username = userDefinedData.username;
         userObject.displayName = userDefinedData.displayName;
         userObject.displayStatus = userDefinedData.displayStatus;
@@ -891,6 +898,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         callObject.isVideoCall = isVideoCall;
         callObject.isIncoming = isIncoming;
 
+        setCallID(callObject);
+        
         setCurrentUserData(userObject);
 
         setCurrentCallData(callObject);
@@ -1024,10 +1033,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                     <Block inset className={`call-controls`}>
                         
                         <Button outline large 
-                            disabled={Object.keys(mediaDevicesList.audio.output).length<2}
+                            disabled={imDevices.hasOwnProperty('audio') && Object.keys(imDevices.audio.output).length<2}
                             id="im-solid-rounded-loudspeaker"
                             key="im-solid-rounded-loudspeaker"
-                            className={`im-solid-rounded color-white ${Object.keys(mediaDevicesList.audio.output).length<2?'disabled':''}`}
+                            className={`im-solid-rounded color-white ${imDevices.hasOwnProperty('audio') && Object.keys(imDevices.audio.output).length<2?'disabled':''}`}
                             onClick={onLoudSpeakerToggle} 
                             iconIos={`f7:${isLoudSpeakerOn?'speaker_slash_fill':'speaker_2_fill'}`}
                             iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
@@ -1037,10 +1046,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                         {isCameraOn ? (
 
-                        <Button outline large disabled={Object.keys(mediaDevicesList.video.input).length<2}
+                        <Button outline large disabled={imDevices.hasOwnProperty('video') && Object.keys(imDevices.video.input).length<2}
                             id="im-solid-rounded-switch-camera"
                             key="im-solid-rounded-switch-camera"
-                            className={`im-solid-rounded ${isCameraOn?(isFrontCamera?'color-white':'color-yellow'):'color-white'}  ${Object.keys(mediaDevicesList.video.input).length<2?'disabled':''}`}
+                            className={`im-solid-rounded ${isCameraOn?(isFrontCamera?'color-white':'color-yellow'):'color-white'}  ${imDevices.hasOwnProperty('video') && Object.keys(imDevices.video.input).length<2?'disabled':''}`}
                             onClick={onFrontCameraToggle} 
                             iconIos={`f7:${isFrontCamera?'camera':'camera'}`}
                             iconMd={`material:${isFrontCamera?'video_camera_front':'video_camera_back'}`}
@@ -1064,10 +1073,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         )}
 
                         <Button outline large
-                            disabled={Object.keys(mediaDevicesList.video.input).length<2}
+                            disabled={imDevices.hasOwnProperty('video') && Object.keys(imDevices.video.input).length<1}
                             id="im-solid-rounded-camera"
                             key="im-solid-rounded-camera"
-                            className={`im-solid-rounded color-white  ${Object.keys(mediaDevicesList.video.input).length<2?'disabled':''}`}
+                            className={`im-solid-rounded color-white  ${imDevices.hasOwnProperty('video') && Object.keys(imDevices.video.input).length<1?'disabled':''}`}
                             onClick={onCameraToggle} 
                             iconIos={`f7:${isCameraOn?'videocam':'videocam_fill'}`}
                             iconMd={`material:${isCameraOn?'videocam_off':'videocam'}`}

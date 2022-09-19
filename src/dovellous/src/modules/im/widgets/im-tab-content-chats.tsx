@@ -206,7 +206,7 @@ export default ({ id, slug, className, skeletonList, onOpenMessage, onOpenProfil
               pageStart={0}
               loadMore={loadMoreChats}
               hasMore={hasMoreChats}
-              loader={<Preloader />}
+              loader={<Preloader key={0} />}
               useWindow={false}
             >
               <ul>
