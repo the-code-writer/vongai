@@ -110,7 +110,20 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const imPlayerContainerRemoteVideoElement = useRef(null);
     const imPlayerContainerLocalVideoElement = useRef(null);
 
-    const [mediaDevicesList, setMediaDevicesList] = useState([{}]);
+    const [mediaDevicesList, setMediaDevicesList] = useState([{
+        audio: {
+            input: {},
+            output: {}
+        },
+        video: {
+            input: {},
+            output: {}
+        },
+        other: {
+            input: {},
+            output: {}
+        },
+    }]);
 
 
     const CallTimer = useCallback(({visible, className}) => {
