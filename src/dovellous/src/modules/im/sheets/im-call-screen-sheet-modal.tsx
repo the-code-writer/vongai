@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useStopwatch } from 'react-timer-hook';
 
 import K from "../../../libraries/app/konstants";
+
 import Dom7 from "dom7";
 
 import song from '../../../../assets/aud/incoming-4.mp3';
@@ -520,7 +521,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         }else{
 
-            StorageIM.dispatch('enumerateDevices', null);
+            enumerateDevices();
             
             setTimeout(()=>{
                 
@@ -590,7 +591,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         }else{
 
-            StorageIM.dispatch('enumerateDevices', null);
+            enumerateDevices();
             
             setTimeout(()=>{
                 
@@ -847,8 +848,21 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
   
     }
 
+    const enumerateDevices = () => {
+
+        f7
+        .dovellous.instance.Libraries
+        .Agora.app
+        .imCall.lib.enumerateDevices(
+            (deviceInfos: any)=>{
+                setIMDevices(deviceInfos);
+            }
+        );
+
+    };
+
     const resetState = () => {        
-        StorageIM.dispatch('enumerateDevices', null);
+        enumerateDevices();
         setCurrentUserData(userObject);
         setCurrentCallData(callObject);
         setCurrentConnectedCallDetails(null);
