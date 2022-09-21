@@ -123,6 +123,7 @@ class IMCall {
         codec: "h264"
       }
     );
+    
 
   }
 
@@ -223,75 +224,92 @@ class IMCall {
 
   }
 
-  async enumerateDevices(callBackFunction) {
+  async organizeDevices(deviceInfos: any, callBackError: any){
+
+    const mediaDevices = {
+        audio: {
+            input: {},
+            output: {}
+        },
+        video: {
+            input: {},
+            output: {}
+        },
+        other: {}
+    }
+
+    deviceInfos.map((deviceInfo: any, deviceInfoIndex: number) => {
+
+        if (deviceInfo.kind === 'audioinput') {
+            deviceInfo["name"] = deviceInfo.label || `Microphone ${Object.keys(mediaDevices.audio.input).length + 1}`;
+            mediaDevices.audio.input[deviceInfo.deviceId] = deviceInfo;
+        } else if (deviceInfo.kind === 'audiooutput') {
+            deviceInfo["name"] = deviceInfo.label || `Speaker ${Object.keys(mediaDevices.audio.input).length + 1}`;
+            mediaDevices.audio.output[deviceInfo.deviceId] = deviceInfo;
+        } else if (deviceInfo.kind === 'videoinput') {
+            deviceInfo["name"] = deviceInfo.label || `Camera ${Object.keys(mediaDevices.video.input).length + 1}`;
+            mediaDevices.video.input[deviceInfo.deviceId] = deviceInfo;
+        } else {
+            deviceInfo["name"] = deviceInfo.label || `Media ${Object.keys(mediaDevices.other[deviceInfo.kind??'type']).length + 1}`;
+            mediaDevices.other[deviceInfo.deviceId] = deviceInfo;
+        }
+
+    });
+
+    const audioDevices = deviceInfos.filter(function (device: any) {
+      return device.kind === "audioinput";
+    });
+
+    const videoDevices = deviceInfos.filter(function (device: any) {
+      return device.kind === "videoinput";
+    });
+
+    var selectedMicrophoneId = audioDevices[0].deviceId;
+    var selectedCameraId = videoDevices[0].deviceId;
+
+    const cameraVideoTrack = await AgoraRTC.createCameraVideoTrack({ cameraId: selectedCameraId })
+
+    const microphoneAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({ microphoneId: selectedMicrophoneId })
+
+    const result = {
+      cameraVideoTrack: cameraVideoTrack,
+      microphoneAudioTrack: microphoneAudioTrack,
+      cameraId: selectedCameraId,
+      microphoneId: selectedMicrophoneId,
+      mediaDevices: mediaDevices
+    };
+
+    callBackError(result);
+  
+  }
+
+  async enumerateDevices(callBackFunction: any) {
+
+    const self = this;
 
     // Get all audio and video devices.
-    await this.AgoraInstance.agoraRTC.getDevices()
-      .then((devices: any) => {
+    await AgoraRTC.getDevices()
+      .then((deviceInfos: any) => {
 
-        const audioDevices = devices.filter(function (device: any) {
-          return device.kind === "audioinput";
-        });
-
-        const videoDevices = devices.filter(function (device: any) {
-          return device.kind === "videoinput";
-        });
-
-        var selectedMicrophoneId = audioDevices[0].deviceId;
-        var selectedCameraId = videoDevices[0].deviceId;
-
-        const mediaDevices = {
-            audio: {
-                input: {},
-                output: {}
-            },
-            video: {
-                input: {},
-                output: {}
-            },
-            other: {}
-        }
-
-        for (let i = 0; i !== devices.length; ++i) {
-
-            const deviceInfo = devices[i];
-            
-            if (deviceInfo.kind === 'audioinput') {
-                deviceInfo["name"] = deviceInfo.label || `Microphone ${mediaDevices.audio.input.length + 1}`;
-                mediaDevices.audio.input[deviceInfo.deviceId] = deviceInfo;
-            } else if (deviceInfo.kind === 'audiooutput') {
-                deviceInfo["name"] = deviceInfo.label || `Speaker ${mediaDevices.audio.input.length + 1}`;
-                mediaDevices.audio.output[deviceInfo.deviceId] = deviceInfo;
-            } else if (deviceInfo.kind === 'videoinput') {
-                deviceInfo["name"] = deviceInfo.label || `Camera ${Object.keys(mediaDevices.video.input).length + 1}`;
-                mediaDevices.video.input[deviceInfo.deviceId] = deviceInfo;
-            } else {
-                deviceInfo["name"] = deviceInfo.label || `Media ${Object.keys(mediaDevices.other[deviceInfo.kind??'type']).length + 1}`;
-                mediaDevices.other[deviceInfo.deviceId] = deviceInfo;
-            }
-
-        }
-
-        return Promise.all([
-          this.AgoraInstance.agoraRTC.createCameraVideoTrack({ cameraId: selectedCameraId }),
-          this.AgoraInstance.agoraRTC.createMicrophoneVideoTrack({ microphoneId: selectedMicrophoneId }),
-          selectedCameraId,
-          selectedMicrophoneId,
-          mediaDevices
-        ]);
+        self.organizeDevices(deviceInfos, callBackFunction);
 
       })
-      .then((tracks: any) => {
-        setTimeout(() => {
-          callBackFunction(
-            {
-              videoTrack: tracks[0],
-              videoTrackSinkID: tracks[2],
-              audioTrack: tracks[1],
-              audioTrackSinkID: tracks[3],
-              devices: tracks[4]
-            })
-        }, 1000);
+      .catch((error: any) => {
+        
+        window.navigator.mediaDevices
+                .enumerateDevices()
+                .then((deviceInfos)=>{
+
+                self.organizeDevices(deviceInfos, callBackFunction);
+
+                }).catch((streamHandleError)=>{
+                  
+                  console.warn("::: enumerateDevices :::", error, streamHandleError);
+
+                  self.throwError("::: streamHandleError :::");
+
+                });
+
       });
 
   }

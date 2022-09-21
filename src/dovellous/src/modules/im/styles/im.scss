@@ -368,6 +368,7 @@ div.m-b-0.fab>a {
             right: 16px;
             left: 16px;
             border: none;
+            height: inherit;
 
             &.conference {
               width: 100%;
@@ -387,16 +388,19 @@ div.m-b-0.fab>a {
               border: 8px solid rgba(0,0,0,0.1);
             }
 
-            div {
-              width: 40%;
-              flex: 40%;
-            }
+            div  {
+              width: 25vw !important;
+              border-radius: 6px !important;
+              float: right !important;
+              margin-right: -16px !important;
+              position: absolute !important;
+              right: 0 !important;
+              bottom: 0 !important;
 
-            video {
-              width: 25vw;
-              border-radius: 6px;
-              float: right;
-              margin-right: -16px;
+              video {
+                width: 100%;
+              }
+
             }
 
           }

@@ -112,8 +112,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const imPlayerContainerRemoteVideoElement = useRef(null);
     const imPlayerContainerLocalVideoElement = useRef(null);
 
-    const [imDevices, setIMDevices] = useStorageIM(
-        'imDevices', 
+    const [imDevices, setIMDevices] = useState(
         {
             audio: {
                 input: {
@@ -134,11 +133,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         }
     );
 
-    const [imDeviceCurrentAudioOutput, setIMDeviceCurrentAudioOutput] = useStorageIM('imDeviceCurrentAudioOutput', 'current');
+    const [imDeviceCurrentAudioOutput, setIMDeviceCurrentAudioOutput] = useState({id: 'default', index: 0});
 
-    const [imDeviceCurrentAudioInput, setIMDeviceCurrentAudioInput] = useStorageIM('imDeviceCurrentAudioOutput', 'current');
+    const [imDeviceCurrentAudioInput, setIMDeviceCurrentAudioInput] = useState({id: 'default', index: 0});
 
-    const [imDeviceCurrentVideoInput, setIMDeviceCurrentVideoInput] = useStorageIM('imDeviceCurrentVideoInput', 'default');
+    const [imDeviceCurrentVideoInput, setIMDeviceCurrentVideoInput] = useState({id: 'default', index: 0});
 
     const CallTimer = useCallback(({visible, className}) => {
 
@@ -825,6 +824,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         }else{
 
+            enumerateDevices();
+
             f7.on(
                 K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
                 (res: any)=>{
@@ -855,14 +856,30 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         .Agora.app
         .imCall.lib.enumerateDevices(
             (deviceInfos: any)=>{
-                setIMDevices(deviceInfos);
+
+                setIMDevices(deviceInfos.mediaDevices);
+
+                setIMDeviceCurrentAudioOutput({
+                    id: deviceInfos.microphoneId,
+                    index: 0
+                });
+
+                setIMDeviceCurrentVideoInput({
+                    id: deviceInfos.cameraId,
+                    index: 0
+                });
+
+                deviceInfos.cameraVideoTrack.play('im-player-container-local');
+
+                console.log(":::::::::: ENUMERATED DEVICES :::::::::::", deviceInfos);
+
             }
         );
 
     };
 
     const resetState = () => {        
-        enumerateDevices();
+        
         setCurrentUserData(userObject);
         setCurrentCallData(callObject);
         setCurrentConnectedCallDetails(null);

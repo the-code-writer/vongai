@@ -1188,7 +1188,8 @@ const StorageIM = createStore({
       window.navigator.mediaDevices
                 .enumerateDevices()
                 .then((deviceInfos)=>{
-                  const mediaDevices = {
+
+                const mediaDevices = {
                     audio: {
                         input: {},
                         output: {}
