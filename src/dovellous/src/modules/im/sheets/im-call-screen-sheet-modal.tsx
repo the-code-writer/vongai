@@ -199,7 +199,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             userObject : currentUserData,
             callObject : currentCallData,
             callDevices: imDevices,
-            callID: currentCallUID
+            callID: currentCallUID,
+            cameraID: imDeviceCurrentVideoInput,
+            microphoneID: imDeviceCurrentAudioInput,
         }
 
     };
@@ -435,7 +437,23 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     };
 
-    const setUpLocalVideoStream = () => {
+    const setUpLocalVideoStream = (cameraId: any) => {
+
+        f7
+        .dovellous.instance.Libraries
+        .Agora.app
+        .imCall.lib.switchVideoDevice(
+            cameraId,
+            (cameraVideoTrack: any)=>{
+
+                playLocalVideoTrack(cameraVideoTrack);
+
+            }
+        );
+
+        return;
+
+        //TODO:- The function below is now redundant, consider removing
          
         const constraints = {
             audio: {deviceId: imDeviceCurrentAudioOutput.id},
@@ -584,7 +602,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
             setTimeout(()=>{
 
-                setUpLocalVideoStream();
+                setUpLocalVideoStream(currentVideoSinkId);
 
             },100);
 
@@ -849,6 +867,12 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
   
     }
 
+    const playLocalVideoTrack = (cameraVideoTrack: any) => {
+
+        cameraVideoTrack.play(K.ModuleComponentsLibs.im.callScreen.PLAYER_CONTAINER_LOCAL);
+
+    }
+
     const enumerateDevices = () => {
 
         f7
@@ -860,6 +884,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                 setIMDevices(deviceInfos.mediaDevices);
 
                 setIMDeviceCurrentAudioOutput({
+                    id: deviceInfos.speakerId,
+                    index: 0
+                });
+
+                setIMDeviceCurrentAudioInput({
                     id: deviceInfos.microphoneId,
                     index: 0
                 });
@@ -869,7 +898,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                     index: 0
                 });
 
-                deviceInfos.cameraVideoTrack.play('im-player-container-local');
+                playLocalVideoTrack(deviceInfos.cameraVideoTrack);
 
                 console.log(":::::::::: ENUMERATED DEVICES :::::::::::", deviceInfos);
 

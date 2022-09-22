@@ -301,6 +301,7 @@ const K = {
 				RE_CONNECTING: 'Reconnecting...',
 				CONNECTING: 'Connecting...',
 				CONNECTED: 'Connected',
+				CONNECTION_ERROR: 'ConnectionError',
 				DISCONNECTED: 'Disconnected',
 				PAUSED: 'Call On Hold',
 				ENDED: 'Call Ended',
@@ -310,6 +311,8 @@ const K = {
 				START_TIMER: 'StartCallTimer',
 				PAUSE_TIMER: 'PauseCallTimer',
 				STOP_TIMER: 'StopCallTimer',
+				SWITCHED_VIDEO_DEVICE: 'SwitchedVideoDevice',
+				PLAYER_CONTAINER_LOCAL: 'im-player-container-local',
 			}
 		}
 	}

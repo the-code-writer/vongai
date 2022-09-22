@@ -120,7 +120,7 @@ class IMCall {
     this.AgoraInstance.agoraRTC.client = AgoraRTC.createClient(
       {
         mode: "rtc",
-        codec: "h264"
+        codec: "vp8"
       }
     );
     
@@ -133,6 +133,8 @@ class IMCall {
    * return null
    */
   async connect(callData: any) {
+
+    const self = this;
 
     console.warn(
       ":::::: AGORA CONNECT CALL :::::: ",
@@ -147,59 +149,97 @@ class IMCall {
 
     this.AgoraInstance.agoraRTC.client.join(
       this.AgoraInstance.agoraOptions.config.appId,
-      callData.callChannel ?? this.AgoraInstance.agoraOptions.config.channelDefault,
+      callData.callChannel,
       callData.callToken,
       callData.callID
     ).then(async (uid: any) => {
 
-      // Create an audio track from the audio sampled by a microphone.
+      try {
+        
+        // Create an audio track from the audio sampled by a microphone.
 
-      this.AgoraInstance.agoraRTC.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(
-        {
-          encoderConfig: {
-            sampleRate: this.imCallconfig.encoder.sampleRate,
-            stereo: this.imCallconfig.encoder.stereo,
-            bitrate: this.imCallconfig.encoder.bitrate,
-          },
+        this.AgoraInstance.agoraRTC.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(
+          this.generateAudioTrackConfig(callData.microponeID)
+        );
+
+        if (callData.isVideo) {
+
+          // Create a video track from the video captured by a camera.
+          this.AgoraInstance.agoraRTC.localVideoTrack = await AgoraRTC.createCameraVideoTrack(
+            this.generateVideoTrackConfig(callData.cameraID)
+          );
+
         }
-      );
 
-      if (callData.isVideo) {
-
-        // Create a video track from the video captured by a camera.
-        this.AgoraInstance.agoraRTC.localVideoTrack = await AgoraRTC.createCameraVideoTrack(
+        this.framework7.emit(
+          K.ModuleComponentsLibs.im.callScreen.CONNECTED,
           {
-            encoderConfig: {
-              width: {
-                ideal: this.imCallconfig.videoSettings.encoding.width * .75,
-                min: this.imCallconfig.videoSettings.encoding.width * .5,
-                max: this.imCallconfig.videoSettings.encoding.width
-              },
-              height: {
-                ideal: this.imCallconfig.videoSettings.encoding.height * .75,
-                min: this.imCallconfig.videoSettings.encoding.height * .5,
-                max: this.imCallconfig.videoSettings.encoding.height
-              },
-              frameRate: this.imCallconfig.videoSettings.encoding.frameRate,
-              bitrateMin: this.imCallconfig.videoSettings.encoding.bitrateMin,
-              bitrateMax: this.imCallconfig.videoSettings.encoding.bitrateMax,
-            },
+            uid: uid,
+            callData: callData,
+            localAudioTrack: this.AgoraInstance.agoraRTC.localAudioTrack,
+            localVideoTrack: callData.isVideo ? this.AgoraInstance.agoraRTC.localVideoTrack : null,
           }
         );
 
+          
+      } catch (error) {
+        
+      self.connectionError(error, callData);
+
       }
 
-      this.framework7.emit(
-        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-        {
-          uid: uid,
-          callData: callData,
-          localAudioTrack: this.AgoraInstance.agoraRTC.localAudioTrack,
-          localVideoTrack: callData.isVideo ? this.AgoraInstance.agoraRTC.localVideoTrack : null,
-        }
-      );
+
+    }).catch((error:any)=>{
+      
+      self.connectionError(error, callData);
 
     });
+
+  }
+
+  generateVideoTrackConfig(cameraId: any){
+    return {
+      cameraId: cameraId,
+      encoderConfig: {
+        width: {
+          ideal: this.imCallconfig.videoSettings.encoding.width * .75,
+          min: this.imCallconfig.videoSettings.encoding.width * .5,
+          max: this.imCallconfig.videoSettings.encoding.width
+        },
+        height: {
+          ideal: this.imCallconfig.videoSettings.encoding.height * .75,
+          min: this.imCallconfig.videoSettings.encoding.height * .5,
+          max: this.imCallconfig.videoSettings.encoding.height
+        },
+        frameRate: this.imCallconfig.videoSettings.encoding.frameRate,
+        bitrateMin: this.imCallconfig.videoSettings.encoding.bitrateMin,
+        bitrateMax: this.imCallconfig.videoSettings.encoding.bitrateMax,
+      },
+    }
+  }
+
+  generateAudioTrackConfig(microphoneId: any){
+    return { 
+      microphoneId: microphoneId,
+      encoderConfig: {
+        sampleRate: this.imCallconfig.encoder.sampleRate,
+        stereo: this.imCallconfig.encoder.stereo,
+        bitrate: this.imCallconfig.encoder.bitrate,
+      }
+    }
+  }
+
+  connectionError(error: any, callData: any){
+
+    this.framework7.emit(
+      K.ModuleComponentsLibs.im.callScreen.CONNECTION_ERROR,
+      {
+        callData: callData,
+        error: error,
+      }
+    );
+
+    this.throwError("connectionError: ");
 
   }
 
@@ -224,7 +264,24 @@ class IMCall {
 
   }
 
-  async organizeDevices(deviceInfos: any, callBackError: any){
+  async switchVideoDevice(cameraId: any, callBackFunction: any){
+
+    const cameraVideoTrack = await AgoraRTC.createCameraVideoTrack(
+      this.generateVideoTrackConfig(cameraId)
+    );
+
+    this.AgoraInstance.agoraRTC.localVideoTrack = cameraVideoTrack;
+    
+    callBackFunction( cameraVideoTrack );
+
+    this.framework7.emit(
+      K.ModuleComponentsLibs.im.callScreen.SWITCHED_VIDEO_DEVICE,
+      cameraVideoTrack
+    );
+
+  }
+
+  async organizeDevices(deviceInfos: any, callBackFunction: any): Promise<void>{
 
     const mediaDevices = {
         audio: {
@@ -238,7 +295,7 @@ class IMCall {
         other: {}
     }
 
-    deviceInfos.map((deviceInfo: any, deviceInfoIndex: number) => {
+    deviceInfos.map((deviceInfo: any): void => {
 
         if (deviceInfo.kind === 'audioinput') {
             deviceInfo["name"] = deviceInfo.label || `Microphone ${Object.keys(mediaDevices.audio.input).length + 1}`;
@@ -256,30 +313,40 @@ class IMCall {
 
     });
 
-    const audioDevices = deviceInfos.filter(function (device: any) {
+    const audioDevicesMicrophones = deviceInfos.filter(function (device: any) {
       return device.kind === "audioinput";
+    });
+
+    const audioDevicesSpeakers = deviceInfos.filter(function (device: any) {
+      return device.kind === "audiooutput";
     });
 
     const videoDevices = deviceInfos.filter(function (device: any) {
       return device.kind === "videoinput";
     });
 
-    var selectedMicrophoneId = audioDevices[0].deviceId;
-    var selectedCameraId = videoDevices[0].deviceId;
+    var selectedMicrophoneId = audioDevicesMicrophones.length > 0 ? audioDevicesMicrophones[0].deviceId : null;
+    var selectedSpeakerId = audioDevicesSpeakers.length > 0 ? audioDevicesSpeakers[0].deviceId : null;
+    var selectedCameraId = videoDevices.length > 0 ? videoDevices[0].deviceId : null;
 
-    const cameraVideoTrack = await AgoraRTC.createCameraVideoTrack({ cameraId: selectedCameraId })
+    const cameraVideoTrack = await AgoraRTC.createCameraVideoTrack(
+      this.generateVideoTrackConfig(selectedCameraId)
+    )
 
-    const microphoneAudioTrack = await AgoraRTC.createMicrophoneAudioTrack({ microphoneId: selectedMicrophoneId })
+    const microphoneAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(
+      this.generateAudioTrackConfig(selectedMicrophoneId)
+    );
 
     const result = {
       cameraVideoTrack: cameraVideoTrack,
       microphoneAudioTrack: microphoneAudioTrack,
       cameraId: selectedCameraId,
       microphoneId: selectedMicrophoneId,
+      speakerId: selectedSpeakerId,
       mediaDevices: mediaDevices
     };
 
-    callBackError(result);
+    callBackFunction(result);
   
   }
 
