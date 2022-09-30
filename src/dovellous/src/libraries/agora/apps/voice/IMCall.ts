@@ -11,6 +11,7 @@ import { IMCallConfig } from "./IMCallConfig";
 import { IMCallError } from "./IMCallErrors";
 
 import AgoraRTC from "agora-rtc-sdk-ng";
+import { AgoraConfig } from '../../../firebase/lib/AgoraConfig';
 
 // Parent constructor
 class IMCall {
@@ -19,7 +20,7 @@ class IMCall {
 
   imCallEvents: ModuleBaseClasses.DovellousLibraryEvent;
 
-  imCallError: AgoraTypeInterfaces.IMCallErrorInterface;
+  imCallError:  AgoraTypeInterfaces.IMCallErrorInterface;
 
   imCallconfig: AgoraTypeInterfaces.IMCallConfigInterface;
 
@@ -27,27 +28,47 @@ class IMCall {
 
   constructor(
     Framework7: any,
-    Agora: any,
-    ...imCallconfigSettings: Array<any>
+    Agora: any
   ) {
 
     this.framework7 = Framework7;
+
+    this.AgoraInstance = Agora;
 
     this.imCallEvents = Agora.events;
 
     this.imCallError = IMCallError;
 
-    if (
-      Array.isArray(imCallconfigSettings) &&
-      imCallconfigSettings.length > 0 &&
-      imCallconfigSettings[0] instanceof IMCallConfig
+    if (Object.keys(this.AgoraInstance.agoraConfig.imCallConfig).length > 0 &&
+    this.AgoraInstance.agoraConfig.imCallConfig.hasOwnProperty('encoder') && 
+    this.AgoraInstance.agoraConfig.imCallConfig instanceof IMCallConfig
     ) {
 
-      this.imCallconfig = imCallconfigSettings[0];
+      if(this.AgoraInstance.agoraConfig.imCallConfig.hasOwnProperty('videoSettings')){
+
+        this.imCallconfig = this.AgoraInstance.agoraConfig.imCallConfig;
+
+        console.log(":::::::::: IM CONSTRUCTOR - AGORA (INSTANCE) FOUND USER CONFIG ::::::::::", this.imCallconfig)
+
+      }else{
+
+        this.loadDefaultConfig();
+
+      }
 
     } else {
 
-      const _imCallConfig: IMCallConfig = new Object();
+      this.loadDefaultConfig();
+
+    }
+
+    this.init();
+
+  }
+
+  loadDefaultConfig(){
+
+      const _imCallConfig: IMCallConfig | any = new Object();
 
       Object.defineProperties(_imCallConfig, {
         "encoder": {
@@ -102,11 +123,7 @@ class IMCall {
 
       this.imCallconfig = new IMCallConfig(_imCallConfig);
 
-    }
-
-    this.AgoraInstance = Agora;
-
-    this.init();
+      console.log(":::::::::: IM CONSTRUCTOR - AGORA (INSTANCE) FALLBACK ::::::::::", this.imCallconfig, _imCallConfig)
 
   }
 
@@ -198,6 +215,9 @@ class IMCall {
   }
 
   generateVideoTrackConfig(cameraId: any){
+
+    console.warn("...IM CONFIG...", this );
+
     return {
       cameraId: cameraId,
       encoderConfig: {

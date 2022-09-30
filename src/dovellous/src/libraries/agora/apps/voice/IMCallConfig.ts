@@ -4,14 +4,14 @@ export class IMCallConfig implements AgoraTypeInterfaces.IMCallConfigInterface {
   encoder: AgoraTypeInterfaces.IMCallEncoderConfigInterface ;
   localAudioTrack: AgoraTypeInterfaces.IMCallLocalAudioTrackConfigInterface;
   remoteAudioTrack: AgoraTypeInterfaces.IMCallRemoteAudioTrackConfigInterface;
-  videoCallConfig: {
+  videoSettings: {
     encoder: AgoraTypeInterfaces.VideoCallEncoderConfigInterface | string;
   }
   constructor(
     _encoder: AgoraTypeInterfaces.IMCallEncoderConfigInterface | AgoraTypeInterfaces.IMCallConfigInterface,
     _localAudioTrack?: AgoraTypeInterfaces.IMCallLocalAudioTrackConfigInterface,
     _remoteAudioTrack?: AgoraTypeInterfaces.IMCallRemoteAudioTrackConfigInterface,
-    _videoCallConfig?: AgoraTypeInterfaces.VideoCallConfigInterface,
+    _videoSettings?: AgoraTypeInterfaces.VideoCallConfigInterface,
   ) {
 
     if( typeof _encoder === "object" && _encoder.hasOwnProperty('encoder')){
@@ -19,12 +19,12 @@ export class IMCallConfig implements AgoraTypeInterfaces.IMCallConfigInterface {
       this.encoder = _config.encoder;
       this.localAudioTrack = _config.localAudioTrack;
       this.remoteAudioTrack = _config.remoteAudioTrack;
-      this.videoCallConfig = _config.videoCallConfig;
+      this.videoSettings = _config.videoSettings;
     }else{
       this.encoder = _encoder;
       this.localAudioTrack = _localAudioTrack;
       this.remoteAudioTrack = _remoteAudioTrack;
-      this.videoCallConfig = _videoCallConfig;
+      this.videoSettings = _videoSettings;
     }
     
   }

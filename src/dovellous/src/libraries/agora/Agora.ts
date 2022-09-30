@@ -129,6 +129,8 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 						parent.imCall.lib = new IMCall(f7, parent);
 
+						parent.imCall.isReady = true;
+
 						f7.emit(
 							K.Events.Modules.Agora.IMCall.ON_APP_INIT,
 							{
@@ -136,8 +138,6 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 								imCallApp: parent.imCall,
 							}
 						);
-
-						parent.imCall.isReady = true;
 
 						return parent.imCall;
 
