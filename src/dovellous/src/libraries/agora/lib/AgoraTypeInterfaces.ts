@@ -1,3 +1,4 @@
+import { IAgoraRTCClient } from "agora-rtc-sdk-ng";
 
 interface IMCallEncoderConfigInterface {
   sampleRate:  number;
@@ -29,17 +30,11 @@ interface IMCallRemoteAudioTrackConfigInterface {
   volume: number;
 }
 
-interface videoSettingsInterface {
-  encoder: VideoCallEncoderConfigInterface;
-}
-
 interface IMCallConfigInterface {
-  encoder: IMCallEncoderConfigInterface;
+  audioSettings: IMCallEncoderConfigInterface;
   localAudioTrack: IMCallLocalAudioTrackConfigInterface;
   remoteAudioTrack: IMCallRemoteAudioTrackConfigInterface;
-  videoSettings: {
-    encoding: VideoCallEncoderConfigInterface | string; //720p_1
-  }
+  videoSettings: string | VideoCallEncoderConfigInterface; //720p_1
 }
 
 interface AgoraConfigInterface {
@@ -77,6 +72,5 @@ export {
   VideoCallEncoderConfigInterface,
   IMCallErrorInterface, 
   IMCallConfigInterface,
-  videoSettingsInterface,
   RTCInterface,
 } 

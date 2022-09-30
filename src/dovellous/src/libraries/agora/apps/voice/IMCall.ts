@@ -66,14 +66,34 @@ class IMCall {
 
   loadDefaultConfig(){
 
-      const _imCallConfig: IMCallConfig | any = new Object();
+      const _imCallConfig: AgoraTypeInterfaces.IMCallConfigInterface | any = new Object();
 
       Object.defineProperties(_imCallConfig, {
-        "encoder": {
+        "audioSettings": {
           value: {
             sampleRate: 48000,
             stereo: true,
             bitrate: 128,
+          },
+          writable: false,
+          enumerable: true,
+          configurable: true
+        },
+        "videoSettings": {
+          value: {
+            width: {
+              ideal: Dom7('html').width() * .75,
+              min: Dom7('html').width() * .5,
+              max: Dom7('html').width(),
+            },
+            height: {
+              ideal: Dom7('html').height() * .75,
+              min: Dom7('html').height() * .5,
+              max: Dom7('html').height(),
+            },
+            frameRate: 15,
+            bitrateMin: 600,
+            bitrateMax: 1000,
           },
           writable: false,
           enumerable: true,
@@ -90,28 +110,6 @@ class IMCall {
         "remoteAudioTrack": {
           value: {
             volume: 50,
-          },
-          writable: false,
-          enumerable: true,
-          configurable: true
-        },
-        "videoSettings": {
-          value: {
-            encoding: {
-              width: {
-                ideal: Dom7('html').width() * .75,
-                min: Dom7('html').width() * .5,
-                max: Dom7('html').width(),
-              },
-              height: {
-                ideal: Dom7('html').height() * .75,
-                min: Dom7('html').height() * .5,
-                max: Dom7('html').height(),
-              },
-              frameRate: 15,
-              bitrateMin: 600,
-              bitrateMax: 1000,
-            }
           },
           writable: false,
           enumerable: true,
@@ -218,18 +216,18 @@ class IMCall {
       cameraId: cameraId,
       encoderConfig: {
         width: {
-          ideal: this.imCallconfig.videoSettings.encoding.width * .75,
-          min: this.imCallconfig.videoSettings.encoding.width * .5,
-          max: this.imCallconfig.videoSettings.encoding.width
+          ideal: this.imCallconfig.videoSettings.width * .75,
+          min: this.imCallconfig.videoSettings.width * .5,
+          max: this.imCallconfig.videoSettings.width
         },
         height: {
-          ideal: this.imCallconfig.videoSettings.encoding.height * .75,
-          min: this.imCallconfig.videoSettings.encoding.height * .5,
-          max: this.imCallconfig.videoSettings.encoding.height
+          ideal: this.imCallconfig.videoSettings.height * .75,
+          min: this.imCallconfig.videoSettings.height * .5,
+          max: this.imCallconfig.videoSettings.height
         },
-        frameRate: this.imCallconfig.videoSettings.encoding.frameRate,
-        bitrateMin: this.imCallconfig.videoSettings.encoding.bitrateMin,
-        bitrateMax: this.imCallconfig.videoSettings.encoding.bitrateMax,
+        frameRate: this.imCallconfig.videoSettings.frameRate,
+        bitrateMin: this.imCallconfig.videoSettings.bitrateMin,
+        bitrateMax: this.imCallconfig.videoSettings.bitrateMax,
       },
     }
   }
@@ -238,9 +236,9 @@ class IMCall {
     return { 
       microphoneId: microphoneId,
       encoderConfig: {
-        sampleRate: this.imCallconfig.encoder.sampleRate,
-        stereo: this.imCallconfig.encoder.stereo,
-        bitrate: this.imCallconfig.encoder.bitrate,
+        sampleRate: this.imCallconfig.audioSettings.sampleRate,
+        stereo: this.imCallconfig.audioSettings.stereo,
+        bitrate: this.imCallconfig.audioSettings.bitrate,
       }
     }
   }
