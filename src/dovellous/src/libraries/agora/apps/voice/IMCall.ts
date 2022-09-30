@@ -48,17 +48,15 @@ class IMCall {
 
         this.imCallconfig = this.AgoraInstance.agoraConfig.imCallConfig;
 
-        console.log(":::::::::: IM CONSTRUCTOR - AGORA (INSTANCE) FOUND USER CONFIG ::::::::::", this.imCallconfig)
-
       }else{
 
-        this.loadDefaultConfig();
+        this.imCallconfig = this.loadDefaultConfig();
 
       }
 
     } else {
 
-      this.loadDefaultConfig();
+      this.imCallconfig = this.loadDefaultConfig();
 
     }
 
@@ -121,9 +119,7 @@ class IMCall {
         },
       });
 
-      this.imCallconfig = new IMCallConfig(_imCallConfig);
-
-      console.log(":::::::::: IM CONSTRUCTOR - AGORA (INSTANCE) FALLBACK ::::::::::", this.imCallconfig, _imCallConfig)
+      return new IMCallConfig(_imCallConfig);
 
   }
 
