@@ -38,6 +38,9 @@ class IMCall {
 
     this.imCallError = IMCallError;
 
+    console.log("================= 000", this.AgoraInstance.agoraConfig.imCallConfig);
+    console.log("================= 001", IMCallConfig);
+
     if (
       Object.keys(this.AgoraInstance.agoraConfig.imCallConfig).length > 0 &&
       this.AgoraInstance.agoraConfig.imCallConfig instanceof IMCallConfig
@@ -45,15 +48,21 @@ class IMCall {
 
       if(this.AgoraInstance.agoraConfig.imCallConfig.hasOwnProperty('audioSettings')){
 
+        console.log("================= 1");
+
         this.imCallconfig = this.AgoraInstance.agoraConfig.imCallConfig;
 
       }else{
+
+        console.log("================= 2");
 
         this.imCallconfig = this.loadDefaultConfig();
 
       }
 
     } else {
+
+      console.log("================= 3");
 
       this.imCallconfig = this.loadDefaultConfig();
 
@@ -168,7 +177,7 @@ class IMCall {
         // Create an audio track from the audio sampled by a microphone.
 
         this.AgoraInstance.agoraRTC.localAudioTrack = await AgoraRTC.createMicrophoneAudioTrack(
-          this.generateAudioTrackConfig(callData.microponeID)
+          this.generateAudioTrackConfig(callData.microphoneID)
         );
 
         if (callData.isVideo) {
@@ -206,31 +215,22 @@ class IMCall {
 
   }
 
-  generateVideoTrackConfig(cameraId: any){
+  generateVideoTrackConfig(cameraId: any, selfie: boolean){
 
-    console.warn("...000000000000IM CONFIG...", this.imCallconfig.videoSettings.width, this );
-
-    const videoWidth:number = this.imCallconfig.videoSettings.width;
-    const videoHeight:number = this.imCallconfig.videoSettings.height;
-
-    return {
+    const config = {
       cameraId: cameraId,
+      facingMode: selfie ?? "user",
       encoderConfig: {
-        width: {
-          ideal: videoWidth * .75,
-          min:   videoWidth * .5,
-          max:   videoWidth
-        },
-        height: {
-          ideal: videoHeight * .75,
-          min:   videoHeight * .5,
-          max:   videoHeight
-        },
+        width: this.imCallconfig.videoSettings.width,
+        height: this.imCallconfig.videoSettings.height,
         frameRate: this.imCallconfig.videoSettings.frameRate,
         bitrateMin: this.imCallconfig.videoSettings.bitrateMin,
         bitrateMax: this.imCallconfig.videoSettings.bitrateMax,
       },
     }
+
+    console.warn("...####################...", config);
+
   }
 
   generateAudioTrackConfig(microphoneId: any){
