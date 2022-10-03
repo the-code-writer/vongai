@@ -34,7 +34,7 @@ interface IMCallConfigInterface {
   audioSettings: IMCallEncoderConfigInterface;
   localAudioTrack: IMCallLocalAudioTrackConfigInterface;
   remoteAudioTrack: IMCallRemoteAudioTrackConfigInterface;
-  videoSettings: string | VideoCallEncoderConfigInterface; //720p_1
+  videoSettings: VideoCallEncoderConfigInterface; //720p_1
 }
 
 interface AgoraConfigInterface {

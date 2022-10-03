@@ -544,29 +544,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                 
                 switchAudioSinkId();
             
-            },2000);
+            },1000);
     
         }
-
-      if (typeof imPlayerContainerLocalVideoElement.current.sinkId !== 'undefined') {
-        imPlayerContainerLocalVideoElement.current.setSinkId(currentAudioSinkId)
-            .then(() => {
-              console.log(`Success, audio output device attached: ${currentAudioSinkId}`);
-            })
-            .catch(error => {
-              let errorMessage = error;
-              if (error.name === 'SecurityError') {
-                errorMessage = `You need to use HTTPS for selecting audio output device: ${error}`;
-              }
-              console.error("Error", currentAudioSinkId, error);
-              // Jump back to first output device in the list as it's the default.
-              setCurrentMediaDeviceAudioSinkIndex(0);
-            });
-      } else {
-
-        console.warn("Error", currentAudioSinkId, 'Browser does not support output device selection.');
-
-      }
 
     };
 

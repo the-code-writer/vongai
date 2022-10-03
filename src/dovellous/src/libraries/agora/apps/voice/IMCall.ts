@@ -1,5 +1,7 @@
 import { K, Snippets } from "../../../app/helpers";
 
+import AgoraRTC from "agora-rtc-sdk-ng";
+
 import Dom7 from 'dom7';
 
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
@@ -10,13 +12,12 @@ import { IMCallConfig } from "./IMCallConfig";
 
 import { IMCallError } from "./IMCallErrors";
 
-import AgoraRTC from "agora-rtc-sdk-ng";
-import { AgoraConfig } from '../../../firebase/lib/AgoraConfig';
-
 // Parent constructor
 class IMCall {
 
-  framework7: any;
+  Framework7Instance: any;
+
+  AgoraInstance: any;
 
   imCallEvents: ModuleBaseClasses.DovellousLibraryEvent;
 
@@ -24,14 +25,12 @@ class IMCall {
 
   imCallconfig: AgoraTypeInterfaces.IMCallConfigInterface;
 
-  AgoraInstance: any;
-
   constructor(
     Framework7: any,
     Agora: any
   ) {
 
-    this.framework7 = Framework7;
+    this.Framework7Instance = Framework7;
 
     this.AgoraInstance = Agora;
 
@@ -39,12 +38,12 @@ class IMCall {
 
     this.imCallError = IMCallError;
 
-    if (Object.keys(this.AgoraInstance.agoraConfig.imCallConfig).length > 0 &&
-    this.AgoraInstance.agoraConfig.imCallConfig.hasOwnProperty('encoder') && 
-    this.AgoraInstance.agoraConfig.imCallConfig instanceof IMCallConfig
+    if (
+      Object.keys(this.AgoraInstance.agoraConfig.imCallConfig).length > 0 &&
+      this.AgoraInstance.agoraConfig.imCallConfig instanceof IMCallConfig
     ) {
 
-      if(this.AgoraInstance.agoraConfig.imCallConfig.hasOwnProperty('videoSettings')){
+      if(this.AgoraInstance.agoraConfig.imCallConfig.hasOwnProperty('audioSettings')){
 
         this.imCallconfig = this.AgoraInstance.agoraConfig.imCallConfig;
 
@@ -135,7 +134,6 @@ class IMCall {
       }
     );
     
-
   }
 
   /**
@@ -153,7 +151,7 @@ class IMCall {
       this.AgoraInstance.agoraOptions
     );
 
-    this.framework7.emit(
+    this.Framework7Instance.emit(
       K.ModuleComponentsLibs.im.callScreen.CONNECTING,
       callData
     );
@@ -182,7 +180,7 @@ class IMCall {
 
         }
 
-        this.framework7.emit(
+        this.Framework7Instance.emit(
           K.ModuleComponentsLibs.im.callScreen.CONNECTED,
           {
             uid: uid,
@@ -210,20 +208,23 @@ class IMCall {
 
   generateVideoTrackConfig(cameraId: any){
 
-    console.warn("...IM CONFIG...", this );
+    console.warn("...000000000000IM CONFIG...", this.imCallconfig.videoSettings.width, this );
+
+    const videoWidth:number = this.imCallconfig.videoSettings.width;
+    const videoHeight:number = this.imCallconfig.videoSettings.height;
 
     return {
       cameraId: cameraId,
       encoderConfig: {
         width: {
-          ideal: this.imCallconfig.videoSettings.width * .75,
-          min: this.imCallconfig.videoSettings.width * .5,
-          max: this.imCallconfig.videoSettings.width
+          ideal: videoWidth * .75,
+          min:   videoWidth * .5,
+          max:   videoWidth
         },
         height: {
-          ideal: this.imCallconfig.videoSettings.height * .75,
-          min: this.imCallconfig.videoSettings.height * .5,
-          max: this.imCallconfig.videoSettings.height
+          ideal: videoHeight * .75,
+          min:   videoHeight * .5,
+          max:   videoHeight
         },
         frameRate: this.imCallconfig.videoSettings.frameRate,
         bitrateMin: this.imCallconfig.videoSettings.bitrateMin,
@@ -245,7 +246,7 @@ class IMCall {
 
   connectionError(error: any, callData: any){
 
-    this.framework7.emit(
+    this.Framework7Instance.emit(
       K.ModuleComponentsLibs.im.callScreen.CONNECTION_ERROR,
       {
         callData: callData,
@@ -272,7 +273,7 @@ class IMCall {
     // Leave the channel.
     await this.AgoraInstance.agoraRTC.client.leave();
 
-    this.framework7.emit(
+    this.Framework7Instance.emit(
       K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
     );
 
@@ -288,7 +289,7 @@ class IMCall {
     
     callBackFunction( cameraVideoTrack );
 
-    this.framework7.emit(
+    this.Framework7Instance.emit(
       K.ModuleComponentsLibs.im.callScreen.SWITCHED_VIDEO_DEVICE,
       cameraVideoTrack
     );
