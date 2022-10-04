@@ -45,6 +45,14 @@ const Snippets = {
 
   strings: {
 
+    isBooleanTrue: (str: any) => {
+      return String(str).toLowerCase() !== "false";
+    },
+
+    isBooleanFalse: (str: any) => {
+      return String(str).toLowerCase() === "false";
+    },
+
     format: (str, ...args) => {
       var str = str.toString();
       if (args.length) {

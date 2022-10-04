@@ -25,10 +25,7 @@ class IMCall {
 
   imCallconfig: AgoraTypeInterfaces.IMCallConfigInterface;
 
-  constructor(
-    Framework7: any,
-    Agora: any
-  ) {
+  constructor( Framework7: any, Agora: any ) {
 
     this.Framework7Instance = Framework7;
 
@@ -38,31 +35,25 @@ class IMCall {
 
     this.imCallError = IMCallError;
 
-    console.log("================= 000", this.AgoraInstance.agoraConfig.imCallConfig);
-    console.log("================= 001", IMCallConfig);
-
     if (
-      Object.keys(this.AgoraInstance.agoraConfig.imCallConfig).length > 0 &&
-      this.AgoraInstance.agoraConfig.imCallConfig instanceof IMCallConfig
+      this.AgoraInstance.agoraConfig.hasOwnProperty('imCallConfig') &&
+      Object.keys(this.AgoraInstance.agoraConfig.imCallConfig).length > 0
     ) {
 
-      if(this.AgoraInstance.agoraConfig.imCallConfig.hasOwnProperty('audioSettings')){
+      if(
+        this.AgoraInstance.agoraConfig.imCallConfig.hasOwnProperty('audioSettings') &&
+        this.AgoraInstance.agoraConfig.imCallConfig.hasOwnProperty('videoSettings')
+        ){
 
-        console.log("================= 1");
-
-        this.imCallconfig = this.AgoraInstance.agoraConfig.imCallConfig;
+        this.imCallconfig = new IMCallConfig(this.AgoraInstance.agoraConfig.imCallConfig);
 
       }else{
-
-        console.log("================= 2");
 
         this.imCallconfig = this.loadDefaultConfig();
 
       }
 
     } else {
-
-      console.log("================= 3");
 
       this.imCallconfig = this.loadDefaultConfig();
 
@@ -74,58 +65,60 @@ class IMCall {
 
   loadDefaultConfig(){
 
-      const _imCallConfig: AgoraTypeInterfaces.IMCallConfigInterface | any = new Object();
+    const imCallConfigInterfaceObject: any = new Object();
 
-      Object.defineProperties(_imCallConfig, {
-        "audioSettings": {
-          value: {
-            sampleRate: 48000,
-            stereo: true,
-            bitrate: 128,
-          },
-          writable: false,
-          enumerable: true,
-          configurable: true
+    Object.defineProperties(imCallConfigInterfaceObject, {
+      "audioSettings": {
+        value: {
+          sampleRate: 48000,
+          stereo: true,
+          bitrate: 128,
         },
-        "videoSettings": {
-          value: {
-            width: {
-              ideal: Dom7('html').width() * .75,
-              min: Dom7('html').width() * .5,
-              max: Dom7('html').width(),
-            },
-            height: {
-              ideal: Dom7('html').height() * .75,
-              min: Dom7('html').height() * .5,
-              max: Dom7('html').height(),
-            },
-            frameRate: 15,
-            bitrateMin: 600,
-            bitrateMax: 1000,
+        writable: false,
+        enumerable: true,
+        configurable: true
+      },
+      "videoSettings": {
+        value: {
+          width: {
+            ideal: Math.ceil(Dom7('html').width() * .75),
+            min: Math.ceil(Dom7('html').width() * .5),
+            max: Math.ceil(Dom7('html').width()),
           },
-          writable: false,
-          enumerable: true,
-          configurable: true
-        },
-        "localAudioTrack": {
-          value: {
-            volume: 50,
+          height: {
+            ideal: Math.ceil(Dom7('html').height() * .75),
+            min: Math.ceil(Dom7('html').height() * .5),
+            max: Math.ceil(Dom7('html').height()),
           },
-          writable: false,
-          enumerable: true,
-          configurable: true
+          frameRate: 15,
+          bitrateMin: 600,
+          bitrateMax: 1000,
         },
-        "remoteAudioTrack": {
-          value: {
-            volume: 50,
-          },
-          writable: false,
-          enumerable: true,
-          configurable: true
+        writable: false,
+        enumerable: true,
+        configurable: true
+      },
+      "localAudioTrack": {
+        value: {
+          volume: 50,
         },
-      });
+        writable: false,
+        enumerable: true,
+        configurable: true
+      },
+      "remoteAudioTrack": {
+        value: {
+          volume: 50,
+        },
+        writable: false,
+        enumerable: true,
+        configurable: true
+      },
+    });
 
-      return new IMCallConfig(_imCallConfig);
+    const imCallConfigSettingsObject: AgoraTypeInterfaces.IMCallConfigInterface = imCallConfigInterfaceObject;
+
+    return new IMCallConfig(imCallConfigSettingsObject);
 
   }
 
@@ -138,8 +131,8 @@ class IMCall {
 
     this.AgoraInstance.agoraRTC.client = AgoraRTC.createClient(
       {
-        mode: "rtc",
-        codec: "vp8"
+        mode: this.AgoraInstance.agoraConfig.clientMode,
+        codec: this.AgoraInstance.agoraConfig.clientCodec
       }
     );
     
@@ -157,6 +150,7 @@ class IMCall {
     console.warn(
       ":::::: AGORA CONNECT CALL :::::: ",
       callData,
+      this.imCallconfig,
       this.AgoraInstance.agoraOptions
     );
 
@@ -187,7 +181,50 @@ class IMCall {
             this.generateVideoTrackConfig(callData.cameraID)
           );
 
+        }else{
+
+          this.AgoraInstance.agoraRTC.localAudioTrack = null;
+
         }
+
+        // Publish the local audio and video tracks to the channel.
+        await this.AgoraInstance.agoraRTC.client.publish([this.AgoraInstance.agoraRTC.localAudioTrack, this.AgoraInstance.agoraRTC.localVideoTrack]);
+
+        this.AgoraInstance.agoraRTC.client.on("user-published", async (user: any, mediaType: any) => {
+          // Subscribe to a remote user.
+          await this.AgoraInstance.agoraRTC.client.subscribe(user, mediaType);
+          console.warn("subscribe success");
+        
+          // If the subscribed track is video.
+          if (mediaType === "video") {
+            // Get `RemoteVideoTrack` in the `user` object.
+            const remoteVideoTrack = user.videoTrack;
+            // Dynamically create a container in the form of a DIV element for playing the remote video track.
+            const playerContainer = document.createElement("div");
+            // Specify the ID of the DIV container. You can use the `uid` of the remote user.
+            playerContainer.id = user.uid.toString();
+            playerContainer.className = "im-player-remote-video-wrapper";
+            playerContainer.style.width = "640px";
+            playerContainer.style.height = "480px";
+            document.getElementById("im-player-container-remote").append(playerContainer);
+        
+            // Play the remote video track.
+            // Pass the DIV container and the SDK dynamically creates a player in the container for playing the remote video track.
+            remoteVideoTrack.play(playerContainer);
+        
+            // Or just pass the ID of the DIV container.
+            // remoteVideoTrack.play(playerContainer.id);
+          }
+        
+          // If the subscribed track is audio.
+          if (mediaType === "audio") {
+            // Get `RemoteAudioTrack` in the `user` object.
+            const remoteAudioTrack = user.audioTrack;
+            // Play the audio track. No need to pass any DOM element.
+            remoteAudioTrack.play();
+          }
+
+        });
 
         this.Framework7Instance.emit(
           K.ModuleComponentsLibs.im.callScreen.CONNECTED,
@@ -215,11 +252,10 @@ class IMCall {
 
   }
 
-  generateVideoTrackConfig(cameraId: any, selfie: boolean){
+  generateVideoTrackConfig(cameraId: any){
 
-    const config = {
+    const videoTrackConfig: any = {
       cameraId: cameraId,
-      facingMode: selfie ?? "user",
       encoderConfig: {
         width: this.imCallconfig.videoSettings.width,
         height: this.imCallconfig.videoSettings.height,
@@ -229,12 +265,14 @@ class IMCall {
       },
     }
 
-    console.warn("...####################...", config);
+    console.warn("... #################### generateVideoTrackConfig #################### ...", videoTrackConfig);
+
+    return videoTrackConfig;
 
   }
 
   generateAudioTrackConfig(microphoneId: any){
-    return { 
+    const audioTrackConfig: any = { 
       microphoneId: microphoneId,
       encoderConfig: {
         sampleRate: this.imCallconfig.audioSettings.sampleRate,
@@ -242,6 +280,11 @@ class IMCall {
         bitrate: this.imCallconfig.audioSettings.bitrate,
       }
     }
+    
+    console.warn("... #################### generateAudioTrackConfig #################### ...", audioTrackConfig);
+
+    return audioTrackConfig;
+
   }
 
   connectionError(error: any, callData: any){

@@ -20,8 +20,6 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 		events: any,
 		appId?: any | AgoraTypeInterfaces.AgoraConfigInterface,
 		primaryCertificate?: any,
-		channels?: any,
-		defaultChannel?: any,
 		imCallConfig?: AgoraTypeInterfaces.IMCallConfigInterface
 	) {
 
@@ -51,9 +49,7 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 				self.options.config = new AgoraConfig(
 					appId, 
-					primaryCertificate, 
-					channels, 
-					defaultChannel, 
+					primaryCertificate,
 					imCallConfig
 				);
 
@@ -155,7 +151,7 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 	}
 
-	getDevices(eventCallBackFunction){
+	getDevices(eventCallBackFunction: any){
 		
         // Get all audio and video devices.
 		AgoraRTC.getDevices().then(devices => {

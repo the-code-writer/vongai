@@ -67,38 +67,36 @@ const Framework7DovellousPlugin = {
       agora: {
         appId: K.Env.AGORA_APP_ID,
         primaryCertificate: K.Env.AGORA_PRIMARY_CERTIFICATE,
-        channels: K.Env.AGORA_CHANNELS,
-        channelDefault: K.Env.AGORA_DEFAULT_CHANNEL,
         clientMode: K.Env.AGORA_CLIENT_MODE,
         clientCodec: K.Env.AGORA_CLIENT_CODEC,
         imCallConfig: {
-          encoder: {
-              sampleRate:  parseInt(K.Env.AGORA_AUDIO_SAMPLE_RATE),
-              stereo: parseInt(K.Env.AGORA_AUDIO_STEREO),    
-              bitrate: parseInt(K.Env.AGORA_AUDIO_BITRATE),
-          },
+          audioSettings: K.Env.AGORA_AUDIO_SETTINGS_ENCODING_PRESET || 
+            {
+                sampleRate:  parseInt(K.Env.AGORA_AUDIO_SAMPLE_RATE),
+                stereo: Snippets.strings.isBooleanTrue(K.Env.AGORA_AUDIO_STEREO),    
+                bitrate: parseInt(K.Env.AGORA_AUDIO_BITRATE),
+            },
           localAudioTrack: {
             volume: parseInt(K.Env.AGORA_LOCAL_AUDIO_TRACK_VOLUME),
           },
           remoteAudioTrack: {
             volume: parseInt(K.Env.AGORA_REMOTE_AUDIO_TRACK_VOLUME),
           },
-          videoSettings: {
-            encoding: K.Env.AGORA_VIDEO_SETTINGS_ENCODING_PRESET || {
-                width: { 
-                  ideal: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_WIDTH)*.75, 
-                  min: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_WIDTH)*.5, 
-                  max: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_WIDTH),
-                },
-                height: { 
-                  ideal: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_HEIGHT)*.75, 
-                  min: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_HEIGHT)*.5, 
-                  max: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_HEIGHT),
-                },
-                frameRate:  parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_FRAMERATE),
-                bitrateMin: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_BIT_MIN), 
-                bitrateMax: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_BIT_MAX),
-            }
+          videoSettings: K.Env.AGORA_VIDEO_SETTINGS_ENCODING_PRESET || 
+            {
+              width: { 
+                ideal: Math.ceil(parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_WIDTH)*.75), 
+                min: Math.ceil(parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_WIDTH)*.5), 
+                max: Math.ceil(parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_WIDTH)),
+              },
+              height: { 
+                ideal: Math.ceil(parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_HEIGHT)*.75), 
+                min: Math.ceil(parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_HEIGHT)*.5), 
+                max: Math.ceil(parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_HEIGHT)),
+              },
+              frameRate:  parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_FRAMERATE),
+              bitrateMin: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_BIT_MIN), 
+              bitrateMax: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_BIT_MAX),
           }
         }
       }

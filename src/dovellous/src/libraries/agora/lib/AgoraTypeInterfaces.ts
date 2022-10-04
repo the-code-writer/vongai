@@ -1,6 +1,7 @@
 import { IAgoraRTCClient } from "agora-rtc-sdk-ng";
 
 interface IMCallEncoderConfigInterface {
+  microphoneId?: string;
   sampleRate:  number;
   stereo: boolean;    
   bitrate: number;
@@ -31,6 +32,7 @@ interface IMCallRemoteAudioTrackConfigInterface {
 }
 
 interface IMCallConfigInterface {
+  cameraId?: string;
   audioSettings: IMCallEncoderConfigInterface;
   localAudioTrack: IMCallLocalAudioTrackConfigInterface;
   remoteAudioTrack: IMCallRemoteAudioTrackConfigInterface;
@@ -40,8 +42,6 @@ interface IMCallConfigInterface {
 interface AgoraConfigInterface {
   appId: any;
 	primaryCertificate?: any;
-	channels?: any;
-	defaultChannel?: any;
 	imCallConfig?: IMCallConfigInterface; 
 }
 

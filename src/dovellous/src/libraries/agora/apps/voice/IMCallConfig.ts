@@ -1,10 +1,11 @@
 import * as AgoraTypeInterfaces from "../../lib/AgoraTypeInterfaces";
 
 export class IMCallConfig implements AgoraTypeInterfaces.IMCallConfigInterface {
+  cameraId: string;  
   audioSettings: AgoraTypeInterfaces.IMCallEncoderConfigInterface ;
   localAudioTrack: AgoraTypeInterfaces.IMCallLocalAudioTrackConfigInterface;
   remoteAudioTrack: AgoraTypeInterfaces.IMCallRemoteAudioTrackConfigInterface;
-  videoSettings: AgoraTypeInterfaces.VideoCallEncoderConfigInterface | string;
+  videoSettings: AgoraTypeInterfaces.VideoCallEncoderConfigInterface;
   constructor(
     _audioSettings: AgoraTypeInterfaces.IMCallEncoderConfigInterface | AgoraTypeInterfaces.IMCallConfigInterface,
     _localAudioTrack?: AgoraTypeInterfaces.IMCallLocalAudioTrackConfigInterface,
@@ -14,16 +15,16 @@ export class IMCallConfig implements AgoraTypeInterfaces.IMCallConfigInterface {
   ) {
 
     if( typeof _audioSettings === "object" && _audioSettings.hasOwnProperty('videoSettings')){
-      const _config: AgoraTypeInterfaces.IMCallConfigInterface = _audioSettings;
-      this.audioSettings = _config.audioSettings;
-      this.localAudioTrack = _config.localAudioTrack;
-      this.remoteAudioTrack = _config.remoteAudioTrack;
-      this.videoSettings = _config.videoSettings;
+      const imCallConfigSettings: AgoraTypeInterfaces.IMCallEncoderConfigInterface | AgoraTypeInterfaces.IMCallConfigInterface = _audioSettings;
+      this.audioSettings    = imCallConfigSettings.audioSettings;
+      this.localAudioTrack  = imCallConfigSettings.localAudioTrack;
+      this.remoteAudioTrack = imCallConfigSettings.remoteAudioTrack;
+      this.videoSettings    = imCallConfigSettings.videoSettings;
     }else{
-      this.audioSettings = _audioSettings;
-      this.localAudioTrack = _localAudioTrack;
+      this.audioSettings    = _audioSettings;
+      this.localAudioTrack  = _localAudioTrack;
       this.remoteAudioTrack = _remoteAudioTrack;
-      this.videoSettings = _videoSettings;
+      this.videoSettings    = _videoSettings;
     }
     
   }

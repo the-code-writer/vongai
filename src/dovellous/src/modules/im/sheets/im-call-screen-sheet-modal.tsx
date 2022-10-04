@@ -200,6 +200,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             callObject : currentCallData,
             callDevices: imDevices,
             callID: currentCallUID,
+            callToken: getCallToken(),
+            callChannel: getCallChannel(),
             cameraID: imDeviceCurrentVideoInput,
             microphoneID: imDeviceCurrentAudioInput,
         }
@@ -214,7 +216,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const getCallToken = () => {
         
-        return import.meta.env.VNG_AGORA_TOKEN;
+        return "00263772128622";
+
+    };
+
+    const getCallChannel = () => {
+        
+        return "00263772128622";
 
     };
 
@@ -640,10 +648,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         f7
         .dovellous.instance.Libraries
         .Agora.app
-        .imCall.lib.connect(
-            getCallData(),
-            getCallToken()
-        );
+        .imCall.lib.connect( getCallData() );
 
     }
 
@@ -982,7 +987,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                 <div className={`videos ${isCameraOn?'visible':'hidden'}`} >
 
                     <div id="im-player-container-remote" className={`remote ${isCallInProgress?'connected':'not-connected'}`} >
-                    <video 
+                        <video 
                             ref={imPlayerContainerRemoteVideoElement} 
                             autoPlay={true} id="im-player-container-remote-video-element"
                             style={{width: "100%"}} />
