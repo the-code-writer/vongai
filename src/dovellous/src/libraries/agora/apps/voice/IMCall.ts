@@ -190,39 +190,21 @@ class IMCall {
         // Publish the local audio and video tracks to the channel.
         await this.AgoraInstance.agoraRTC.client.publish([this.AgoraInstance.agoraRTC.localAudioTrack, this.AgoraInstance.agoraRTC.localVideoTrack]);
 
-        this.AgoraInstance.agoraRTC.client.on("user-published", async (user: any, mediaType: any) => {
+        this.AgoraInstance.agoraRTC.client.on(K.ModuleComponentsLibs.im.callScreen.USER_PUBLISHED, async (user: any, mediaType: any) => {
           // Subscribe to a remote user.
           await this.AgoraInstance.agoraRTC.client.subscribe(user, mediaType);
-          console.warn("subscribe success");
+
+          console.warn("====================== subscribe success =====================");
         
-          // If the subscribed track is video.
-          if (mediaType === "video") {
-            // Get `RemoteVideoTrack` in the `user` object.
-            const remoteVideoTrack = user.videoTrack;
-            // Dynamically create a container in the form of a DIV element for playing the remote video track.
-            const playerContainer = document.createElement("div");
-            // Specify the ID of the DIV container. You can use the `uid` of the remote user.
-            playerContainer.id = user.uid.toString();
-            playerContainer.className = "im-player-remote-video-wrapper";
-            playerContainer.style.width = "640px";
-            playerContainer.style.height = "480px";
-            document.getElementById("im-player-container-remote").append(playerContainer);
-        
-            // Play the remote video track.
-            // Pass the DIV container and the SDK dynamically creates a player in the container for playing the remote video track.
-            remoteVideoTrack.play(playerContainer);
-        
-            // Or just pass the ID of the DIV container.
-            // remoteVideoTrack.play(playerContainer.id);
-          }
-        
-          // If the subscribed track is audio.
-          if (mediaType === "audio") {
-            // Get `RemoteAudioTrack` in the `user` object.
-            const remoteAudioTrack = user.audioTrack;
-            // Play the audio track. No need to pass any DOM element.
-            remoteAudioTrack.play();
-          }
+          this.Framework7Instance.emit(
+            K.ModuleComponentsLibs.im.callScreen.USER_PUBLISHED,
+            {
+              user: user,
+              uid: user.uid.toString(),
+              player: mediaType===K.ModuleComponentsLibs.im.callScreen.MEDIA_TYPE_VIDEO?user.videoTrack:user.audioTrack,
+              mediaType: mediaType
+            }
+          );
 
         });
 

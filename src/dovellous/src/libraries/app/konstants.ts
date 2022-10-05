@@ -294,6 +294,9 @@ const K = {
 				imMyStories: 'imMyStories',
 			},
 			callScreen: {
+				MEDIA_TYPE_VIDEO: 'video',
+				MEDIA_TYPE_AUDIO: 'audio',
+				USER_PUBLISHED: 'user-published',
 				DEVICES_ENUMERATED: 'Device enumerated',
 				INITIALIZING: 'Initializing...',
 				LINE_BUSY: 'Line busy...',
@@ -302,6 +305,7 @@ const K = {
 				RE_CONNECTING: 'Reconnecting...',
 				CONNECTING: 'Connecting...',
 				CONNECTED: 'Connected',
+				CONNECTED_USER: 'ConnectedUser',
 				CONNECTION_ERROR: 'ConnectionError',
 				DISCONNECTED: 'Disconnected',
 				PAUSED: 'Call On Hold',

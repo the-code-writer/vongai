@@ -645,6 +645,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             }
         );
 
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.USER_PUBLISHED,
+            ( connectedUserCallDetails ) => {
+                onCallConnectedUser(connectedUserCallDetails);
+            }
+        );
+
         f7
         .dovellous.instance.Libraries
         .Agora.app
@@ -669,6 +676,40 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         setCurrentCallData(_currentCallData);
 
         f7.emit(K.ModuleComponentsLibs.im.callScreen.START_TIMER);
+
+    }
+
+    const onCallConnectedUser = (connectedUserCallDetails)=>{
+        
+          // If the subscribed track is video.
+          if (connectedUserCallDetails.mediaType === K.ModuleComponentsLibs.im.callScreen.MEDIA_TYPE_VIDEO) {
+            // Get `RemoteVideoTrack` in the `user` object.
+            const remoteVideoTrack = connectedUserCallDetails.user.videoTrack;
+            // Dynamically create a container in the form of a DIV element for playing the remote video track.
+            const playerContainer = document.createElement("div");
+            // Specify the ID of the DIV container. You can use the `uid` of the remote user.
+            playerContainer.id = connectedUserCallDetails.user.uid.toString();
+            playerContainer.className = "im-player-remote-video-wrapper";
+            playerContainer.style.width = "640px";
+            playerContainer.style.height = "480px";
+            document.getElementById("im-player-container-remote").append(playerContainer);
+        
+            // Play the remote video track.
+            // Pass the DIV container and the SDK dynamically creates a player in the container for playing the remote video track.
+            remoteVideoTrack.play(playerContainer);
+        
+            // Or just pass the ID of the DIV container.
+            // remoteVideoTrack.play(playerContainer.id);
+          }
+        
+          // If the subscribed track is audio.
+          if (connectedUserCallDetails.mediaType === K.ModuleComponentsLibs.im.callScreen.MEDIA_TYPE_AUDIO) {
+            // Get `RemoteAudioTrack` in the `user` object.
+            const remoteAudioTrack = connectedUserCallDetails.user.audioTrack;
+            // Play the audio track. No need to pass any DOM element.
+            remoteAudioTrack.play();
+          }
+
 
     }
 
