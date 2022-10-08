@@ -1,14 +1,26 @@
 import { Block, Button, Link, Navbar, NavRight, NavTitle, PageContent, Segmented, Sheet } from "framework7-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-export default ({ id, userData, onChat, onIMCall, onVideoCall, onContactInfo }) => {
+export default ({ id, userData, onChat, onIMCall, onContactInfo }) => {
+
+    const [currentUserData, setCurrentUserData] = useState<any | undefined>(undefined);
+
+    useEffect(()=>{
+
+        setCurrentUserData(userData);
+
+        return ()=>{
+            setCurrentUserData(null);
+        }
+
+    },[userData]);
 
     return (
         <Sheet
             id={id}
             key={id}
             className={`im-sheet-modal im-contact-info-sheet-modal ${id}`}
-            style={{backgroundImage: `url(${userData.avatar})`}}  
+            style={{backgroundImage: `url(${currentUserData.avatar})`}}  
             backdrop={true} 
             bottom={true} 
             push={true}
@@ -19,13 +31,13 @@ export default ({ id, userData, onChat, onIMCall, onVideoCall, onContactInfo }) 
             closeOnEscape={true}
         >
             <Navbar sliding={true}>
-                <NavTitle sliding title={`${userData.displayName}`} subtitle={userData.senderNumber} />
+                <NavTitle sliding title={`${currentUserData.displayName}`} subtitle={currentUserData.senderNumber} />
                 <NavRight>
                     <Link iconIos="f7:ellipsis_vertical" iconAurora="f7:ellipsis_vertical" iconMd="material:close"  sheetClose />
                 </NavRight>
             </Navbar>
             <PageContent>
-                <img src={userData.avatar} style={{ width: '100%' }} />
+                <img src={currentUserData.avatar} style={{ width: '100%' }} />
                 <Block inset>
                 <Segmented raised tag="p" className="im-contact-info">
                     <Button className="ripple" sheetClose text="Chat" onClick={()=>onChat(userData)} iconIos="f7:text_bubble_fill" iconMd="material:chat" iconAurora="f7:text_bubble_fill" iconSize={32} />

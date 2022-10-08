@@ -249,8 +249,7 @@ export default function useAgora(
       video: {
         input: {},
         output: {}
-      },
-      other: {}
+      }
     }
 
     deviceInfos.map((deviceInfo: any): void => {
@@ -265,8 +264,7 @@ export default function useAgora(
         deviceInfo["name"] = deviceInfo.label || `Camera ${Object.keys(mediaDevices.video.input).length + 1}`;
         mediaDevices.video.input[deviceInfo.deviceId] = deviceInfo;
       } else {
-        deviceInfo["name"] = deviceInfo.label || `Media ${Object.keys(mediaDevices.other[deviceInfo.kind ?? 'type']).length + 1}`;
-        mediaDevices.other[deviceInfo.deviceId] = deviceInfo;
+        console.warn("::: UNKNOWN DEVICE :::", deviceInfo);
       }
 
     });

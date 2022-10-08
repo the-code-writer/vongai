@@ -88,13 +88,11 @@ const MainApplication = () => {
 
       }
       
-      if(import.meta.env){
+      if(import.meta?.env){
 
-        window.F7React = F7React;
+        (window as any).F7React = F7React;
 
       }
-
-      console.warn(":: APP THEME INITIALIZED ::", import.meta.env, F7React);
 
       // Generate data for IM Testing
 

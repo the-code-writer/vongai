@@ -159,7 +159,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const [currentCallData, setCurrentCallData] = useState(callObject);
 
-    const [currentCallChannelData, setCurrentCallChannelData] = useState(['CHANNEL','CALL_ID']);
+    const [currentCallSessionData, setCurrentCallSessionData] = useState(['CHANNEL','CALL_ID']);
 
     const [currentConnectedCallDetails, setCurrentConnectedCallDetails] = useState(null);
     
@@ -239,8 +239,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         return {
             userObject : currentUserData,
             callObject : currentCallData,
-            callChannel : getCallChannelToken(),
-            callHash : getCallChannelHash(),
+            callSessionToken : getCallSessionToken(),
+            callSessionId : getCallSessionId(),
             callHooks: {
                 remoteUsers: remoteUsers,
                 audioInputDevicesArray: audioInputDevicesArray,
@@ -262,27 +262,27 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const setCallID = (callObject: any) => {
 
-        const _currentCallChannelData1 = String(`CALL:${new Date().getTime()}:${String(callObject.origin.phoneNumber).replace(/\W/g, '')}:${String(callObject.destination.phoneNumber).replace(/\W/g, '')}`);
+        const _currentCallSessionData1 = String(`CALL:${new Date().getTime()}:${String(callObject.origin.phoneNumber).replace(/\W/g, '')}:${String(callObject.destination.phoneNumber).replace(/\W/g, '')}`);
 
-        const _currentCallChannelData2 = Snippets.numbers.randomFloat(1000000, 9000000);
+        const _currentCallSessionData2 = Snippets.numbers.randomFloat(1000000, 9000000);
 
-        const _currentCallChannelData3 = `${_currentCallChannelData1}:${_currentCallChannelData2}`;
+        const _currentCallSessionData3 = `${_currentCallSessionData1}:${_currentCallSessionData2}`;
 
-        const _currentCallChannelData4 = Snippets.encryption.sha1(String(_currentCallChannelData3));
+        const _currentCallSessionData4 = Snippets.encryption.sha1(String(_currentCallSessionData3));
 
-        setCurrentCallChannelData([_currentCallChannelData3, _currentCallChannelData4]);
-
-    };
-
-    const getCallChannelToken = () => {
-        
-        return String(`${currentCallChannelData[0]}`).toUpperCase();
+        setCurrentCallSessionData([_currentCallSessionData3, _currentCallSessionData4]);
 
     };
 
-    const getCallChannelHash = () => {
+    const getCallSessionToken = () => {
         
-        return String(`${currentCallChannelData[1]}`).toUpperCase();
+        return String(`${currentCallSessionData[0]}`).toUpperCase();
+
+    };
+
+    const getCallSessionId = () => {
+        
+        return String(`${currentCallSessionData[1]}`).toUpperCase();
 
     };
 
@@ -707,7 +707,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         setCurrentUserData(userObject);
         setCurrentCallData(callObject);
         setCurrentConnectedCallDetails(null);
-        setCurrentCallChannelData(['CHANNEL','CALL_ID']);
+        setCurrentCallSessionData(['CHANNEL','CALL_ID']);
         setCurrentViewState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
         setisMuteOn(false);
         setIsCameraOn(isVideoCall);
@@ -871,6 +871,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         isIncoming ? onIncomingCallHandler() : onOutgoingCallHandler();
 
         init(isIncoming);
+
+        return resetState;
 
     }, 
     [userDefinedData]
