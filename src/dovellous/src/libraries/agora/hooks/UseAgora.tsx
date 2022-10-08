@@ -2,11 +2,14 @@ import { useState, useEffect } from 'react';
 import AgoraRTC, {
   IAgoraRTCClient, IAgoraRTCRemoteUser, MicrophoneAudioTrackInitConfig, CameraVideoTrackInitConfig, IMicrophoneAudioTrack, ICameraVideoTrack, ILocalVideoTrack, ILocalAudioTrack, SDK_CODEC, SDK_MODE, UID
 } from 'agora-rtc-sdk-ng';
+import { f7 } from 'framework7-react';
+import K from '../../app/konstants';
 
 //import AIDenoiserEnabler from "./AIDenoiserEnabler";
 
 
 export default function useAgora(
+  Framework7Instance: any,
   onUserPublished: Function,
   onUserUnpublished: Function,
   onUserJoined: Function,
@@ -318,8 +321,12 @@ export default function useAgora(
 
     console.warn("::: CONNECT CALL :::", callData);
 
-    joinChannel(callData.callChannel);
+    joinChannel(callData.callHash);
 
+    Framework7Instance.emit(
+      K.ModuleComponentsLibs.im.callScreen.CONNECTING,
+      callData
+    );
   }
 
   const disconnectCall = (callData: any) => {
@@ -328,9 +335,13 @@ export default function useAgora(
 
     leaveChannel();
 
+    Framework7Instance.emit(
+      K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
+    );
+
   }
 
-  async function joinChannel(channel: string, token?: string, uid?: UID | string | number | null) {
+  async function joinChannel(channel: string, callData:any, token?: string, uid?: UID | string | number | null) {
 
     if (!client) return;
 
@@ -353,6 +364,19 @@ export default function useAgora(
       (window as any).videoTrack = cameraTrack;
 
       setJoinState(true);
+
+      Framework7Instance.emit(
+        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+        {
+          client: client,
+          videoTrack: cameraTrack,
+          microphoneTrack: microphoneTrack,
+          callData: callData,
+          channel: channel,
+          token: token,
+          uid: uid
+        }
+      );
 
     } catch (error) {
 
@@ -386,6 +410,14 @@ export default function useAgora(
 
     onUserPublished(user, mediaType);
 
+    Framework7Instance.emit(
+      K.ModuleComponentsLibs.im.callScreen.USER_PUBLISHED,
+      {
+        user: user,
+        mediaType: mediaType
+      }
+    );
+
   }
 
   const handleUserUnpublished = (user: IAgoraRTCRemoteUser) => {
@@ -395,6 +427,13 @@ export default function useAgora(
     setRemoteUsers(remoteUsers => Array.from(clientRemoteUsers));
 
     onUserUnpublished(user);
+
+    Framework7Instance.emit(
+      K.ModuleComponentsLibs.im.callScreen.USER_UNPUBLISHED,
+      {
+        user: user
+      }
+    );
 
   }
 
@@ -406,6 +445,13 @@ export default function useAgora(
 
     onUserJoined(user);
 
+    Framework7Instance.emit(
+      K.ModuleComponentsLibs.im.callScreen.USER_JOINED,
+      {
+        user: user
+      }
+    );
+
   }
 
   const handleUserLeft = (user: IAgoraRTCRemoteUser) => {
@@ -415,6 +461,13 @@ export default function useAgora(
     setRemoteUsers(remoteUsers => Array.from(clientRemoteUsers));
 
     onUserLeft(user);
+
+    Framework7Instance.emit(
+      K.ModuleComponentsLibs.im.callScreen.USER_LEFT,
+      {
+        user: user
+      }
+    );
 
   }
 

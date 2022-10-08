@@ -32,8 +32,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onOutgoingCall,
     onAnswerCall,
     onDeclineCall,
-    onParticipantJoined,
-    onParticipantLeft
+    onUserJoined,
+    onUserLeft
     
 }) => {
 
@@ -107,7 +107,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
   
         console.warn(":::: === AGORA EVENT [onUserJoinedHandler] === :::", user);
 
-        onParticipantJoined(user);
+        onUserJoined(user);
   
       }
   
@@ -115,7 +115,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
   
         console.warn(":::: === AGORA EVENT [onUserLeftHandler] === :::", user);
 
-        onParticipantLeft(user);
+        onUserLeft(user);
   
       }
 
@@ -148,6 +148,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         currentVideoInputDevicesIndex,
         currentVideoInputDevicesID
     } = useAgora(
+        f7,
         onUserPublishedHandler,
         onUserUnpublishedHandler,
         onUserJoinedHandler,
@@ -596,6 +597,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         onCloseThisCallScreen();
 
     };
+
     const onActionsAddParticipantHandler = () => {
 
     }
@@ -732,9 +734,29 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                     
                     console.log("::::::*********** DEVICES ************:::::: ", devices);
 
-                    //setAgoraAppParams();
+                    console.log("::::::*********** AGORA CONFIG : setAgoraAppParams ************:::::: ", 
+                        [
+                            module.app.agoraConfig.appId,
+                            module.app.agoraConfig.clientCodec,
+                            module.app.agoraConfig.clientMode,
+                        ]);
 
-                    //setAgoraTracksConfig();
+                    console.log("::::::*********** AGORA CONFIG : setAgoraTracksConfig ************:::::: ", 
+                        [
+                            module.app.agoraConfig.imCallConfig.audioSettings,
+                            module.app.agoraConfig.imCallConfig.videoSettings,
+                        ]);
+
+                    setAgoraAppParams(
+                        module.app.agoraConfig.appId,
+                        module.app.agoraConfig.clientCodec,
+                        module.app.agoraConfig.clientMode,
+                    );
+
+                    setAgoraTracksConfig(
+                        module.app.agoraConfig.imCallConfig.audioSettings,
+                        module.app.agoraConfig.imCallConfig.videoSettings,
+                    );
                 
                 });
 
@@ -902,6 +924,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                     ):(
 
+                        remoteUsers.length === 1 && (
+
                         <div className='player-container-duo'>
 
                             <div id="remote" className={`remote ${isCallInProgress?'connected':'not-connected'}`} >
@@ -921,6 +945,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                             </div>
                         
                         </div>
+
+                        )
 
                     )}
 
