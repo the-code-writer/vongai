@@ -731,6 +731,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             (module: any)=>{
 
                 enumerateDevices((devices: any) => {
+
+                    f7.emit(
+                        K.ModuleComponentsLibs.im.callScreen.DEVICES_ENUMERATED,
+                        devices
+                      );
                     
                     console.log("::::::*********** DEVICES ************:::::: ", devices);
 

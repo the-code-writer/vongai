@@ -298,9 +298,9 @@ const K = {
 				MEDIA_TYPE_AUDIO: 'audio',
 				USER_PUBLISHED: 'user-published',
 				USER_UNPUBLISHED: 'user-unpublished',
-				USER_JOINED: 'UserJoined',
-				USER_LEFT: 'UserLeft',
-				DEVICES_ENUMERATED: 'Device enumerated',
+				USER_JOINED: 'user-joined',
+				USER_LEFT: 'user-left',
+				DEVICES_ENUMERATED: 'devices-enumerated',
 				INITIALIZING: 'Initializing...',
 				LINE_BUSY: 'Line busy...',
 				INCOMING: 'Incoming Call...',
@@ -308,7 +308,6 @@ const K = {
 				RE_CONNECTING: 'Reconnecting...',
 				CONNECTING: 'Connecting...',
 				CONNECTED: 'Connected',
-				CONNECTED_USER: 'ConnectedUser',
 				CONNECTION_ERROR: 'ConnectionError',
 				DISCONNECTED: 'Disconnected',
 				PAUSED: 'Call On Hold',
@@ -318,8 +317,6 @@ const K = {
 				START_TIMER: 'StartCallTimer',
 				PAUSE_TIMER: 'PauseCallTimer',
 				STOP_TIMER: 'StopCallTimer',
-				SWITCHED_VIDEO_DEVICE: 'SwitchedVideoDevice',
-				PLAYER_CONTAINER_LOCAL: 'im-player-container-local',
 			}
 		}
 	}
