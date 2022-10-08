@@ -271,36 +271,67 @@ export default function useAgora(
 
     });
 
-    const audioDevicesMicrophones = deviceInfos.filter(function (device: any) {
+    let selectedMicrophoneId:string = '';
+    let selectedSpeakerId:string = '';
+    let selectedCameraId:string = '';
+
+    const audioDevicesMicrophones: String[] = deviceInfos.filter(function (device: any) {
       return device.kind === "audioinput";
     });
 
-    setAudioInputDevicesArray(Object.values(audioDevicesMicrophones));
-    setAudioInputDevicesObject(audioDevicesMicrophones);
-    setCurrentAudioInputDevicesID(audioDevicesMicrophones[0].id);
-    setCurrentAudioInputDevicesIndex(0);
+    const audioDevicesMicrophonesObject: any = new Object();
+
+    audioDevicesMicrophones.map((device:any, deviceIndex:number)=>{
+      audioDevicesMicrophonesObject[device.deviceId] = device;      
+      audioDevicesMicrophonesObject[device.deviceId]["deviceIndex"] = deviceIndex;
+      if(deviceIndex === 0){
+        setCurrentAudioInputDevicesID(device.deviceId);
+        selectedMicrophoneId = device.deviceId;    
+        setCurrentAudioInputDevicesIndex(0);
+      }
+    });
+
+    setAudioInputDevicesArray(audioDevicesMicrophones);
+    setAudioInputDevicesObject(audioDevicesMicrophonesObject);
 
     const audioDevicesSpeakers = deviceInfos.filter(function (device: any) {
       return device.kind === "audiooutput";
     });
 
-    setAudioOutputDevicesArray(Object.values(audioDevicesSpeakers));
-    setAudioOutputDevicesObject(audioDevicesSpeakers);
-    setCurrentAudioOutputDevicesID(audioDevicesSpeakers[0].id);
-    setCurrentAudioOutputDevicesIndex(0);
+    const audioDevicesSpeakersObject: any = new Object();
+
+    audioDevicesSpeakers.map((device:any, deviceIndex:number)=>{
+      audioDevicesSpeakersObject[device.deviceId] = device;
+      audioDevicesSpeakersObject[device.deviceId]["deviceIndex"] = deviceIndex;
+      if(deviceIndex === 0){
+        setCurrentAudioOutputDevicesID(device.deviceId);
+        selectedSpeakerId = device.deviceId;    
+        setCurrentAudioOutputDevicesIndex(0);
+      }
+    });
+
+    setAudioOutputDevicesArray(audioDevicesSpeakers);
+    setAudioOutputDevicesObject(audioDevicesSpeakersObject);
 
     const videoDevices = deviceInfos.filter(function (device: any) {
       return device.kind === "videoinput";
     });
 
-    setVideoInputDevicesArray(Object.values(videoDevices));
-    setVideoInputDevicesObject(videoDevices);
-    setCurrentVideoInputDevicesID(videoDevices[0].id);
-    setCurrentVideoInputDevicesIndex(0);
+    
+    const videoDevicesObject: any = new Object();
 
-    var selectedMicrophoneId = audioDevicesMicrophones.length > 0 ? audioDevicesMicrophones[0].deviceId : null;
-    var selectedSpeakerId = audioDevicesSpeakers.length > 0 ? audioDevicesSpeakers[0].deviceId : null;
-    var selectedCameraId = videoDevices.length > 0 ? videoDevices[0].deviceId : null;
+    videoDevices.map((device:any, deviceIndex:number)=>{
+      videoDevicesObject[device.deviceId] = device;
+      videoDevicesObject[device.deviceId]["deviceIndex"] = deviceIndex;
+      if(deviceIndex === 0){
+        setCurrentAudioOutputDevicesID(device.deviceId);
+        selectedCameraId = device.deviceId;
+        setCurrentVideoInputDevicesIndex(0);
+      }
+    });
+
+    setVideoInputDevicesArray(videoDevices);
+    setVideoInputDevicesObject(videoDevicesObject);
 
     const devices = {
       cameraId: selectedCameraId,
