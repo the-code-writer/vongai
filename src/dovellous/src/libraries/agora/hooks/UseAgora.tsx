@@ -277,6 +277,8 @@ export default function useAgora(
 
     setAudioInputDevicesArray(Object.values(audioDevicesMicrophones));
     setAudioInputDevicesObject(audioDevicesMicrophones);
+    setCurrentAudioInputDevicesID(audioDevicesMicrophones.id);
+    setCurrentAudioInputDevicesIndex(0);
 
     const audioDevicesSpeakers = deviceInfos.filter(function (device: any) {
       return device.kind === "audiooutput";
@@ -284,6 +286,8 @@ export default function useAgora(
 
     setAudioOutputDevicesArray(Object.values(audioDevicesSpeakers));
     setAudioOutputDevicesObject(audioDevicesSpeakers);
+    setCurrentAudioOutputDevicesID(audioDevicesSpeakers.id);
+    setCurrentAudioOutputDevicesIndex(0);
 
     const videoDevices = deviceInfos.filter(function (device: any) {
       return device.kind === "videoinput";
@@ -291,6 +295,8 @@ export default function useAgora(
 
     setVideoInputDevicesArray(Object.values(videoDevices));
     setVideoInputDevicesObject(videoDevices);
+    setCurrentVideoInputDevicesID(videoDevices.id);
+    setCurrentVideoInputDevicesIndex(0);
 
     var selectedMicrophoneId = audioDevicesMicrophones.length > 0 ? audioDevicesMicrophones[0].deviceId : null;
     var selectedSpeakerId = audioDevicesSpeakers.length > 0 ? audioDevicesSpeakers[0].deviceId : null;
