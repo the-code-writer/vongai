@@ -316,11 +316,17 @@ export default function useAgora(
 
   const connectCall = (callData: any) => {
 
-    console.warn("::: CONNECT CALL :::");
+    console.warn("::: CONNECT CALL :::", callData);
+
+    joinChannel(callData.callChannel);
 
   }
 
   const disconnectCall = (callData: any) => {
+
+    console.warn("::: DISCONNECT CALL :::", callData);
+
+    leaveChannel();
 
   }
 
