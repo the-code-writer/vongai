@@ -9,6 +9,13 @@ import Dom7 from "dom7";
 import song from '../../../../assets/aud/incoming-4.mp3';
 
 import { StorageIM, useStorageIM } from "../store/im-store";
+import { addListener } from "process";
+import Snippets from "../../../libraries/app/snippets";
+import useAgora from "../../../libraries/agora/hooks/useAgora";
+import MediaPlayer from "../../../libraries/agora/components/MediaPlayer";
+
+import AgoraRTC, { IAgoraRTCClient, IAgoraRTCRemoteUser, MicrophoneAudioTrackInitConfig, CameraVideoTrackInitConfig, IMicrophoneAudioTrack, ICameraVideoTrack, ILocalVideoTrack, ILocalAudioTrack } from 'agora-rtc-sdk-ng';
+
 
 export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onMute,
@@ -25,7 +32,9 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onOutgoingCall,
     onAnswerCall,
     onDeclineCall,
-    onAddParticipant
+    onParticipantJoined,
+    onParticipantLeft
+    
 }) => {
 
     interface UserDataObject {
@@ -82,14 +91,77 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         dialAttempts: [],
     }
 
+    const onUserPublishedHandler = async (user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') => {
+        
+        console.warn(":::: === AGORA EVENT [onUserPublishedHandler] === :::", user, mediaType);
+  
+      }
+  
+      const onUserUnpublishedHandler  = (user: IAgoraRTCRemoteUser) => {
+  
+        console.warn(":::: === AGORA EVENT [onUserUnpublishedHandler] === :::", user);
+  
+      }
+  
+      const onUserJoinedHandler  = (user: IAgoraRTCRemoteUser) => {
+  
+        console.warn(":::: === AGORA EVENT [onUserJoinedHandler] === :::", user);
+
+        onParticipantJoined(user);
+  
+      }
+  
+      const onUserLeftHandler  = (user: IAgoraRTCRemoteUser) => {
+  
+        console.warn(":::: === AGORA EVENT [onUserLeftHandler] === :::", user);
+
+        onParticipantLeft(user);
+  
+      }
+
+
+    
+    const { 
+        client,
+        localAudioTrack,
+        localVideoTrack,
+        joinState,
+        disconnectCall,
+        connectCall,
+        setAgoraAppParams,
+        setAgoraTracksConfig,
+        enumerateDevices,
+        setNextAudioInputDevicesIndex,
+        setNextAudioOutputDevicesIndex,
+        setNextVideoInputDevicesIndex,
+        remoteUsers,
+        audioInputDevicesArray,
+        audioInputDevicesObject,
+        currentAudioInputDevicesIndex,
+        currentAudioInputDevicesID,
+        audioOutputDevicesArray,
+        audioOutputDevicesObject,
+        currentAudioOutputDevicesIndex,
+        currentAudioOutputDevicesID,
+        videoInputDevicesArray,
+        videoInputDevicesObject,
+        currentVideoInputDevicesIndex,
+        currentVideoInputDevicesID
+    } = useAgora(
+        onUserPublishedHandler,
+        onUserUnpublishedHandler,
+        onUserJoinedHandler,
+        onUserLeftHandler
+    );
+
     const [currentUserData, setCurrentUserData] = useState(userObject);
 
     const [currentCallData, setCurrentCallData] = useState(callObject);
 
+    const [currentCallChannelData, setCurrentCallChannelData] = useState(['CHANNEL','CALL_ID']);
+
     const [currentConnectedCallDetails, setCurrentConnectedCallDetails] = useState(null);
     
-    const [currentCallUID, setCurrentCallUID] = useState('CALL_0');
-
     const [currentViewState, setCurrentViewState] = useState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
     
     const [isMuteOn, setisMuteOn] = useState(false);
@@ -98,46 +170,14 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     const [isFrontCamera, setIsFrontCamera] = useState(true);
     const [isLoudSpeakerOn, setIsLoudSpeakerOn] = useState(false);
     const [isOnHold, setIsOnHold] = useState(false);
+    const [isCallConnected, setIsCallConnected] = useState(false);
     const [isCallEnded, setIsCallEnded] = useState(false);
     const [isCallAnswered, setIsCallAnswered] = useState(false);
     const [isCallDeclined, setIsCallDeclined] = useState(false);
-    const [callHasParticipants, setCallHasParticipants] = useState(false);
-    const [callParticipants, setCallParticipants] = useState([{participantData: userDefinedData}]);
     const [isCallInProgress, setIsCallInProgress] = useState(false);
     const [callRedialAttempts, setCallRedialAttempts] = useState([]);
 
     const [ringingTone, setRingingTone] = useState(new Audio(song));
-
-    
-    const imPlayerContainerRemoteVideoElement = useRef(null);
-    const imPlayerContainerLocalVideoElement = useRef(null);
-
-    const [imDevices, setIMDevices] = useState(
-        {
-            audio: {
-                input: {
-        
-                },
-                output: {
-        
-                }
-            },
-            video: {
-                input: {
-        
-                },
-                output: {
-                    
-                }
-            }
-        }
-    );
-
-    const [imDeviceCurrentAudioOutput, setIMDeviceCurrentAudioOutput] = useState({id: 'default', index: 0});
-
-    const [imDeviceCurrentAudioInput, setIMDeviceCurrentAudioInput] = useState({id: 'default', index: 0});
-
-    const [imDeviceCurrentVideoInput, setIMDeviceCurrentVideoInput] = useState({id: 'default', index: 0});
 
     const CallTimer = useCallback(({visible, className}) => {
 
@@ -198,31 +238,50 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         return {
             userObject : currentUserData,
             callObject : currentCallData,
-            callDevices: imDevices,
-            callID: currentCallUID,
-            callToken: getCallToken(),
-            callChannel: getCallChannel(),
-            cameraID: imDeviceCurrentVideoInput,
-            microphoneID: imDeviceCurrentAudioInput,
+            callChannel : getCallChannelToken(),
+            callHash : getCallChannelHash(),
+            callHooks: {
+                remoteUsers: remoteUsers,
+                audioInputDevicesArray: audioInputDevicesArray,
+                audioInputDevicesObject: audioInputDevicesObject,
+                currentAudioInputDevicesIndex: currentAudioInputDevicesIndex,
+                currentAudioInputDevicesID: currentAudioInputDevicesID,
+                audioOutputDevicesArray: audioOutputDevicesArray,
+                audioOutputDevicesObject: audioOutputDevicesObject,
+                currentAudioOutputDevicesIndex: currentAudioOutputDevicesIndex,
+                currentAudioOutputDevicesID: currentAudioOutputDevicesID,
+                videoInputDevicesArray: videoInputDevicesArray,
+                videoInputDevicesObject: videoInputDevicesObject,
+                currentVideoInputDevicesIndex: currentVideoInputDevicesIndex,
+                currentVideoInputDevicesID: currentVideoInputDevicesID
+            },
         }
 
     };
 
-    const setCallID = (callObject) => {
+    const setCallID = (callObject: any) => {
 
-        setCurrentCallUID(`CALL_${new Date().getTime()}_${callObject.origin.phoneNumber}_${callObject.destination.phoneNumber}`);
+        const _currentCallChannelData1 = String(`CALL:${new Date().getTime()}:${String(callObject.origin.phoneNumber).replace(/\W/g, '')}:${String(callObject.destination.phoneNumber).replace(/\W/g, '')}`);
+
+        const _currentCallChannelData2 = Snippets.numbers.randomFloat(1000000, 9000000);
+
+        const _currentCallChannelData3 = `${_currentCallChannelData1}:${_currentCallChannelData2}`;
+
+        const _currentCallChannelData4 = Snippets.encryption.sha1(String(_currentCallChannelData3));
+
+        setCurrentCallChannelData([_currentCallChannelData3, _currentCallChannelData4]);
 
     };
 
-    const getCallToken = () => {
+    const getCallChannelToken = () => {
         
-        return "00263772128622";
+        return String(`${currentCallChannelData[0]}`).toUpperCase();
 
     };
 
-    const getCallChannel = () => {
+    const getCallChannelHash = () => {
         
-        return "00263772128622";
+        return String(`${currentCallChannelData[1]}`).toUpperCase();
 
     };
 
@@ -248,6 +307,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         onMute(getCallData());
 
+        //TODO - function
+
     };
 
     const onUnMuteHandler = () => {
@@ -256,13 +317,15 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         onUnMute(getCallData());
 
+        //TODO - function
+
     };
 
     const onFrontCameraToggle = () => {
 
         setIsFrontCamera(!isFrontCamera);
 
-        switchVideoSinkId();
+        setNextVideoInputDevicesIndex();
 
     };
 
@@ -270,10 +333,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         if(isCameraOn){            
             onCameraOffHandler();
-            stopLocalVideoStream();
         }else{
             onCameraOnHandler();
-            setUpLocalVideoStream();
         }
 
     };
@@ -298,7 +359,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         isLoudSpeakerOn ? onLoudSpeakerOffHandler() : onLoudSpeakerOnHandler();
 
-        switchAudioSinkId();
+        setNextAudioOutputDevicesIndex();
 
     };
 
@@ -325,34 +386,22 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     };
 
     const onEndCallHandler = () => {
-        
-        f7.on(
-            K.ModuleComponentsLibs.im.callScreen.DISCONNECTED, () => {
 
-                setCurrentConnectedCallDetails(null);
+        onEndedCallHandleDisconnections();
 
-                setIsCallEnded(true);
-                setIsCallInProgress(false);
-
-                setCurrentViewState(
-                    K.ModuleComponentsLibs.im.callScreen.ENDED
-                );
-
-                onCallDisConnected();
-
-                onEndCall(getCallData());
-
-            }
-        );
-
-        f7
-        .dovellous.instance.Libraries
-        .Agora.app
-        .imCall.lib.disconnect();
+        //TODO: Send to remote user so that he invokes ENDED_BY_REMOTE_USER
 
     };
 
     const onEndedCallHandler = () => {
+
+        onEndedCallHandleDisconnections();
+
+    };
+
+    const onEndedCallHandleDisconnections = () => {
+
+        disconnectCall();
         
         setIsCallEnded(true);
 
@@ -386,6 +435,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         f7.sheet.open('.im-callscreen-action-onhold');
 
+        //TODO: Mute video and audio
+
     };
 
     const onUnHoldCallHandler = () => {
@@ -397,6 +448,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         );
 
         onUnHoldCall(getCallData());
+
+        //TODO: Unmute video and audio
 
     };
 
@@ -416,20 +469,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         onIncomingCall(getCallData());
 
+        // Local Notification: PEER_INCOMING_CALL
+
     };
 
     const onOutgoingCallHandler = () => {
-
-        if(isCameraOn){
-            setUpLocalVideoStream();
-        }
-
-        f7.on(
-            'remote_call_connecting',
-            () => {
-                onCallConnecting(); //publish your stream
-            }
-        );
 
         setIsCallAnswered(false);
         setIsCallDeclined(false);
@@ -443,231 +487,33 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         onOutgoingCall(getCallData());
 
-    };
+        // Send IM to calee: PEER_INCOMING_CALL
 
-    const setUpLocalVideoStream = (cameraId: any) => {
-
-        f7
-        .dovellous.instance.Libraries
-        .Agora.app
-        .imCall.lib.switchVideoDevice(
-            cameraId,
-            (cameraVideoTrack: any)=>{
-
-                playLocalVideoTrack(cameraVideoTrack);
-
-            }
-        );
-
-        return;
-
-        //TODO:- The function below is now redundant, consider removing
-         
-        const constraints = {
-            audio: {deviceId: imDeviceCurrentAudioOutput.id},
-            video: {deviceId: imDeviceCurrentVideoInput.id}
-          };
-
-        window.navigator.mediaDevices.getUserMedia(constraints)
-            .then(streamAvailable)
-            .catch(streamHandleError);
-
-        console.log("::: setUpLocalVideoStream :::", constraints);
-
-    }
-
-    const streamAvailable = (stream: any) => {
-
-        window.stream = stream;
-        
-        imPlayerContainerLocalVideoElement.current.srcObject = window.stream;
-
-        imPlayerContainerLocalVideoElement.current.onloadedmetadata = (e: any) => {
-            imPlayerContainerLocalVideoElement.current.play();
-        };
-                
-        imPlayerContainerRemoteVideoElement.current.srcObject = window.stream;
-
-        imPlayerContainerRemoteVideoElement.current.onloadedmetadata = (e: any) => {
-            imPlayerContainerRemoteVideoElement.current.play();
-        };
-      
-    }
-    
-    // Attach audio output device to video element using device/sink ID.
-    const switchAudioSinkId = () => {
-
-        if(imDevices.audio.hasOwnProperty('output')){
-            
-            const audioSinkIds = Object.keys(imDevices.audio.output);
-
-            let currentMediaDeviceAudioSinkIndex: number = imDeviceCurrentAudioOutput.index;
-
-            console.log("::: audioSinkIds, currentMediaDeviceAudioSinkIndex :::", audioSinkIds, currentMediaDeviceAudioSinkIndex, (currentMediaDeviceAudioSinkIndex + 1) , audioSinkIds.length);
-
-            if((currentMediaDeviceAudioSinkIndex + 1) === audioSinkIds.length){
-
-                currentMediaDeviceAudioSinkIndex = 0;
-
-            }else{
-
-                currentMediaDeviceAudioSinkIndex++;
-
-            }
-
-            const currentAudioSinkId = audioSinkIds[currentMediaDeviceAudioSinkIndex];
-        
-            setIMDeviceCurrentAudioOutput({
-                index: currentMediaDeviceAudioSinkIndex,
-                id: currentAudioSinkId
-            });
-
-            setTimeout(()=>{
-
-                imPlayerContainerLocalVideoElement.current.setSinkId(currentAudioSinkId)
-                .then(() => {
-                console.log(`Success, audio output device attached: ${currentAudioSinkId}`);
-                })
-                .catch(error => {
-                    let errorMessage = error;
-                    if (error.name === 'SecurityError') {
-                        errorMessage = `You need to use HTTPS for selecting audio output device: ${error}`;
-                    }
-                    console.error("Error", currentAudioSinkId, error);
-                    // Jump back to first output device in the list as it's the default.                    
-                    setIMDeviceCurrentAudioOutput({
-                        index: 0,
-                        id: audioSinkIds[0]
-                    });
-
-                });
-
-            },100);
-
-        }else{
-
-            enumerateDevices();
-            
-            setTimeout(()=>{
-                
-                switchAudioSinkId();
-            
-            },1000);
-    
-        }
+        // Local Notification: OUTGOING_CALL
 
     };
-
-    // Attach video output device to video element using device/sink ID.
-    const switchVideoSinkId = () => {
-
-        stopLocalVideoStream();
-
-        if(imDevices.video.hasOwnProperty('input')){
-            
-            const videoSinkIds = Object.keys(imDevices.video.input);
-
-            let currentMediaDeviceVideoSinkIndex: number = imDeviceCurrentVideoInput.index;
-
-            console.log("::: videoSinkIds, currentMediaDeviceVideoSinkIndex :::", videoSinkIds, currentMediaDeviceVideoSinkIndex, (currentMediaDeviceVideoSinkIndex + 1) , videoSinkIds.length);
-
-            if((currentMediaDeviceVideoSinkIndex + 1) === videoSinkIds.length){
-
-                currentMediaDeviceVideoSinkIndex = 0;
-
-            }else{
-
-                currentMediaDeviceVideoSinkIndex++;
-
-            }
-
-            const currentVideoSinkId = videoSinkIds[currentMediaDeviceVideoSinkIndex];
-        
-            setIMDeviceCurrentVideoInput({
-                index: currentMediaDeviceVideoSinkIndex,
-                id: currentVideoSinkId
-            });
-
-            setTimeout(()=>{
-
-                setUpLocalVideoStream(currentVideoSinkId);
-
-            },100);
-
-        }else{
-
-            enumerateDevices();
-            
-            setTimeout(()=>{
-                
-                switchVideoSinkId();
-            
-            },2000);
-    
-        }
-
-    };
-
-    const streamHandleError = (error) => {
-
-        console.log('Please check your devices. Stream Error: navigator.MediaDevices.getUserMedia error: ', error);
-
-    }      
-
-    const stopLocalVideoStream = () => {
-
-        if(window.stream !== null && typeof window.stream !== "undefined"){
-
-            var tracks = window.stream.getTracks();
-        
-            for (var i = 0; i < tracks.length; i++) {
-                var track = tracks[i];
-                track.stop();
-            }
-        
-            imPlayerContainerLocalVideoElement.current.srcObject = null;
-
-        }
-        
-    }
 
     const onCallConnecting = ()=>{
+
+        console.warn("::::::*********** CALL CONNECTING ************:::::: ", getCallData());
 
         ringingTone.pause();
 
         setCurrentViewState( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
 
-        f7.on(
-            K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-            ( connectedCallDetails ) => {
-                setCurrentConnectedCallDetails(connectedCallDetails);
-                onCallConnected(connectedCallDetails);
-            }
-        );
-
-        f7.on(
-            K.ModuleComponentsLibs.im.callScreen.USER_PUBLISHED,
-            ( connectedUserCallDetails ) => {
-                onCallConnectedUser(connectedUserCallDetails);
-            }
-        );
-
-        f7
-        .dovellous.instance.Libraries
-        .Agora.app
-        .imCall.lib.connect( getCallData() );
+        // Send IM to caller: PEER_CONNECTING
 
     }
 
-    const onCallConnected = (connectedCallDetails)=>{
-
+    const onCallConnected = (connectedCallDetails: any)=>{
+        
+        console.warn("::::::*********** CALL CONNECTED ************:::::: ", connectedCallDetails);
+  
         ringingTone.pause();
 
         setCurrentViewState(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED
         );
-
-        setIsCallInProgress(true);
 
         const _currentCallData = currentCallData;
 
@@ -675,46 +521,18 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         setCurrentCallData(_currentCallData);
 
+        setIsCallInProgress(false);
+
+        setIsCallConnected(true);
+
         f7.emit(K.ModuleComponentsLibs.im.callScreen.START_TIMER);
-
-    }
-
-    const onCallConnectedUser = (connectedUserCallDetails)=>{
-        
-          // If the subscribed track is video.
-          if (connectedUserCallDetails.mediaType === K.ModuleComponentsLibs.im.callScreen.MEDIA_TYPE_VIDEO) {
-            // Get `RemoteVideoTrack` in the `user` object.
-            const remoteVideoTrack = connectedUserCallDetails.user.videoTrack;
-            // Dynamically create a container in the form of a DIV element for playing the remote video track.
-            const playerContainer = document.createElement("div");
-            // Specify the ID of the DIV container. You can use the `uid` of the remote user.
-            playerContainer.id = connectedUserCallDetails.user.uid.toString();
-            playerContainer.className = "im-player-remote-video-wrapper";
-            playerContainer.style.width = "640px";
-            playerContainer.style.height = "480px";
-            document.getElementById("im-player-container-remote").append(playerContainer);
-        
-            // Play the remote video track.
-            // Pass the DIV container and the SDK dynamically creates a player in the container for playing the remote video track.
-            remoteVideoTrack.play(playerContainer);
-        
-            // Or just pass the ID of the DIV container.
-            // remoteVideoTrack.play(playerContainer.id);
-          }
-        
-          // If the subscribed track is audio.
-          if (connectedUserCallDetails.mediaType === K.ModuleComponentsLibs.im.callScreen.MEDIA_TYPE_AUDIO) {
-            // Get `RemoteAudioTrack` in the `user` object.
-            const remoteAudioTrack = connectedUserCallDetails.user.audioTrack;
-            // Play the audio track. No need to pass any DOM element.
-            remoteAudioTrack.play();
-          }
-
 
     }
 
     const onCallDisConnected = ()=>{
 
+        console.warn("::::::*********** CALL DISCONNECTED ************:::::: ", connectedCallDetails);
+  
         ringingTone.pause();
 
         f7.emit(K.ModuleComponentsLibs.im.callScreen.STOP_TIMER);
@@ -741,7 +559,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         setIsCallInProgress(false);
 
-        stopLocalVideoStream();
+        setIsCallConnected(false);
 
         console.log("::: CALL SUMMARY :::", getCallData());
 
@@ -778,29 +596,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         onCloseThisCallScreen();
 
     };
-
-    const onAddParticipantHandler = () => {
-
-        setCallHasParticipants(true);
-
-        //callParticipants
-
-        onAddParticipant(getCallData());
-
-    };
-
-    const onParticipantJoinedHandler = () => {
-
-        //
-
-    };
-
-    const onParticipantLeftHandler = () => {
-
-        //
-
-    };
-
     const onActionsAddParticipantHandler = () => {
 
     }
@@ -858,87 +653,59 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     }
 
-    const init = async () => {
+    const init = async (callIsIncomming: Boolean) => {
+        
+        if(!callIsIncomming){
 
-        if(
-            f7.dovellous.instance.Libraries.Agora === null
-        ){
-
-            //alert('Could not start Agora  Services');
+            connectIncomingCallNow();
 
         }else{
 
-            enumerateDevices();
-
-            f7.on(
-                K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
-                (res: any)=>{
-                    console.error(":::::::::: AgoraLibEvent.MODULE_LOADED :::::::::::", res);
-                }
-            );
-
-            f7.on(
-                K.Events.Modules.Agora.IMCall.ON_APP_INIT,
-                (res: any)=>{
-                    console.error(":::::::::: IMCall.ON_APP_INIT :::::::::::", res);
-
-                    f7.dovellous.instance.Libraries.Agora.app.imCall.lib.start()
-
-                }
-            );
+            connectOutgoingCallNow();
 
         }
 
-        console.log(":::::::::: CALL DATA INIT READY :::::::::::", getCallData());
+        console.log("::::::*********** CALL SCREEN READY ************:::::: ", getCallData());
   
     }
 
-    const playLocalVideoTrack = (cameraVideoTrack: any) => {
+    const connectIncomingCallNow = () => {
 
-        cameraVideoTrack.play(K.ModuleComponentsLibs.im.callScreen.PLAYER_CONTAINER_LOCAL);
+        console.log("::::::*********** connectIncomingCallNow************:::::: ", f7.dovellous.instance.Libraries);
+  
+        if(isAgoraLoadedAndReady()){
+
+            connectCall( getCallData() )
+
+        }
 
     }
 
-    const enumerateDevices = () => {
+    const connectOutgoingCallNow = () => {
 
-        f7
-        .dovellous.instance.Libraries
-        .Agora.app
-        .imCall.lib.enumerateDevices(
-            (deviceInfos: any)=>{
+        if(isAgoraLoadedAndReady()){
 
-                setIMDevices(deviceInfos.mediaDevices);
+            connectCall( getCallData() )
 
-                setIMDeviceCurrentAudioOutput({
-                    id: deviceInfos.speakerId,
-                    index: 0
-                });
+        }
 
-                setIMDeviceCurrentAudioInput({
-                    id: deviceInfos.microphoneId,
-                    index: 0
-                });
+    }
 
-                setIMDeviceCurrentVideoInput({
-                    id: deviceInfos.cameraId,
-                    index: 0
-                });
+    const isAgoraLoadedAndReady = () => {
 
-                playLocalVideoTrack(deviceInfos.cameraVideoTrack);
+        if(f7.dovellous.instance.Libraries.Agora === null){
+            return false;
+        }
 
-                console.log(":::::::::: ENUMERATED DEVICES :::::::::::", deviceInfos);
-
-            }
-        );
-
-    };
+        return typeof f7.dovellous.instance.Libraries.Agora === "object" && f7.dovellous.instance.Libraries.Agora.hasOwnProperty('app');
+    }
 
     const resetState = () => {        
         
         setCurrentUserData(userObject);
         setCurrentCallData(callObject);
         setCurrentConnectedCallDetails(null);
-        setCurrentCallUID('CALL_X');
+        setCurrentCallChannelData(['CHANNEL','CALL_ID']);
         setCurrentViewState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
         setisMuteOn(false);
         setIsCameraOn(isVideoCall);
@@ -949,16 +716,96 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         setIsCallEnded(false);
         setIsCallAnswered(false);
         setIsCallDeclined(false);
-        setCallHasParticipants(false);
-        setCallParticipants([{participantData: userDefinedData}]);
         setIsCallInProgress(false);
         setCallRedialAttempts([]);
         setRingingTone(new Audio(song));
     }
 
+    const addEventListeners = () => {
+
+        
+        f7.on(
+            K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
+            (module: any)=>{
+
+                enumerateDevices((devices: any) => {
+                    
+                    console.log("::::::*********** DEVICES ************:::::: ", devices);
+
+                    //setAgoraAppParams();
+
+                    //setAgoraTracksConfig();
+                
+                });
+
+                console.log("::::::*********** AGORA READY ************:::::: ", module);
+                
+            }
+        );
+
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.CONNECTING,
+            () => {
+                onCallConnecting();
+            }
+        );
+
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+            ( connectedCallDetails: any ) => {
+                setCurrentConnectedCallDetails(connectedCallDetails);
+                onCallConnected(connectedCallDetails);
+            }
+        );
+
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.USER_PUBLISHED,
+            ( connectedUserCallDetails: any ) => {
+                onCallConnectedUser(connectedUserCallDetails);
+            }
+        );
+
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.USER_UNPUBLISHED,
+            ( connectedUserCallDetails: any ) => {
+                onCallDisconnectedUser(connectedUserCallDetails);
+            }
+        );
+
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.DISCONNECTED, () => {
+
+                setCurrentConnectedCallDetails(null);
+
+                setIsCallEnded(true);
+                setIsCallInProgress(false);
+
+                setCurrentViewState(
+                    K.ModuleComponentsLibs.im.callScreen.ENDED
+                );
+
+                onCallDisConnected();
+
+                onEndCall(getCallData());
+
+            }
+        );
+
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.ENDED_BY_REMOTE_USER, () => {
+
+                onEndedCallHandler();
+
+            }
+        );
+
+    }
+
     useEffect(() => {
 
         resetState();
+
+        addEventListeners();
 
         userObject.username = userDefinedData.username;
         userObject.displayName = userDefinedData.displayName;
@@ -996,7 +843,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         isIncoming ? onIncomingCallHandler() : onOutgoingCallHandler();
 
-        init();
+        init(isIncoming);
 
     }, 
     [userDefinedData]
@@ -1023,23 +870,60 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                 <div className="backdrop blurry" />
 
-                {true && (
+                {isCameraOn && (
 
-                <div className={`videos ${isCameraOn?'visible':'hidden'}`} >
+                <div className={`videos visible`} >
 
-                    <div id="im-player-container-remote" className={`remote ${isCallInProgress?'connected':'not-connected'}`} >
-                        <video 
-                            ref={imPlayerContainerRemoteVideoElement} 
-                            autoPlay={true} id="im-player-container-remote-video-element"
-                            style={{width: "100%"}} />
-                    </div>
+                    {remoteUsers.length > 1 ? (
+                        
+                        <div className='player-container-conference'>
 
-                    <div id="im-player-container-local" className={`local ${isCallInProgress?'connected':'not-connected'}`} >
-                        <video 
-                            ref={imPlayerContainerLocalVideoElement} 
-                            autoPlay={true} id="im-player-container-local-video-element"
-                            style={{width: "100%"}} />
-                    </div>
+                            <div className='local-wrapper'>
+                                <MediaPlayer 
+                                    uuid={client.uid} 
+                                    user={null}
+                                    videoTrack={localVideoTrack} 
+                                    audioTrack={undefined} />
+                            </div>
+
+                            {remoteUsers.map(user => (
+
+                            <div className='remote-wrapper' key={user.uid}>
+                                <MediaPlayer 
+                                    uuid={user.uid} 
+                                    user={user} 
+                                    videoTrack={user.videoTrack} 
+                                    audioTrack={user.audioTrack} />
+                            </div>
+
+                            ))}
+
+                        </div>
+
+                    ):(
+
+                        <div className='player-container-duo'>
+
+                            <div id="remote" className={`remote ${isCallInProgress?'connected':'not-connected'}`} >
+                                <MediaPlayer 
+                                    uuid={`remote-video`} 
+                                    user={remoteUsers[0]} 
+                                    videoTrack={remoteUsers[0].videoTrack} 
+                                    audioTrack={remoteUsers[0].audioTrack} />
+                            </div>
+
+                            <div id="local" className={`local ${isCallInProgress?'connected':'not-connected'}`} >
+                                <MediaPlayer 
+                                    uuid={`local-video`}
+                                    user={null}
+                                    videoTrack={localVideoTrack} 
+                                    audioTrack={undefined} />
+                            </div>
+                        
+                        </div>
+
+                    )}
+
 
                 </div>
 
@@ -1048,7 +932,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                 <PageContent>
                    
                     <div className="call-remote-user" style={{visibility: isCameraOn?'hidden':'visible'}}>
-                        <img src={currentUserData.displayPhoto} />
+                        <img src={currentUserData.displayPhoto??''} alt={``} />
                         <BlockTitle large>{currentUserData.displayName}</BlockTitle>
                         {includedInViewState(
                                     [
@@ -1119,10 +1003,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                     <Block inset className={`call-controls`}>
                         
                         <Button outline large 
-                            disabled={imDevices.hasOwnProperty('audio') && Object.keys(imDevices.audio.output).length<2}
+                            disabled={audioOutputDevicesArray.length<2}
                             id="im-solid-rounded-loudspeaker"
                             key="im-solid-rounded-loudspeaker"
-                            className={`im-solid-rounded color-white ${imDevices.hasOwnProperty('audio') && Object.keys(imDevices.audio.output).length<2?'disabled':''}`}
+                            className={`im-solid-rounded color-white ${audioOutputDevicesArray.length<2?'disabled':''}`}
                             onClick={onLoudSpeakerToggle} 
                             iconIos={`f7:${isLoudSpeakerOn?'speaker_slash_fill':'speaker_2_fill'}`}
                             iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
@@ -1132,10 +1016,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
                         {isCameraOn ? (
 
-                        <Button outline large disabled={imDevices.hasOwnProperty('video') && Object.keys(imDevices.video.input).length<2}
+                        <Button outline large disabled={videoInputDevicesArray.length<2}
                             id="im-solid-rounded-switch-camera"
                             key="im-solid-rounded-switch-camera"
-                            className={`im-solid-rounded ${isCameraOn?(isFrontCamera?'color-white':'color-yellow'):'color-white'}  ${imDevices.hasOwnProperty('video') && Object.keys(imDevices.video.input).length<2?'disabled':''}`}
+                            className={`im-solid-rounded ${isCameraOn?(isFrontCamera?'color-white':'color-yellow'):'color-white'}  ${videoInputDevicesArray.length<2?'disabled':''}`}
                             onClick={onFrontCameraToggle} 
                             iconIos={`f7:${isFrontCamera?'camera':'camera'}`}
                             iconMd={`material:${isFrontCamera?'video_camera_front':'video_camera_back'}`}
@@ -1159,10 +1043,10 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         )}
 
                         <Button outline large
-                            disabled={imDevices.hasOwnProperty('video') && Object.keys(imDevices.video.input).length<1}
+                            disabled={videoInputDevicesArray.length<1}
                             id="im-solid-rounded-camera"
                             key="im-solid-rounded-camera"
-                            className={`im-solid-rounded color-white  ${imDevices.hasOwnProperty('video') && Object.keys(imDevices.video.input).length<1?'disabled':''}`}
+                            className={`im-solid-rounded color-white  ${videoInputDevicesArray.length<1?'disabled':''}`}
                             onClick={onCameraToggle} 
                             iconIos={`f7:${isCameraOn?'videocam':'videocam_fill'}`}
                             iconMd={`material:${isCameraOn?'videocam_off':'videocam'}`}

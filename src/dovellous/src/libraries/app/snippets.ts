@@ -7,6 +7,14 @@ const Snippets = {
 
   numbers: {
 
+    randomInterger: (highestNumber:number, lowestNumber:number) => {
+      return Math.floor(Math.random() * (highestNumber - lowestNumber)) + lowestNumber;
+    },
+
+    randomFloat: (highestNumber:number, lowestNumber:number) => {
+      return (Math.random() * (highestNumber - lowestNumber)) + lowestNumber;
+    },
+
     formatPhoneNumber: (str, styleNumber) => {
       //Filter only numbers from the input
       let cleaned = ('' + str).replace(/\D/g, '');

@@ -107,7 +107,8 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 					f7.emit(
 						K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
 						{
-							app: parent
+							app: parent,
+							f7: f7
 						}
 					);
 

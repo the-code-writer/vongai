@@ -689,3 +689,57 @@ div.m-b-0.fab>a {
   }
 
 }
+
+.nime {
+  position: absolute;
+  display: block;
+  width: 7px;
+  height: 7px;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  border-radius: 100%;
+  background-color: #81bc8f;
+  right: -20px;
+  bottom: 7px;
+}
+
+.nime:after, .nime:before {
+  content: "";
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  opacity: 0;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  border-radius: 100%;
+  top: -8px;
+  left: -8px;
+  background: #05d436;
+}
+
+.nime:before {
+  -webkit-animation: nime 2s ease-out infinite;
+  animation: nime 2s .4s ease-out infinite;
+  animation-duration: 2s;
+  animation-timing-function: ease-out;
+  animation-delay: 0.4s;
+  animation-iteration-count: infinite;
+  animation-direction: normal;
+  animation-fill-mode: none;
+  animation-play-state: running;
+  animation-name: nime;
+}
+
+.nime:after {
+  z-index: 1;
+  -webkit-animation: nime 2s .4s ease-out infinite;
+  animation: nime 2s .4s ease-out infinite;
+  animation-duration: 2s;
+  animation-timing-function: ease-out;
+  animation-delay: 0.4s;
+  animation-iteration-count: infinite;
+  animation-direction: normal;
+  animation-fill-mode: none;
+  animation-play-state: running;
+  animation-name: nime;
+}
