@@ -319,9 +319,11 @@ export default function useAgora(
 
   const connectCall = (callData: any) => {
 
-    console.warn("::: CONNECT CALL :::", callData);
+    const channelName:string = String(callData.callHash).toLowerCase();
 
-    joinChannel(callData.callHash);
+    console.warn("::: CONNECT CALL :::", channelName, callData);
+
+    joinChannel(channelName, callData);
 
     Framework7Instance.emit(
       K.ModuleComponentsLibs.im.callScreen.CONNECTING,
