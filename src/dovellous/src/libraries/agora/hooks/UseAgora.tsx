@@ -42,6 +42,9 @@ export default function useAgora(
     currentVideoInputDevicesID: String,
   } {
 
+    
+  const [enableDenoiser4AudioTrack, setEnableDenoiser4AudioTrack ] = useState<any>(undefined)   
+
   const [client, setClient] = useState<IAgoraRTCClient | undefined>(undefined);
   const [clientCodec, setClientCodec] = useState<SDK_CODEC>('vp8');
   const [clientMode, setClientMode] = useState<SDK_MODE>('rtc');
@@ -394,7 +397,7 @@ export default function useAgora(
       callData
     );
     
-    joinChannel(callSessionId, callData, undefined, `USER_${callData.callObject.origin.phoneNumber}`);
+    joinChannel(callSessionId, callData, undefined, `user_${callData.callObject.uid}`);
 
   }
 
@@ -421,20 +424,14 @@ export default function useAgora(
         videoInputDevicesConfig      
       );
 
-      console.warn("::: JOIN CHANNEL :::", appId, channel);
-
       client.join(appId, channel, token || null, uid || null)
-      .then(async(uid:UID)=>{
+      .then(async(newuid:UID)=>{
 
         setLocalCLientUID(uid);
 
         setJoinState(true);
         
-        const enableDenoiser4AudioTrack = AIDenoiserEnabler();
-        
         await enableDenoiser4AudioTrack.enabler(microphoneTrack);
-
-        console.warn("::: JOINED CHANNEL ---- NOW PUBLISH::: !!!!!!!!!!!!!!!!!", uid);
 
         await client.publish([microphoneTrack, cameraTrack]);
 
@@ -442,7 +439,7 @@ export default function useAgora(
         (window as any).videoTrack = cameraTrack;
         (window as any).audioTrack = microphoneTrack;
 
-        console.warn("::: PUBLISHED CHANNEL ::: !!!!!!!!!!!!!!!!!", localClientUID, client, cameraTrack, microphoneTrack);
+        console.warn("::: PUBLISHED CHANNEL ::: !!!!!!!!!!!!!!!!!", callData, uid, localClientUID, newuid, channel, appId);
 
         Framework7Instance.emit(
           K.ModuleComponentsLibs.im.callScreen.CONNECTED,
@@ -610,6 +607,10 @@ export default function useAgora(
 
   }, [clientCodec, clientMode])
 
+  useEffect(() => {
+    setEnableDenoiser4AudioTrack(AIDenoiserEnabler());  
+  }, []);
+  
   return {
     client,
     localAudioTrack,

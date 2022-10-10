@@ -227,13 +227,72 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     },[]);
 
-    const getCallData = () => {
+    const initCallObjectData = () => {
+
+        const currentCallObjectData: CallDataObject = {
+            uid: null,
+            destination: null,
+            origin: null,
+            callStarted: 0,
+            callAnswered: 0,
+            callEnded: 0,
+            callDuration: 0,
+            isVideoCall: false,
+            isIncoming: false,
+            dialAttempts: [],
+        }
+
+        currentCallObjectData.destination = {
+            displayName: userDefinedData.displayName, 
+            phoneNumber: userDefinedData.phoneNumber
+        };
+
+        currentCallObjectData.uid = Snippets.encryption.sha1(userDefinedData.phoneNumber);
+
+        currentCallObjectData.origin = {
+            displayName: userDefinedData.displayName, 
+            phoneNumber: userDefinedData.phoneNumber
+        };
+
+        currentCallObjectData.callStarted = new Date().getTime();
+        currentCallObjectData.callEnded = 0;
+        currentCallObjectData.callDuration = 0;
+        currentCallObjectData.isVideoCall = isVideoCall;
+        currentCallObjectData.isIncoming = isIncoming;
+
+        setCallID(currentCallObjectData);
         
-        return {
+        setCurrentCallData(currentCallObjectData);
+
+        return currentCallObjectData;
+
+    }
+
+    const getCallData = () => {
+
+        const localCurrentCallData = currentCallData;
+
+        localCurrentCallData.destination = {
+            displayName: userDefinedData.displayName, 
+            phoneNumber: userDefinedData.phoneNumber
+        };
+
+        localCurrentCallData.origin = {
+            displayName: userDefinedData.displayName, 
+            phoneNumber: userDefinedData.phoneNumber
+        };
+
+        localCurrentCallData.uid = Snippets.encryption.sha1(userDefinedData.phoneNumber);
+
+        const callID: any = setCallID(localCurrentCallData);
+
+        setCurrentCallData(localCurrentCallData);
+
+        const callData:any = {
             userObject : userDefinedData,
-            callObject : currentCallData,
-            callSessionToken : getCallSessionToken(),
-            callSessionId : getCallSessionId(),
+            callObject : localCurrentCallData,
+            callSessionToken : callID[0],
+            callSessionId : callID[1],
             callHooks: {
                 remoteUsers: remoteUsers,
                 audioInputDevicesArray: audioInputDevicesArray,
@@ -251,6 +310,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             },
         }
 
+        console.log("2XXXXXXX", callData);
+
+        return callData;
+
     };
 
     const setCallID = (callObject: any) => {
@@ -264,6 +327,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         const _currentCallSessionData4 = Snippets.encryption.sha1(String(_currentCallSessionData3));
 
         setCurrentCallSessionData([_currentCallSessionData3, _currentCallSessionData4]);
+
+        return [_currentCallSessionData3, _currentCallSessionData4];
 
     };
 
@@ -449,33 +514,37 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onIncomingCallHandler = () => {
 
-        ringingTone.loop = true;
-        
-        ringingTone.play();
-        
-        setIsCallAnswered(false);
-        setIsCallDeclined(false);
-        setIsCallInProgress(false);
+        if(Object.keys(userDefinedData).length > 0 && userDefinedData.hasOwnProperty('phoneNumber')){
 
-        setCurrentViewState(
-            K.ModuleComponentsLibs.im.callScreen.INCOMING
-        );
+            ringingTone.loop = true;
+            
+            ringingTone.play();
+            
+            connectIncomingCallNow();
 
-        onIncomingCall(getCallData());
+            setIsCallAnswered(false);
+            setIsCallDeclined(false);
+            setIsCallInProgress(false);
 
-        // Local Notification: PEER_INCOMING_CALL
+            onIncomingCall(getCallData());
+
+            setCurrentViewState(
+                K.ModuleComponentsLibs.im.callScreen.INCOMING
+            );
+
+            // Local Notification: PEER_INCOMING_CALL
+
+        }
 
     };
 
     const onOutgoingCallHandler = () => {
+        
+        connectOutgoingCallNow();
 
         setIsCallAnswered(false);
         setIsCallDeclined(false);
         setIsCallInProgress(false);
-
-        setCurrentViewState(
-            K.ModuleComponentsLibs.im.callScreen.OUTGOING
-        );
 
         setCallRedialAttempts([...callRedialAttempts, new Date().getTime()]);
 
@@ -484,6 +553,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         // Send IM to calee: PEER_INCOMING_CALL
 
         // Local Notification: OUTGOING_CALL
+
+        setCurrentViewState(
+            K.ModuleComponentsLibs.im.callScreen.OUTGOING
+        );
 
     };
 
@@ -624,15 +697,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         f7.sheet.close(`.${id}`);
 
-        setCurrentUserData({
-            username: null,
-            displayName: null,
-            displayStatus: null,
-            displayPhoto: null,
-            phoneNumber: null,
-            emailAddress: null,
-        });
-
         setCurrentCallData({
             uid: null,
             destination: null,
@@ -652,13 +716,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         
         if(!callIsIncomming){
 
-            onIncomingCallHandler()
-            connectIncomingCallNow();
+            onIncomingCallHandler();
 
         }else{
 
             onOutgoingCallHandler();
-            connectOutgoingCallNow();
 
         }
   
@@ -668,11 +730,13 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         if(isAgoraLoadedAndReady()){
 
+            console.log("1XXXXXXX USER : ", userDefinedData, currentCallData);
+
             const callData:any = getCallData();
 
             setTimeout(()=>{
                 
-                console.log("XXXXXXX USER : ", userDefinedData, currentCallData, callData);
+                console.log("3XXXXXXX USER : ", userDefinedData, currentCallData, callData);
 
                 connectCall( callData );
 
@@ -690,7 +754,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
             setTimeout(()=>{
                 
-                console.log("XXXXXXX USER : ", userDefinedData, userDefinedData, currentCallData, callData);
+                console.log("XXXXXXX USER : ", userDefinedData, currentCallData, callData);
 
                 connectCall( callData );
 
@@ -808,25 +872,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         addEventListeners();
 
-        callObject.destination = {
-            displayName: userDefinedData.displayName, 
-            phoneNumber: userDefinedData.phoneNumber
-        };
-
-        callObject.origin = {
-            displayName: userDefinedData.displayName, 
-            phoneNumber: userDefinedData.phoneNumber
-        };
-
-        callObject.callStarted = new Date().getTime();
-        callObject.callEnded = 0;
-        callObject.callDuration = 0;
-        callObject.isVideoCall = isVideoCall;
-        callObject.isIncoming = isIncoming;
-
-        setCallID(callObject);
-        
-        setCurrentCallData(callObject);
+        initCallObjectData();
 
         setIsCameraOn(isVideoCall);
 

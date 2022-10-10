@@ -135,6 +135,7 @@ export default ({callDataObject}) => {
                 onLoudSpeakerOn={onLoudSpekerOnHandler}
                 onLoudSpeakerOff={onLoudSpeakerOffHandler}
                 onEndCall={onEndCallHandler}
+                onEndedCall={onEndedCallHandler}
                 onIncomingCall={onIncomingCallHandler}
                 onOutgoingCall={onOutgoingCallHandler}
                 onHoldCall={onHoldCallHandler}
