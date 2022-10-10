@@ -18,6 +18,9 @@ export default function useAgora(
     localAudioTrack: ILocalAudioTrack | undefined,
     localVideoTrack: ILocalVideoTrack | undefined,
     localClientUID: UID,
+    localClientChannel: UID,
+    localClientSessionToken: UID,
+    localClientSessionID: UID,
     joinState: boolean,
     setAgoraAppParams: Function,
     setAgoraTracksConfig: Function,
@@ -51,7 +54,10 @@ export default function useAgora(
   const [appId, setAppId] = useState<string>('');
   const [localVideoTrack, setLocalVideoTrack] = useState<ILocalVideoTrack | undefined>(undefined);
   const [localAudioTrack, setLocalAudioTrack] = useState<ILocalAudioTrack | undefined>(undefined);
-  const [localClientUID, setLocalCLientUID] = useState<UID | undefined>(undefined);
+  const [localClientUID, setLocalClientUID] = useState<UID | undefined>(undefined);
+  const [localClientChannel, setLocalClientChannel] = useState<UID | undefined>(undefined);
+  const [localClientSessionID, setLocalClientSessionID] = useState<UID | undefined>(undefined);
+  const [localClientSessionToken, setLocalClientSessionToken] = useState<UID | undefined>(undefined);
 
   const [joinState, setJoinState] = useState<boolean>(false);
 
@@ -427,10 +433,16 @@ export default function useAgora(
       client.join(appId, channel, token || null, uid || null)
       .then(async(newuid:UID)=>{
 
-        setLocalCLientUID(uid);
+        setLocalClientUID(uid);
+
+        setLocalClientChannel(channel);
+
+        setLocalClientSessionToken(token);
+
+        setLocalClientSessionID(channel);
 
         setJoinState(true);
-        
+
         await enableDenoiser4AudioTrack.enabler(microphoneTrack);
 
         await client.publish([microphoneTrack, cameraTrack]);
@@ -616,6 +628,9 @@ export default function useAgora(
     localAudioTrack,
     localVideoTrack,
     localClientUID,
+    localClientChannel,
+    localClientSessionToken,
+    localClientSessionID,
     joinState,
     setAgoraAppParams,
     setAgoraTracksConfig,

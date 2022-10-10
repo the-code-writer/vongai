@@ -122,6 +122,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         localAudioTrack,
         localVideoTrack,
         localClientUID,
+        localClientChannel,
+        localClientSessionToken,
+        localClientSessionID,
         joinState,
         disconnectCall,
         connectCall,
@@ -284,15 +287,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         localCurrentCallData.uid = Snippets.encryption.sha1(userDefinedData.phoneNumber);
 
-        const callID: any = setCallID(localCurrentCallData);
-
-        setCurrentCallData(localCurrentCallData);
-
         const callData:any = {
             userObject : userDefinedData,
             callObject : localCurrentCallData,
-            callSessionToken : callID[0],
-            callSessionId : callID[1],
+            callSessionToken : getCallSessionToken(),
+            callSessionId : getCallSessionId(),
             callHooks: {
                 remoteUsers: remoteUsers,
                 audioInputDevicesArray: audioInputDevicesArray,
@@ -714,13 +713,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const init = async (callIsIncomming: Boolean) => {
         
-        if(!callIsIncomming){
+        if(isAgoraLoadedAndReady()){
 
-            onIncomingCallHandler();
+            const callData:any = getCallData();
 
-        }else{
+            setTimeout(()=>{
+                
+                connectCall( callData );
 
-            onOutgoingCallHandler();
+            },10);
 
         }
   
@@ -730,17 +731,13 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         if(isAgoraLoadedAndReady()){
 
-            console.log("1XXXXXXX USER : ", userDefinedData, currentCallData);
-
             const callData:any = getCallData();
 
             setTimeout(()=>{
                 
-                console.log("3XXXXXXX USER : ", userDefinedData, currentCallData, callData);
-
                 connectCall( callData );
 
-            },100);
+            },10);
 
         }
 
