@@ -394,7 +394,7 @@ export default function useAgora(
       callData
     );
     
-    joinChannel(callSessionId, callData);
+    joinChannel(callSessionId, callData, undefined, `USER_${callData.callObject.origin.phoneNumber}`);
 
   }
 
@@ -499,14 +499,6 @@ export default function useAgora(
 
     onUserPublished(user, mediaType);
 
-    Framework7Instance.emit(
-      K.ModuleComponentsLibs.im.callScreen.USER_PUBLISHED,
-      {
-        user: user,
-        mediaType: mediaType
-      }
-    );
-
   }
 
   const handleUserUnpublished = (user: IAgoraRTCRemoteUser) => {
@@ -516,13 +508,6 @@ export default function useAgora(
     setRemoteUsers(remoteUsers => Array.from(clientRemoteUsers));
 
     onUserUnpublished(user);
-
-    Framework7Instance.emit(
-      K.ModuleComponentsLibs.im.callScreen.USER_UNPUBLISHED,
-      {
-        user: user
-      }
-    );
 
   }
 
@@ -534,13 +519,6 @@ export default function useAgora(
 
     onUserJoined(user);
 
-    Framework7Instance.emit(
-      K.ModuleComponentsLibs.im.callScreen.USER_JOINED,
-      {
-        user: user
-      }
-    );
-
   }
 
   const handleUserLeft = (user: IAgoraRTCRemoteUser) => {
@@ -550,13 +528,6 @@ export default function useAgora(
     setRemoteUsers(remoteUsers => Array.from(clientRemoteUsers));
 
     onUserLeft(user);
-
-    Framework7Instance.emit(
-      K.ModuleComponentsLibs.im.callScreen.USER_LEFT,
-      {
-        user: user
-      }
-    );
 
   }
 

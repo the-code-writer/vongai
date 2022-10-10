@@ -9,7 +9,6 @@ import Dom7 from "dom7";
 import song from '../../../../assets/aud/incoming-4.mp3';
 
 import { StorageIM, useStorageIM } from "../store/im-store";
-import { addListener } from "process";
 import Snippets from "../../../libraries/app/snippets";
 import useAgora from "../../../libraries/agora/hooks/useAgora";
 import MediaPlayer from "../../../libraries/agora/components/MediaPlayer";
@@ -46,15 +45,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         displayPhoto: string;
         phoneNumber: string | number;
         emailAddress: string;
-    }
-
-    const userObject = {
-        username: null,
-        displayName: null,
-        displayStatus: null,
-        displayPhoto: null,
-        phoneNumber: null,
-        emailAddress: null,
     }
 
     interface CallDestinationObject {
@@ -162,8 +152,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         onUserLeftHandler
     );
 
-    const [currentUserData, setCurrentUserData] = useState(userObject);
-
     const [currentCallData, setCurrentCallData] = useState(callObject);
 
     const [currentCallSessionData, setCurrentCallSessionData] = useState(['CHANNEL','CALL_ID']);
@@ -242,7 +230,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const getCallData = () => {
         
         return {
-            userObject : currentUserData,
+            userObject : userDefinedData,
             callObject : currentCallData,
             callSessionToken : getCallSessionToken(),
             callSessionId : getCallSessionId(),
@@ -664,10 +652,12 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         
         if(!callIsIncomming){
 
+            onIncomingCallHandler()
             connectIncomingCallNow();
 
         }else{
 
+            onOutgoingCallHandler();
             connectOutgoingCallNow();
 
         }
@@ -678,7 +668,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         if(isAgoraLoadedAndReady()){
 
-            connectCall( getCallData() )
+            const callData:any = getCallData();
+
+            setTimeout(()=>{
+                
+                console.log("XXXXXXX USER : ", userDefinedData, currentCallData, callData);
+
+                connectCall( callData );
+
+            },100);
 
         }
 
@@ -688,7 +686,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         if(isAgoraLoadedAndReady()){
 
-            connectCall( getCallData() )
+            const callData:any = getCallData();
+
+            setTimeout(()=>{
+                
+                console.log("XXXXXXX USER : ", userDefinedData, userDefinedData, currentCallData, callData);
+
+                connectCall( callData );
+
+            },100);
 
         }
 
@@ -706,7 +712,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const resetState = () => {        
         
-        setCurrentUserData(userObject);
         setCurrentCallData(callObject);
         setCurrentCallSessionData(['CHANNEL','CALL_ID']);
         setCurrentViewState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
@@ -737,7 +742,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         devices
                       );
                     
-
                     setAgoraAppParams(
                         module.app.agoraConfig.appId,
                         module.app.agoraConfig.clientCodec,
@@ -768,34 +772,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             K.ModuleComponentsLibs.im.callScreen.CONNECTED,
             ( connectedCallDetails: any ) => {
                 onCallConnected(connectedCallDetails);
-            }
-        );
-
-        f7.on(
-            K.ModuleComponentsLibs.im.callScreen.USER_PUBLISHED,
-            ( connectedUserCallDetails: any ) => {
-                console.log("=====USER_PUBLISHED=====", connectedUserCallDetails);
-            }
-        );
-
-        f7.on(
-            K.ModuleComponentsLibs.im.callScreen.USER_UNPUBLISHED,
-            ( connectedUserCallDetails: any ) => {
-                console.log("=====USER_UNPUBLISHED=====", connectedUserCallDetails);
-            }
-        );
-
-        f7.on(
-            K.ModuleComponentsLibs.im.callScreen.USER_JOINED,
-            ( connectedUserCallDetails: any ) => {
-                console.log("=====USER_JOINED=====", connectedUserCallDetails);
-            }
-        );
-
-        f7.on(
-            K.ModuleComponentsLibs.im.callScreen.USER_LEFT,
-            ( connectedUserCallDetails: any ) => {
-                console.log("=====USER_LEFT=====", connectedUserCallDetails);
             }
         );
 
@@ -832,14 +808,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         addEventListeners();
 
-        userObject.username = userDefinedData.username;
-        userObject.displayName = userDefinedData.displayName;
-        userObject.displayStatus = userDefinedData.displayStatus;
-        userObject.displayStatus = userDefinedData.displayStatus;
-        userObject.displayPhoto = userDefinedData.displayPhoto;
-        userObject.phoneNumber = userDefinedData.phoneNumber;
-        userObject.emailAddress = userDefinedData.emailAddress;
-
         callObject.destination = {
             displayName: userDefinedData.displayName, 
             phoneNumber: userDefinedData.phoneNumber
@@ -858,15 +826,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCallID(callObject);
         
-        setCurrentUserData(userObject);
-
         setCurrentCallData(callObject);
 
         setIsCameraOn(isVideoCall);
 
         setIsIncomingCall(isIncoming);
-
-        isIncoming ? onIncomingCallHandler() : onOutgoingCallHandler();
 
         init(isIncoming);
 
@@ -892,7 +856,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                 closeByBackdropClick={false}
                 closeByOutsideClick={false}
                 closeOnEscape={false}
-                style={{backgroundImage: `url(${currentUserData.displayPhoto})`}}
+                style={{backgroundImage: `url(${userDefinedData.displayPhoto})`}}
             >
 
                 <div className="backdrop blurry" />
@@ -963,15 +927,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                 <PageContent>
                    
                     <div className="call-remote-user" style={{visibility: isCameraOn?'hidden':'visible'}}>
-                        <img src={currentUserData.displayPhoto??''} alt={``} />
-                        <BlockTitle large>{currentUserData.displayName}</BlockTitle>
+                        <img src={userDefinedData.displayPhoto??''} alt={``} />
+                        <BlockTitle large>{userDefinedData.displayName}</BlockTitle>
                         {includedInViewState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.INCOMING,
                                         K.ModuleComponentsLibs.im.callScreen.OUTGOING,
                                     ]
                         ) && (
-                            <BlockTitle medium style={{textAlign: 'center'}}>{currentUserData.phoneNumber}</BlockTitle>
+                            <BlockTitle medium style={{textAlign: 'center'}}>{userDefinedData.phoneNumber}</BlockTitle>
                         )}
                         <BlockTitle medium style={{textAlign: 'center'}}>{currentViewState}</BlockTitle>
                         <BlockTitle medium style={{textAlign: 'center'}}>
@@ -1185,14 +1149,14 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 <div className={`im-call-status-overlay ${!isCallInProgress ? 'black' : isOnHold ? 'red':'green'}`}>
                     <div className="info">
-                        <span className="display-name">{currentUserData.displayName}</span>
+                        <span className="display-name">{userDefinedData.displayName}</span>
                         {includedInViewState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.INCOMING,
                                         K.ModuleComponentsLibs.im.callScreen.OUTGOING,
                                     ]
                         ) && (
-                            <span className="display-number">{currentUserData.phoneNumber}</span>
+                            <span className="display-number">{userDefinedData.phoneNumber}</span>
                         )}
                         <CallTimer className="display-timer" visible={
                                     includedInViewState(
