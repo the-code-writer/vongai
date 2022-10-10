@@ -22,6 +22,7 @@ export default function useAgora(
     localClientSessionToken: UID,
     localClientSessionID: UID,
     joinState: boolean,
+    joiningState: boolean,
     setAgoraAppParams: Function,
     setAgoraTracksConfig: Function,
     connectCall: Function,
@@ -60,6 +61,8 @@ export default function useAgora(
   const [localClientSessionToken, setLocalClientSessionToken] = useState<UID | undefined>(undefined);
 
   const [joinState, setJoinState] = useState<boolean>(false);
+
+  const [joiningState, setJoiningState] = useState<boolean>(false);
 
   const [remoteUsers, setRemoteUsers] = useState<IAgoraRTCRemoteUser[]>([]);
 
@@ -402,6 +405,10 @@ export default function useAgora(
       K.ModuleComponentsLibs.im.callScreen.CONNECTING,
       callData
     );
+
+    setJoinState(false);
+
+    setJoiningState(true);
     
     joinChannel(callSessionId, callData, undefined, `user_${callData.callObject.uid}`);
 
@@ -443,6 +450,8 @@ export default function useAgora(
 
         setJoinState(true);
 
+        setJoiningState(false);
+
         await enableDenoiser4AudioTrack.enabler(microphoneTrack);
 
         await client.publish([microphoneTrack, cameraTrack]);
@@ -451,8 +460,6 @@ export default function useAgora(
         (window as any).videoTrack = cameraTrack;
         (window as any).audioTrack = microphoneTrack;
 
-        console.warn("::: PUBLISHED CHANNEL ::: !!!!!!!!!!!!!!!!!", callData, uid, localClientUID, newuid, channel, appId);
-
         Framework7Instance.emit(
           K.ModuleComponentsLibs.im.callScreen.CONNECTED,
           {
@@ -460,12 +467,23 @@ export default function useAgora(
             videoTrack: cameraTrack,
             audioTrack: microphoneTrack,
             callData: callData,
-            sessionId: channel,
             channel: channel,
             token: token,
             uid: uid
           }
         );
+
+        console.warn("::: PUBLISHED CHANNEL ::: !!!!!!!!!!!!!!!!!", callData, uid, localClientUID, newuid, channel, appId);
+
+        console.warn("::: FIRE EVENT ::: !!!!!!!!!!!!!!!!!", {
+          client: client,
+          videoTrack: cameraTrack,
+          audioTrack: microphoneTrack,
+          callData: callData,
+          channel: channel,
+          token: token,
+          uid: uid
+        });
 
       })
       .catch((error: any)=>{
@@ -491,9 +509,14 @@ export default function useAgora(
       localVideoTrack.stop();
       localVideoTrack.close();
     }
-    setRemoteUsers([]);
-    setJoinState(false);
+
     await client?.leave();
+
+    setRemoteUsers([]);
+    
+    setJoinState(false);
+
+    setJoiningState(false);
 
   }
 
@@ -632,6 +655,7 @@ export default function useAgora(
     localClientSessionToken,
     localClientSessionID,
     joinState,
+    joiningState,
     setAgoraAppParams,
     setAgoraTracksConfig,
     connectCall,

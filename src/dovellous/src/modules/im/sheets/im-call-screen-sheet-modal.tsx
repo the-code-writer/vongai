@@ -126,6 +126,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         localClientSessionToken,
         localClientSessionID,
         joinState,
+        joiningState,
         disconnectCall,
         connectCall,
         setAgoraAppParams,
@@ -293,23 +294,38 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             callSessionToken : getCallSessionToken(),
             callSessionId : getCallSessionId(),
             callHooks: {
-                remoteUsers: remoteUsers,
-                audioInputDevicesArray: audioInputDevicesArray,
-                audioInputDevicesObject: audioInputDevicesObject,
-                currentAudioInputDevicesIndex: currentAudioInputDevicesIndex,
-                currentAudioInputDevicesID: currentAudioInputDevicesID,
-                audioOutputDevicesArray: audioOutputDevicesArray,
-                audioOutputDevicesObject: audioOutputDevicesObject,
-                currentAudioOutputDevicesIndex: currentAudioOutputDevicesIndex,
-                currentAudioOutputDevicesID: currentAudioOutputDevicesID,
-                videoInputDevicesArray: videoInputDevicesArray,
-                videoInputDevicesObject: videoInputDevicesObject,
-                currentVideoInputDevicesIndex: currentVideoInputDevicesIndex,
-                currentVideoInputDevicesID: currentVideoInputDevicesID
+                client,
+                localAudioTrack,
+                localVideoTrack,
+                localClientUID,
+                localClientChannel,
+                localClientSessionToken,
+                localClientSessionID,
+                joinState,
+                joiningState,
+                disconnectCall,
+                connectCall,
+                setAgoraAppParams,
+                setAgoraTracksConfig,
+                enumerateDevices,
+                setNextAudioInputDevicesIndex,
+                setNextAudioOutputDevicesIndex,
+                setNextVideoInputDevicesIndex,
+                remoteUsers,
+                audioInputDevicesArray,
+                audioInputDevicesObject,
+                currentAudioInputDevicesIndex,
+                currentAudioInputDevicesID,
+                audioOutputDevicesArray,
+                audioOutputDevicesObject,
+                currentAudioOutputDevicesIndex,
+                currentAudioOutputDevicesID,
+                videoInputDevicesArray,
+                videoInputDevicesObject,
+                currentVideoInputDevicesIndex,
+                currentVideoInputDevicesID
             },
         }
-
-        console.log("2XXXXXXX", callData);
 
         return callData;
 
@@ -751,8 +767,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
             setTimeout(()=>{
                 
-                console.log("XXXXXXX USER : ", userDefinedData, currentCallData, callData);
-
                 connectCall( callData );
 
             },100);
