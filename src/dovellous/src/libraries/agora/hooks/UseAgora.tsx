@@ -92,16 +92,27 @@ export default function useAgora(
 
     const nextIndex = (currentIndex + 1) % audioInputDevicesArray.length;
 
-    setCurrentAudioInputDevicesIndex(nextIndex);
+    const nextDevice = audioInputDevicesArray[nextIndex];
 
-    const nextDevID = audioInputDevicesArray[nextIndex];
+    if(nextIndex === nextDevice?.deviceIndex){
 
-    setCurrentAudioInputDevicesID(nextDevID);
+      setCurrentAudioInputDevicesIndex(nextIndex);
 
-    return {
-      deviceIndex: nextIndex,
-      deviceID: nextDevID
-    }
+      setCurrentAudioInputDevicesID(nextDevice?.deviceId);
+
+      return {
+        deviceIndex: nextDevice?.deviceIndex,
+        deviceID: nextDevice?.deviceId
+      }
+
+    } else {
+      
+      return {
+        deviceIndex: currentAudioInputDevicesIndex,
+        deviceID: currentAudioInputDevicesID
+      }
+
+    }  
 
   }
 
@@ -122,16 +133,27 @@ export default function useAgora(
 
     const nextIndex = (currentIndex + 1) % audioOutputDevicesArray.length;
 
-    setCurrentAudioOutputDevicesIndex(nextIndex);
+    const nextDevice = audioOutputDevicesArray[nextIndex];
 
-    const nextDevID = audioOutputDevicesArray[nextIndex];
+    if(nextIndex === nextDevice?.deviceIndex){
 
-    setCurrentAudioOutputDevicesID(nextDevID);
+      setCurrentAudioOutputDevicesIndex(nextIndex);
 
-    return {
-      deviceIndex: nextIndex,
-      deviceID: nextDevID
-    }
+      setCurrentAudioOutputDevicesID(nextDevice?.deviceId);
+
+      return {
+        deviceIndex: nextDevice?.deviceIndex,
+        deviceID: nextDevice?.deviceId
+      }
+
+    } else {
+      
+      return {
+        deviceIndex: currentAudioOutputDevicesIndex,
+        deviceID: currentAudioOutputDevicesID
+      }
+
+    }  
 
   }
 
@@ -152,16 +174,27 @@ export default function useAgora(
 
     const nextIndex = (currentIndex + 1) % videoInputDevicesArray.length;
 
-    setCurrentVideoInputDevicesIndex(nextIndex);
+    const nextDevice = videoInputDevicesArray[nextIndex];
 
-    const nextDevID = videoInputDevicesArray[nextIndex];
+    if(nextIndex === nextDevice?.deviceIndex){
 
-    setCurrentVideoInputDevicesID(nextDevID);
+      setCurrentVideoInputDevicesIndex(nextIndex);
 
-    return {
-      deviceIndex: nextIndex,
-      deviceID: nextDevID
-    }
+      setCurrentVideoInputDevicesID(nextDevice?.deviceId);
+
+      return {
+        deviceIndex: nextDevice?.deviceIndex,
+        deviceID: nextDevice?.deviceId
+      }
+
+    } else {
+      
+      return {
+        deviceIndex: currentVideoInputDevicesIndex,
+        deviceID: currentVideoInputDevicesID
+      }
+
+    }  
 
   }
 
@@ -354,16 +387,15 @@ export default function useAgora(
 
   const connectCall = (callData: any) => {
 
-    const channelName:string = String(callData.callHash).toLowerCase();
-
-    console.warn("::: CONNECT CALL :::", channelName, callData);
-
-    joinChannel(channelName, callData);
+    const callSessionId:string = String(callData.callSessionId).toLowerCase();
 
     Framework7Instance.emit(
       K.ModuleComponentsLibs.im.callScreen.CONNECTING,
       callData
     );
+    
+    joinChannel(callSessionId, callData);
+
   }
 
   const disconnectCall = (callData: any) => {
@@ -382,6 +414,8 @@ export default function useAgora(
 
     if (!client) return;
 
+    console.warn("::: JOIN CHANNEL :::", channel, callData);
+
     try{
 
       const [microphoneTrack, cameraTrack] = await createLocalTracks(
@@ -389,33 +423,45 @@ export default function useAgora(
         videoInputDevicesConfig      
       );
 
-      await client.join(appId, channel, token || null, uid || null);
+      client.join(appId, channel, token || null, uid || null)
+      .then(async(uid:UID)=>{
 
-      //const enableDenoiser4AudioTrack = AIDenoiserEnabler();
+        //const enableDenoiser4AudioTrack = AIDenoiserEnabler();
 
-      //await enableDenoiser4AudioTrack.enabler(microphoneTrack);
+        //await enableDenoiser4AudioTrack.enabler(microphoneTrack);
 
-      await client.publish([microphoneTrack, cameraTrack]);
+        await client.publish([microphoneTrack, cameraTrack]);
 
-      (window as any).client = client;
-      (window as any).videoTrack = cameraTrack;
+        (window as any).client = client;
+        (window as any).videoTrack = cameraTrack;
+        (window as any).audioTrack = microphoneTrack;
 
-      setJoinState(true);
+        setJoinState(true);
 
-      Framework7Instance.emit(
-        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-        {
-          client: client,
-          videoTrack: cameraTrack,
-          microphoneTrack: microphoneTrack,
-          callData: callData,
-          channel: channel,
-          token: token,
-          uid: uid
-        }
-      );
+        Framework7Instance.emit(
+          K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+          {
+            client: client,
+            videoTrack: cameraTrack,
+            audioTrack: microphoneTrack,
+            callData: callData,
+            sessionId: channel,
+            channel: channel,
+            token: token,
+            uid: uid
+          }
+        );
+
+      })
+      .catch((error: any)=>{
+
+        console.warn("::: AGORA JOIN ERROR 1 :::", error);
+
+      });
 
     } catch (error) {
+
+      console.warn("::: AGORA JOIN ERROR 2 :::", error);
 
     }
 

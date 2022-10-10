@@ -161,8 +161,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const [currentCallSessionData, setCurrentCallSessionData] = useState(['CHANNEL','CALL_ID']);
 
-    const [currentConnectedCallDetails, setCurrentConnectedCallDetails] = useState(null);
-    
     const [currentViewState, setCurrentViewState] = useState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
     
     const [isMuteOn, setisMuteOn] = useState(false);
@@ -666,15 +664,11 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
             connectOutgoingCallNow();
 
         }
-
-        console.log("::::::*********** CALL SCREEN READY ************:::::: ", getCallData());
   
     }
 
     const connectIncomingCallNow = () => {
 
-        console.log("::::::*********** connectIncomingCallNow************:::::: ", f7.dovellous.instance.Libraries);
-  
         if(isAgoraLoadedAndReady()){
 
             connectCall( getCallData() )
@@ -700,13 +694,13 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         }
 
         return typeof f7.dovellous.instance.Libraries.Agora === "object" && f7.dovellous.instance.Libraries.Agora.hasOwnProperty('app');
+
     }
 
     const resetState = () => {        
         
         setCurrentUserData(userObject);
         setCurrentCallData(callObject);
-        setCurrentConnectedCallDetails(null);
         setCurrentCallSessionData(['CHANNEL','CALL_ID']);
         setCurrentViewState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
         setisMuteOn(false);
@@ -724,7 +718,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     }
 
     const addEventListeners = () => {
-
         
         f7.on(
             K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
@@ -737,20 +730,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                         devices
                       );
                     
-                    console.log("::::::*********** DEVICES ************:::::: ", devices);
-
-                    console.log("::::::*********** AGORA CONFIG : setAgoraAppParams ************:::::: ", 
-                        [
-                            module.app.agoraConfig.appId,
-                            module.app.agoraConfig.clientCodec,
-                            module.app.agoraConfig.clientMode,
-                        ]);
-
-                    console.log("::::::*********** AGORA CONFIG : setAgoraTracksConfig ************:::::: ", 
-                        [
-                            module.app.agoraConfig.imCallConfig.audioSettings,
-                            module.app.agoraConfig.imCallConfig.videoSettings,
-                        ]);
 
                     setAgoraAppParams(
                         module.app.agoraConfig.appId,
@@ -768,6 +747,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
                 console.log("::::::*********** AGORA READY ************:::::: ", module);
                 
             }
+
         );
 
         f7.on(
@@ -780,7 +760,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         f7.on(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED,
             ( connectedCallDetails: any ) => {
-                setCurrentConnectedCallDetails(connectedCallDetails);
                 onCallConnected(connectedCallDetails);
             }
         );
@@ -801,8 +780,6 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         f7.on(
             K.ModuleComponentsLibs.im.callScreen.DISCONNECTED, () => {
-
-                setCurrentConnectedCallDetails(null);
 
                 setIsCallEnded(true);
                 setIsCallInProgress(false);
