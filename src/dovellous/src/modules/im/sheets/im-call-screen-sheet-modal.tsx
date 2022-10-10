@@ -274,7 +274,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const getCallData = () => {
 
-        const localCurrentCallData = currentCallData;
+        const localCurrentCallData: any = new Object();
 
         localCurrentCallData.destination = {
             displayName: userDefinedData.displayName, 
