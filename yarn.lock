@@ -4153,6 +4153,11 @@
     "clean-stack" "^4.0.0"
     "indent-string" "^5.0.0"
 
+"agora-extension-ai-denoiser@^1.0.0":
+  "integrity" "sha512-9U5En2TCLizLYpnakZju3+LrR6hpP5DrGW5oPLd/x+kYpg47kBodcke9z2hq11vM9hEf7Tpo28Q33GO1wQxEzQ=="
+  "resolved" "https://registry.npmjs.org/agora-extension-ai-denoiser/-/agora-extension-ai-denoiser-1.0.0.tgz"
+  "version" "1.0.0"
+
 "agora-react-uikit@^1.1.0":
   "integrity" "sha512-6YeQEp6fT1cQCR+WpJOtkL6hlQgJcRc4VnBQEld1kFnj5DQOIq4DolXmYkXIvCv/yVbnPsMSZ5UYKu+o6SlacA=="
   "resolved" "https://registry.npmjs.org/agora-react-uikit/-/agora-react-uikit-1.1.0.tgz"

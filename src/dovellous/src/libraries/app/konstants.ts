@@ -6,8 +6,6 @@ const K = {
 		CDN_URI: import.meta.env.VNG_CDN_URI,
 		AGORA_APP_ID: import.meta.env.VNG_AGORA_APP_ID,
 		AGORA_PRIMARY_CERTIFICATE: import.meta.env.VNG_AGORA_PRIMARY_CERTIFICATE,
-		AGORA_CHANNELS: import.meta.env.VNG_AGORA_CHANNELS,
-		AGORA_DEFAULT_CHANNEL: import.meta.env.VNG_AGORA_DEFAULT_CHANNEL,
 		AGORA_CLIENT_MODE: import.meta.env.VNG_AGORA_CLIENT_MODE,
 		AGORA_CLIENT_CODEC: import.meta.env.VNG_AGORA_CLIENT_CODEC,
 		AGORA_AUDIO_SETTINGS_ENCODING_PRESET: import.meta.env.VNG_AGORA_AUDIO_SETTINGS_ENCODING_PRESET,
@@ -316,6 +314,7 @@ const K = {
 				NETWORK_CHANGE: 'Network Change',
 				START_TIMER: 'StartCallTimer',
 				PAUSE_TIMER: 'PauseCallTimer',
+				RESET_TIMER: 'PauseCallTimer',
 				STOP_TIMER: 'StopCallTimer',
 			}
 		}

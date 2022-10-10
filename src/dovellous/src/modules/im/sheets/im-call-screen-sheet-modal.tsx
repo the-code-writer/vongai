@@ -17,7 +17,7 @@ import MediaPlayer from "../../../libraries/agora/components/MediaPlayer";
 import AgoraRTC, { IAgoraRTCClient, IAgoraRTCRemoteUser, MicrophoneAudioTrackInitConfig, CameraVideoTrackInitConfig, IMicrophoneAudioTrack, ICameraVideoTrack, ILocalVideoTrack, ILocalAudioTrack } from 'agora-rtc-sdk-ng';
 
 
-export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
+export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     onMute,
     onUnMute,
     onCameraOn,
@@ -32,6 +32,8 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
     onOutgoingCall,
     onAnswerCall,
     onDeclineCall,
+    onUserPublished,
+    onUserUnpublished,
     onUserJoined,
     onUserLeft
     
@@ -95,11 +97,15 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         
         console.warn(":::: === AGORA EVENT [onUserPublishedHandler] === :::", user, mediaType);
   
+        onUserPublished(user, mediaType);
+  
       }
   
       const onUserUnpublishedHandler  = (user: IAgoraRTCRemoteUser) => {
   
         console.warn(":::: === AGORA EVENT [onUserUnpublishedHandler] === :::", user);
+
+        onUserUnpublished(user);
   
       }
   
@@ -125,6 +131,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         client,
         localAudioTrack,
         localVideoTrack,
+        localClientUID,
         joinState,
         disconnectCall,
         connectCall,
@@ -193,25 +200,25 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
         useEffect(()=>{
 
-            f7.on('startCallTimer', ()=>{
+            f7.on(K.ModuleComponentsLibs.im.callScreen.START_TIMER, ()=>{
 
                 start();
 
             });
 
-            f7.on('pauseCallTimer', ()=>{
+            f7.on(K.ModuleComponentsLibs.im.callScreen.PAUSE_TIMER, ()=>{
 
                 pause();
 
             });
 
-            f7.on('resetCallTimer', ()=>{
+            f7.on(K.ModuleComponentsLibs.im.callScreen.RESET_TIMER, ()=>{
 
                 reset();
 
             });
 
-            f7.on('stopCallTimer', ()=>{
+            f7.on(K.ModuleComponentsLibs.im.callScreen.STOP_TIMER, ()=>{
 
                 pause();
 
@@ -530,7 +537,7 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
 
     const onCallDisConnected = ()=>{
 
-        console.warn("::::::*********** CALL DISCONNECTED ************:::::: ", connectedCallDetails);
+        console.warn("::::::*********** CALL DISCONNECTED ************:::::: ");
   
         ringingTone.pause();
 
@@ -767,14 +774,28 @@ export default ({ id, className, userDefinedData, isVideoCall, isIncoming,
         f7.on(
             K.ModuleComponentsLibs.im.callScreen.USER_PUBLISHED,
             ( connectedUserCallDetails: any ) => {
-                onCallConnectedUser(connectedUserCallDetails);
+                console.log("=====USER_PUBLISHED=====", connectedUserCallDetails);
             }
         );
 
         f7.on(
             K.ModuleComponentsLibs.im.callScreen.USER_UNPUBLISHED,
             ( connectedUserCallDetails: any ) => {
-                onCallDisconnectedUser(connectedUserCallDetails);
+                console.log("=====USER_UNPUBLISHED=====", connectedUserCallDetails);
+            }
+        );
+
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.USER_JOINED,
+            ( connectedUserCallDetails: any ) => {
+                console.log("=====USER_JOINED=====", connectedUserCallDetails);
+            }
+        );
+
+        f7.on(
+            K.ModuleComponentsLibs.im.callScreen.USER_LEFT,
+            ( connectedUserCallDetails: any ) => {
+                console.log("=====USER_LEFT=====", connectedUserCallDetails);
             }
         );
 

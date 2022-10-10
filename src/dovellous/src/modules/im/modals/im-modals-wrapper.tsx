@@ -6,108 +6,112 @@ export default ({callDataObject}) => {
 
     const [callData, setCallData] = useState(callDataObject);
 
-    const generateCallID = () => {
-
-    };
-
-    // Begin IM Call Actions
-
-    const onMuteHandler = (userData)=>{
+    const onMuteHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onMuteHandler", userData);
 
     };
 
-    const onUnMuteHandler = (userData)=>{
+    const onUnMuteHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onUnMuteHandler", userData);
 
     };
 
-    const onCameraOnHandler = (userData)=>{
+    const onCameraOnHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onCameraOnHandler", userData);
 
     };
 
-    const onCameraOffHandler = (userData)=>{
+    const onCameraOffHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onCameraOffHandler", userData);
 
     };
 
-    const onLoudSpekerOnHandler = (userData)=>{
+    const onLoudSpekerOnHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onLoudSpekerOnHandler", userData);
 
     };
 
-    const onLoudSpeakerOffHandler = (userData)=>{
+    const onLoudSpeakerOffHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onLoudSpeakerOffHandler", userData);
 
     };
 
-    const onEndCallHandler = (userData)=>{
+    const onEndCallHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onEndCallHandler", userData);
 
     };
 
-    const onEndedCallHandler = (userData)=>{
+    const onEndedCallHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onEndedCallHandler", userData);
 
     };
 
-    const onHoldCallHandler = (userData)=>{
+    const onHoldCallHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onHoldCallHandler", userData);
 
     };
 
-    const onOutgoingCallHandler = (userData)=>{
+    const onOutgoingCallHandler = (userData: any)=>{
         console.log("::: VOICE CALL ACTION - onOutgoingCallHandler", userData);
 
     };
 
-    const onIncomingCallHandler = (userData)=>{
+    const onIncomingCallHandler = (userData: any)=>{
         console.log("::: VOICE CALL ACTION - onIncomingCallHandler", userData);
 
     };
 
-    const onAnswerCallHandler = (userData)=>{
+    const onAnswerCallHandler = (userData: any)=>{
         console.log("::: VOICE CALL ACTION - onAnswerCallHandler", userData);
 
     };
 
-    const onDeclineCallHandler = (userData)=>{
+    const onDeclineCallHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onDeclineCallHandler", userData);
 
     };
 
-    const onAddParticipantHandler = (userData)=>{
+    const onUserPublishedHandler = (userData: any, mediaType: any)=>{
+
+        console.log("::: VOICE CALL ACTION - onAddParticipantHandler", userData, mediaType);
+
+    };
+   
+    const onUserUnpublishedHandler = (userData: any)=>{
 
         console.log("::: VOICE CALL ACTION - onAddParticipantHandler", userData);
 
     };
    
-    const onParticipantJoinedHandler = (userData)=>{
+    const onUserJoinedHandler = (userData: any)=>{
 
-        console.log("::: VOICE CALL ACTION - onParticipantJoinedHandler", userData);
+        console.log("::: VOICE CALL ACTION - onUserJoinedHandler", userData);
 
     };
    
-    const onParticipantLeftHandler = (userData)=>{
+    const onUserLeftHandler = (userData: any)=>{
 
-        console.log("::: VOICE CALL ACTION - onParticipantLeftHandler", userData);
+        console.log("::: VOICE CALL ACTION - onUserLeftHandler", userData);
 
     };
 
     useEffect(() => {
       
         setCallData(callDataObject);
+
+        return () => {
+            setCallData({});
+        }
     
     }, [callDataObject])
     
@@ -120,7 +124,6 @@ export default ({callDataObject}) => {
 
             <IMCall 
                 id={`im-im-call-sheet-modal`} 
-                key={`im-im-call-sheet-modal`} 
                 className={`im-im-call-sheet-modal`}
                 isVideoCall={callData.isVideoCall} 
                 isIncoming={callData.isIncomingCall}
@@ -137,7 +140,10 @@ export default ({callDataObject}) => {
                 onHoldCall={onHoldCallHandler}
                 onAnswerCall={onAnswerCallHandler}
                 onDeclineCall={onDeclineCallHandler}
-                onAddParticipant={onAddParticipantHandler}
+                onUserPublished={onUserPublishedHandler}
+                onUserUnpublished={onUserUnpublishedHandler}
+                onUserJoined={onUserJoinedHandler}
+                onUserLeft={onUserLeftHandler}
                 
             />
 

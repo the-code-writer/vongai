@@ -2,11 +2,9 @@ import { useState, useEffect } from 'react';
 import AgoraRTC, {
   IAgoraRTCClient, IAgoraRTCRemoteUser, MicrophoneAudioTrackInitConfig, CameraVideoTrackInitConfig, IMicrophoneAudioTrack, ICameraVideoTrack, ILocalVideoTrack, ILocalAudioTrack, SDK_CODEC, SDK_MODE, UID
 } from 'agora-rtc-sdk-ng';
-import { f7 } from 'framework7-react';
 import K from '../../app/konstants';
 
-//import AIDenoiserEnabler from "./AIDenoiserEnabler";
-
+import AIDenoiserEnabler from "./AIDenoiserEnabler";
 
 export default function useAgora(
   Framework7Instance: any,
@@ -19,6 +17,7 @@ export default function useAgora(
     client:IAgoraRTCClient | undefined,
     localAudioTrack: ILocalAudioTrack | undefined,
     localVideoTrack: ILocalVideoTrack | undefined,
+    localClientUID: UID,
     joinState: boolean,
     setAgoraAppParams: Function,
     setAgoraTracksConfig: Function,
@@ -49,6 +48,7 @@ export default function useAgora(
   const [appId, setAppId] = useState<string>('');
   const [localVideoTrack, setLocalVideoTrack] = useState<ILocalVideoTrack | undefined>(undefined);
   const [localAudioTrack, setLocalAudioTrack] = useState<ILocalAudioTrack | undefined>(undefined);
+  const [localClientUID, setLocalCLientUID] = useState<UID | undefined>(undefined);
 
   const [joinState, setJoinState] = useState<boolean>(false);
 
@@ -414,8 +414,6 @@ export default function useAgora(
 
     if (!client) return;
 
-    console.warn("::: JOIN CHANNEL :::", channel, callData);
-
     try{
 
       const [microphoneTrack, cameraTrack] = await createLocalTracks(
@@ -423,12 +421,20 @@ export default function useAgora(
         videoInputDevicesConfig      
       );
 
+      console.warn("::: JOIN CHANNEL :::", appId, channel);
+
       client.join(appId, channel, token || null, uid || null)
       .then(async(uid:UID)=>{
 
-        //const enableDenoiser4AudioTrack = AIDenoiserEnabler();
+        setLocalCLientUID(uid);
 
-        //await enableDenoiser4AudioTrack.enabler(microphoneTrack);
+        setJoinState(true);
+        
+        const enableDenoiser4AudioTrack = AIDenoiserEnabler();
+        
+        await enableDenoiser4AudioTrack.enabler(microphoneTrack);
+
+        console.warn("::: JOINED CHANNEL ---- NOW PUBLISH::: !!!!!!!!!!!!!!!!!", uid);
 
         await client.publish([microphoneTrack, cameraTrack]);
 
@@ -436,7 +442,7 @@ export default function useAgora(
         (window as any).videoTrack = cameraTrack;
         (window as any).audioTrack = microphoneTrack;
 
-        setJoinState(true);
+        console.warn("::: PUBLISHED CHANNEL ::: !!!!!!!!!!!!!!!!!", localClientUID, client, cameraTrack, microphoneTrack);
 
         Framework7Instance.emit(
           K.ModuleComponentsLibs.im.callScreen.CONNECTED,
@@ -637,6 +643,7 @@ export default function useAgora(
     client,
     localAudioTrack,
     localVideoTrack,
+    localClientUID,
     joinState,
     setAgoraAppParams,
     setAgoraTracksConfig,
