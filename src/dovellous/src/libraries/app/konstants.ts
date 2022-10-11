@@ -313,6 +313,7 @@ const K = {
 				ENDED: 'CallEnded',
 				ENDED_BY_REMOTE_USER: 'CallEndedByRemoteUser',
 				NETWORK_CHANGE: 'NetworkChange',
+				SUMMARY: 'CallSummary',
 				START_TIMER: 'StartCallTimer',
 				PAUSE_TIMER: 'PauseCallTimer',
 				RESET_TIMER: 'PauseCallTimer',

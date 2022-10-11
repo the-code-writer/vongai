@@ -140,31 +140,31 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const [currentCallStateLabel, setCurrentCallStateLabel] = useState<String[]>('Please wait...');
 
-    const [currentCallStateINITIALIZING, setCurrentCallStateINITIALIZING] = useState<Boolean[]>(true);
-    const [currentCallStateDIALING, setCurrentCallStateDIALING] = useState<Boolean[]>(false);
-    const [currentCallStateCONNECTING, setCurrentCallStateCONNECTING] = useState<Boolean[]>(false);
-    const [currentCallStateCONNECTED, setCurrentCallStateCONNECTED] = useState<Boolean[]>(false);
-    const [currentCallStateRECONNECTING, setCurrentCallStateRECONNECTING] = useState<Boolean[]>(false);
-    const [currentCallStateDISCONNECTING, setCurrentCallStateDISCONNECTING] = useState<Boolean[]>(false);
-    const [currentCallStateDISCONNECTED, setCurrentCallStateDISCONNECTED] = useState<Boolean[]>(false);
+    const [currentCallStateINITIALIZING, setCurrentCallStateINITIALIZING] = useState<Boolean>(true);
+    const [currentCallStateDIALING, setCurrentCallStateDIALING] = useState<Boolean>(false);
+    const [currentCallStateCONNECTING, setCurrentCallStateCONNECTING] = useState<Boolean>(false);
+    const [currentCallStateCONNECTED, setCurrentCallStateCONNECTED] = useState<Boolean>(false);
+    const [currentCallStateRECONNECTING, setCurrentCallStateRECONNECTING] = useState<Boolean>(false);
+    const [currentCallStateDISCONNECTING, setCurrentCallStateDISCONNECTING] = useState<Boolean>(false);
+    const [currentCallStateDISCONNECTED, setCurrentCallStateDISCONNECTED] = useState<Boolean>(false);
 
-    const [currentCallActionAnswered, setCurrentCallActionAnswered] = useState<Boolean[]>(false);
-    const [currentCallActionDeclined, setCurrentCallActionDeclined] = useState<Boolean[]>(false);
-    const [currentCallActionInProgress, setCurrentCallActionInProgress] = useState<Boolean[]>(false);
-    const [currentCallActionHold, setCurrentCallActionHold] = useState<Boolean[]>(false);
-    const [currentCallActionMuted, setCurrentCallActionMuted] = useState<Boolean[]>(false);
-    const [currentCallActionEnded, setCurrentCallActionEnded] = useState<Boolean[]>(true);
+    const [currentCallActionAnswered, setCurrentCallActionAnswered] = useState<Boolean>(false);
+    const [currentCallActionDeclined, setCurrentCallActionDeclined] = useState<Boolean>(false);
+    const [currentCallActionInProgress, setCurrentCallActionInProgress] = useState<Boolean>(false);
+    const [currentCallActionHold, setCurrentCallActionHold] = useState<Boolean>(false);
+    const [currentCallActionMuted, setCurrentCallActionMuted] = useState<Boolean>(false);
+    const [currentCallActionEnded, setCurrentCallActionEnded] = useState<Boolean>(true);
 
-    const [currentCallTypeIsIncoming, setCurrentCallTypeIsIncoming] = useState<Boolean[]>(isIncoming);
-    const [currentCallTypeIsVideo, setCurrentCallTypeIsVideo] = useState<Boolean[]>(isVideoCall);
+    const [currentCallTypeIsIncoming, setCurrentCallTypeIsIncoming] = useState<Boolean>(isIncoming);
+    const [currentCallTypeIsVideo, setCurrentCallTypeIsVideo] = useState<Boolean>(isVideoCall);
 
-    const [currentCallModeIsUsingFrontCamera, setCurrentCallModeIsUsingFrontCamera] = useState<Boolean[]>(true);
-    const [currentCallModeIsCameraTurnedON, setCurrentCallModeIsCameraTurnedON] = useState<Boolean[]>(isVideoCall);
-    const [currentCallModeIsLoudSpeakerTurnedON, setCurrentCallModeIsLoudSpeakerTurnedON] = useState<Boolean[]>(false);
+    const [currentCallModeIsUsingFrontCamera, setCurrentCallModeIsUsingFrontCamera] = useState<Boolean>(true);
+    const [currentCallModeIsCameraTurnedON, setCurrentCallModeIsCameraTurnedON] = useState<Boolean>(isVideoCall);
+    const [currentCallModeIsLoudSpeakerTurnedON, setCurrentCallModeIsLoudSpeakerTurnedON] = useState<Boolean>(false);
 
     const [ringingTone, setRingingTone] = useState(new Audio(song));
 
-    const [isAgoraModuleReady, setIsAgoraModuleReady] = useState<Boolean[]>(false);
+    const [isAgoraModuleReady, setIsAgoraModuleReady] = useState<Boolean>(false);
 
     const CallTimer = useCallback(({visible, className}) => {
 
@@ -228,7 +228,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     },[]);
 
-    const currentCallPayloadSnapshot = (endedTimestamp:number) => {
+    const currentCallPayloadSnapshot = () => {
 
         const _currentCallPayload: IMCallTypeInterfaces.CallDataObject = currentCallPayload;
 
@@ -243,27 +243,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         _currentCallPayload.isIncoming= currentCallTypeIsIncoming;
 
         _currentCallPayload.callAnsweredTimestamp = currentCallTimeAnswered;
-
-        if(endedTimestamp !== undefined){
-
-            _currentCallPayload.callEndedTimestamp = (endedTimestamp !== undefined)?endedTimestamp:0;
-
-            const _callDuration:number = ((endedTimestamp-currentCallTimeAnswered)/1000);
-            
-            _currentCallPayload.callDuration = (endedTimestamp !== undefined) ? _callDuration:0;
-            
-            setCurrentCallTimeEnded(endedTimestamp);
-            
-            console.warn(`::currentCallPayloadSnapshot::endedTimestamp::${endedTimestamp} - ${currentCallTimeAnswered}`, _callDuration);
-
-        }else{
-
-            _currentCallPayload.callEndedTimestamp = 0;
-
-            _currentCallPayload.callDuration = 0;
-
-        }
-        
 
         _currentCallPayload.callDialAttempts = currentCallDialAttempts;
 
@@ -541,22 +520,40 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         ringingTone.pause();
 
         const endedTimestamp:number = new Date().getTime();
+        let callDuration:number = 0;
+        const callSummary:any = currentCallPayloadSnapshot();
 
-        const callSummary:any = currentCallPayloadSnapshot(endedTimestamp);
+        setCurrentCallTimeEnded(endedTimestamp);
 
-        setCurrentCallSummary(callSummary);
+        if(endedTimestamp > 0){
 
-        console.warn("::::::*********** CALL DISCONNECTED : SUMMARY ************:::::: ", callSummary);
+            callDuration = Math.floor((endedTimestamp-callSummary.callAnsweredTimestamp)/1000);
 
-        setCurrentCallStateCONNECTED(false);
-        setCurrentCallActionInProgress(false);
+        }
+        
+        callSummary.callDuration = callDuration;
 
-        setCurrentCallViewStateName(
-            K.ModuleComponentsLibs.im.callScreen.ENDED
-        );
+        callSummary.callEndedTimestamp = endedTimestamp;
 
-        f7.emit(K.ModuleComponentsLibs.im.callScreen.STOP_TIMER);
-    
+        if(callSummary.callAnsweredTimestamp > 0 && callDuration > 0){
+                
+            setCurrentCallSummary(callSummary);
+
+            setCurrentCallStateCONNECTED(false);
+            setCurrentCallActionInProgress(false);
+
+            setCurrentCallViewStateName(
+                K.ModuleComponentsLibs.im.callScreen.ENDED
+            );
+
+            f7.emit(K.ModuleComponentsLibs.im.callScreen.STOP_TIMER);
+
+            f7.emit(K.ModuleComponentsLibs.im.callScreen.SUMMARY, callSummary);
+        
+            console.warn("::::::*********** 1 * CALL DISCONNECTED : SUMMARY ************:::::: ", callSummary);
+
+        }
+
     }
 
     const onAnswerCallHandler = () => {
@@ -895,13 +892,13 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 <div className={`videos visible`} >
 
-                    {remoteUsers.length > 1 ? (
+                    {(remoteUsers.length > 1 && joinState) ? (
                         
                         <div className='player-container-conference'>
 
                             <div className='local-wrapper'>
                                 <MediaPlayer 
-                                    uuid={client.uid} 
+                                    uuid={`user_${currentCallUUID}`} 
                                     user={null}
                                     videoTrack={localVideoTrack} 
                                     audioTrack={undefined} />
@@ -923,9 +920,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     ):(
 
-                        remoteUsers.length === 1 && (
+                        joinState && (
 
                         <div className='player-container-duo'>
+
+                            {remoteUsers.length > 0 && (
 
                             <div id="remote" className={`remote ${currentCallActionInProgress?'connected':'not-connected'}`} >
                                 <MediaPlayer 
@@ -934,6 +933,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                     videoTrack={remoteUsers[0].videoTrack} 
                                     audioTrack={remoteUsers[0].audioTrack} />
                             </div>
+
+                            )}
 
                             <div id="local" className={`local ${currentCallActionInProgress?'connected':'not-connected'}`} >
                                 <MediaPlayer 
