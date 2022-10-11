@@ -156,11 +156,23 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         onUserLeftHandler
     );
 
-    const [currentCallData, setCurrentCallData] = useState(callObject);
-
-    const [currentCallSessionData, setCurrentCallSessionData] = useState(['CHANNEL','CALL_ID']);
-
     const [currentViewState, setCurrentViewState] = useState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
+
+    const [currentCallSessionID, setCurrentCallSessionID] = useState<String>('SID');
+
+    const [currentCallSessionChannel, setCurrentCallSessionChannel] = useState<String>('SCH');
+
+    const [currentCallUserOrigin, setCurrentCallUserOrigin] = useState<any>({displayName:'DNO',phoneNumber:'000'});
+
+    const [currentCallUserDestination, setCurrentCallUserDestination] = useState<any>({displayName:'DND',phoneNumber:'001'});
+
+    const [currentCallTimeDial, setCurrentCallTimeDial] = useState<Number>(0);
+    const [currentCallTimeConnected, setCurrentCallTimeConnected] = useState<Number>(0);
+    const [currentCallTimeEnded, setCurrentCallTimeEnded] = useState<Number>(0);
+    const [currentCallDuration, setCurrentCallDuration] = useState<Number>(0);
+    const [currentCallTimeDialAttempts, setCurrentCallTimeDialAttempts] = useState<String[]>([]);
+
+    const [currentCallStateCONNECTING, setCurrentCallStateCONNECTING] = useState<Boolean[]>(false);
     
     const [isMuteOn, setisMuteOn] = useState(false);
     const [isCameraOn, setIsCameraOn] = useState(isVideoCall);
@@ -787,9 +799,22 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const resetState = () => {        
         
-        setCurrentCallData(callObject);
-        setCurrentCallSessionData(['CHANNEL','CALL_ID']);
+        setCurrentCallSessionID('SID');
+
+        setCurrentCallSessionChannel('SCH');
+
+        setCurrentCallUserOrigin({displayName:'DNO',phoneNumber:'000'});
+
+        setCurrentCallUserDestination({displayName:'DND',phoneNumber:'001'});
+
+        setCurrentCallTimeDial(0);
+        setCurrentCallTimeConnected(0);
+        setCurrentCallTimeEnded(0);
+        setCurrentCallDuration(0);
+        setCurrentCallTimeDialAttempts([]);
+    
         setCurrentViewState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
+        
         setisMuteOn(false);
         setIsCameraOn(isVideoCall);
         setIsIncomingCall(isIncoming);
@@ -802,6 +827,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setIsCallInProgress(false);
         setCallRedialAttempts([]);
         setRingingTone(new Audio(song));
+
     }
 
     const addEventListeners = () => {
