@@ -4,6 +4,8 @@ import AgoraRTC, {
 } from 'agora-rtc-sdk-ng';
 import K from '../../app/konstants';
 
+import * as IMCallTypeInterfaces from "../../../libraries/agora/apps/voice/IMCallTypeInterfaces";
+
 import AIDenoiserEnabler from "./AIDenoiserEnabler";
 
 export default function useAgora(
@@ -397,20 +399,20 @@ export default function useAgora(
     return [microphoneTrack, cameraTrack];
   }
 
-  const connectCall = (callData: any) => {
+  const connectCall = (callPayload: IMCallTypeInterfaces.CallDataObject) => {
 
-    const callSessionId:string = String(callData.callSessionId).toLowerCase();
+    const callSessionChannel:string = String(callPayload.callSessionChannel).toLowerCase();
 
-    Framework7Instance.emit(
-      K.ModuleComponentsLibs.im.callScreen.CONNECTING,
-      callData
-    );
+    joinChannel(callSessionChannel, callPayload, undefined, `user_${callPayload.uid}`);
 
     setJoinState(false);
 
     setJoiningState(true);
     
-    joinChannel(callSessionId, callData, undefined, `user_${callData.callObject.uid}`);
+    Framework7Instance.emit(
+      K.ModuleComponentsLibs.im.callScreen.CONNECTING,
+      callPayload
+    );
 
   }
 
@@ -426,7 +428,7 @@ export default function useAgora(
 
   }
 
-  async function joinChannel(channel: string, callData:any, token?: string, uid?: UID | string | number | null) {
+  async function joinChannel(channel: string, callPayload:any, token?: string, uid?: UID | string | number | null) {
 
     if (!client) return;
 
@@ -460,30 +462,20 @@ export default function useAgora(
         (window as any).videoTrack = cameraTrack;
         (window as any).audioTrack = microphoneTrack;
 
-        Framework7Instance.emit(
-          K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-          {
-            client: client,
-            videoTrack: cameraTrack,
-            audioTrack: microphoneTrack,
-            callData: callData,
-            channel: channel,
-            token: token,
-            uid: uid
-          }
-        );
-
-        console.warn("::: PUBLISHED CHANNEL ::: !!!!!!!!!!!!!!!!!", callData, uid, localClientUID, newuid, channel, appId);
-
-        console.warn("::: FIRE EVENT ::: !!!!!!!!!!!!!!!!!", {
+        const payload:any = {
           client: client,
           videoTrack: cameraTrack,
           audioTrack: microphoneTrack,
-          callData: callData,
+          callPayload: callPayload,
           channel: channel,
           token: token,
           uid: uid
-        });
+        };
+
+        Framework7Instance.emit(
+          K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+          payload
+        );
 
       })
       .catch((error: any)=>{
