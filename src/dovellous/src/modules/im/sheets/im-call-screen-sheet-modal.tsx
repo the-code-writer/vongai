@@ -532,7 +532,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallActionHold(true);
 
         setCurrentCallViewStateName(
-            K.ModuleComponentsLibs.im.callScreen.PAUSED
+            K.ModuleComponentsLibs.im.callScreen.ON_HOLD
         );
 
         onHoldCall(getCallData());
