@@ -84,6 +84,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         localClientChannel,
         localClientSessionToken,
         localClientSessionID,
+        localTracksAvailable,
         joinState,
         joiningState,
         disconnectCall,
@@ -233,7 +234,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         const _currentCallPayload: IMCallTypeInterfaces.CallDataObject = currentCallPayload;
 
         _currentCallPayload.uid = currentCallUUID;
-        _currentCallPayload.userData = currentCallUserData;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+        _currentCallPayload.userData = currentCallUserData;
         _currentCallPayload.origin = currentCallUserOrigin;
         _currentCallPayload.destination = currentCallUserDestination;
         _currentCallPayload.callStartedTimestamp = currentCallTimeStarted;
@@ -892,21 +893,26 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 <div className={`videos visible`} >
 
-                    {(remoteUsers.length > 1 && joinState) ? (
-                        
+                    {(remoteUsers.length > 1) ? (
+
                         <div className='player-container-conference'>
 
-                            <div className='local-wrapper'>
-                                <MediaPlayer 
-                                    uuid={`user_${currentCallUUID}`} 
-                                    user={null}
-                                    videoTrack={localVideoTrack} 
-                                    audioTrack={undefined} />
+                            {localTracksAvailable && (
+
+                            <div className={`local-wrapper ${localClientUID}`} key={localClientUID}>
+                                
+                                <MediaPlayer
+                                    uuid={`${localClientUID}`}
+                                    videoTrack={localVideoTrack}
+                                    isBackdrop={remoteUsers.length === 0} />
+                                
                             </div>
 
+                            )}
+                        
                             {remoteUsers.map(user => (
 
-                            <div className='remote-wrapper' key={user.uid}>
+                            <div className={`remote-wrapper ${user.uid}`} key={user.uid}>
                                 <MediaPlayer 
                                     uuid={user.uid} 
                                     user={user} 
@@ -920,35 +926,36 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     ):(
 
-                        joinState && (
-
                         <div className='player-container-duo'>
 
-                            {remoteUsers.length > 0 && (
+                            {joinState && remoteUsers.length > 0 && (
 
-                            <div id="remote" className={`remote ${currentCallActionInProgress?'connected':'not-connected'}`} >
+                            <div className={`remote-wrapper remote connected ${remoteUsers[0].uid} ${remoteUsers.length === 0?'backdrop':''}`} >
+
                                 <MediaPlayer 
-                                    uuid={`remote-video`} 
+                                    uuid={remoteUsers[0].uid} 
                                     user={remoteUsers[0]} 
                                     videoTrack={remoteUsers[0].videoTrack} 
                                     audioTrack={remoteUsers[0].audioTrack} />
+
                             </div>
 
                             )}
 
-                            <div id="local" className={`local ${currentCallActionInProgress?'connected':'not-connected'} ${remoteUsers.length === 0?'backdrop':''}`} >
-                                <MediaPlayer 
-                                    uuid={`local-video`}
-                                    user={null}
-                                    videoTrack={localVideoTrack} 
-                                    audioTrack={undefined}
-                                    isBackdrop={remoteUsers.length === 0}
-                                    />
+                            {localTracksAvailable && (
+
+                            <div className={`local-wrapper local connected ${localClientUID} ${remoteUsers.length === 0?'backdrop':''}`} key={localClientUID}>
+                                                            
+                                <MediaPlayer
+                                    uuid={`${localClientUID}`}
+                                    videoTrack={localVideoTrack}
+                                    isBackdrop={remoteUsers.length === 0} />
+
                             </div>
+
+                            )}
                         
                         </div>
-
-                        )
 
                     )}
 

@@ -23,6 +23,7 @@ export default function useAgora(
     localClientChannel: any,
     localClientSessionToken: any,
     localClientSessionID: any,
+    localTracksAvailable: boolean,
     joinState: boolean,
     joiningState: boolean,
     setAgoraAppParams: Function,
@@ -60,7 +61,9 @@ export default function useAgora(
   const [localClientUID, setLocalClientUID] = useState<UID | undefined>(undefined);
   const [localClientChannel, setLocalClientChannel] = useState<UID | undefined>(undefined);
   const [localClientSessionID, setLocalClientSessionID] = useState<UID | undefined>(undefined);
-  const [localClientSessionToken, setLocalClientSessionToken] = useState<UID | undefined>(undefined);
+  const [localClientSessionToken, setLocalClientSessionToken] = useState<UID | undefined>(undefined)
+  
+  const [localTracksAvailable, setLocalTracksAvailable] = useState<boolean>(false);
 
   const [joinState, setJoinState] = useState<boolean>(false);
 
@@ -395,7 +398,9 @@ export default function useAgora(
   ): Promise<[IMicrophoneAudioTrack, ICameraVideoTrack]> {
     const [microphoneTrack, cameraTrack] = await AgoraRTC.createMicrophoneAndCameraTracks(audioConfig, videoConfig);
     setLocalAudioTrack(microphoneTrack);
-    setLocalVideoTrack(cameraTrack);
+    setLocalVideoTrack(cameraTrack);    
+    setLocalTracksAvailable(true);
+
     return [microphoneTrack, cameraTrack];
   }
 
@@ -432,6 +437,8 @@ export default function useAgora(
 
     if (!client) return;
 
+    if (!channel) return;
+
     try{
 
       const [microphoneTrack, cameraTrack] = await createLocalTracks(
@@ -440,9 +447,9 @@ export default function useAgora(
       );
 
       client.join(appId, channel, token || null, uid || null)
-      .then(async(newuid:UID)=>{
+      .then(async(newUUID:UID)=>{
 
-        setLocalClientUID(uid);
+        setLocalClientUID(newUUID);
 
         setLocalClientChannel(channel);
 
@@ -646,6 +653,7 @@ export default function useAgora(
     localClientChannel,
     localClientSessionToken,
     localClientSessionID,
+    localTracksAvailable,
     joinState,
     joiningState,
     setAgoraAppParams,
