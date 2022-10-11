@@ -936,12 +936,14 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             )}
 
-                            <div id="local" className={`local ${currentCallActionInProgress?'connected':'not-connected'}`} >
+                            <div id="local" className={`local ${currentCallActionInProgress?'connected':'not-connected'} ${remoteUsers.length === 0?'backdrop':''}`} >
                                 <MediaPlayer 
                                     uuid={`local-video`}
                                     user={null}
                                     videoTrack={localVideoTrack} 
-                                    audioTrack={undefined} />
+                                    audioTrack={undefined}
+                                    isBackdrop={remoteUsers.length === 0}
+                                    />
                             </div>
                         
                         </div>
