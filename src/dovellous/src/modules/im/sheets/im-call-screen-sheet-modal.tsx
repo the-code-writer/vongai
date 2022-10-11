@@ -156,7 +156,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         onUserLeftHandler
     );
 
-    const [currentViewState, setCurrentViewState] = useState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
+    const [currentCallViewStateName, setCurrentCallViewStateName] = useState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
 
     const [currentCallSessionID, setCurrentCallSessionID] = useState<String>('SID');
 
@@ -172,20 +172,30 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const [currentCallDuration, setCurrentCallDuration] = useState<Number>(0);
     const [currentCallTimeDialAttempts, setCurrentCallTimeDialAttempts] = useState<String[]>([]);
 
+    const [currentCallStateLabel, setCurrentCallStateLabel] = useState<String[]>('Please wait...');
+
+    const [currentCallStateINITIALIZING, setCurrentCallStateINITIALIZING] = useState<Boolean[]>(true);
+    const [currentCallStateDIALING, setCurrentCallStateDIALING] = useState<Boolean[]>(false);
     const [currentCallStateCONNECTING, setCurrentCallStateCONNECTING] = useState<Boolean[]>(false);
+    const [currentCallStateCONNECTED, setCurrentCallStateCONNECTED] = useState<Boolean[]>(false);
+    const [currentCallStateRECONNECTING, setCurrentCallStateRECONNECTING] = useState<Boolean[]>(false);
+    const [currentCallStateDISCONNECTING, setCurrentCallStateDISCONNECTING] = useState<Boolean[]>(false);
+    const [currentCallStateDISCONNECTED, setCurrentCallStateDISCONNECTED] = useState<Boolean[]>(false);
+
+    const [currentCallActionAnswered, setCurrentCallActionAnswered] = useState<Boolean[]>(false);
+    const [currentCallActionDeclined, setCurrentCallActionDeclined] = useState<Boolean[]>(false);
+    const [currentCallActionInProgress, setCurrentCallActionInProgress] = useState<Boolean[]>(false);
+    const [currentCallActionHold, setCurrentCallActionHold] = useState<Boolean[]>(false);
+    const [currentCallActionMuted, setCurrentCallActionMuted] = useState<Boolean[]>(false);
+    const [currentCallActionEnded, setCurrentCallActionEnded] = useState<Boolean[]>(true);
+
+    const [currentCallTypeIsIncoming, setCurrentCallTypeIsIncoming] = useState<Boolean[]>(isIncoming);
+    const [currentCallTypeIsVideo, setCurrentCallTypeIsVideo] = useState<Boolean[]>(isVideoCall);
+
     
-    const [isMuteOn, setisMuteOn] = useState(false);
-    const [isCameraOn, setIsCameraOn] = useState(isVideoCall);
-    const [isIncomingCall, setIsIncomingCall] = useState(isIncoming);
-    const [isFrontCamera, setIsFrontCamera] = useState(true);
-    const [isLoudSpeakerOn, setIsLoudSpeakerOn] = useState(false);
-    const [isOnHold, setIsOnHold] = useState(false);
-    const [isCallConnected, setIsCallConnected] = useState(false);
-    const [isCallEnded, setIsCallEnded] = useState(false);
-    const [isCallAnswered, setIsCallAnswered] = useState(false);
-    const [isCallDeclined, setIsCallDeclined] = useState(false);
-    const [isCallInProgress, setIsCallInProgress] = useState(false);
-    const [callRedialAttempts, setCallRedialAttempts] = useState([]);
+    const [currentCallModeIsUsingFrontCamera, setCurrentCallModeIsUsingFrontCamera] = useState<Boolean[]>(true);
+    const [currentCallModeIsCameraTurnedON, setCurrentCallModeIsCameraTurnedON] = useState<Boolean[]>(isVideoCall);
+    const [currentCallModeIsLoudSpeakerTurnedON, setCurrentCallModeIsLoudSpeakerTurnedON] = useState<Boolean[]>(false);
 
     const [ringingTone, setRingingTone] = useState(new Audio(song));
 
@@ -231,14 +241,22 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         },[]);
 
         return (
-          <React.Fragment>
-                <span className={className} style={{height: visible?'100%':'0px', opacity: visible?1:0}}>
-                    <>{parseInt(days) > 0 && (String(days).padStart(2, '0')`:`)}</>
-                    <>{parseInt(hours) > 0 && (String(hours).padStart(2, '0')`:`)}</>
-                    <>{`${String(minutes).padStart(2, '0')}:`}</>
-                    <>{`${String(seconds).padStart(2, '0')}`}</>
-                </span>
-          </React.Fragment>
+
+            <React.Fragment>
+
+                {isRunning && (
+
+                    <span className={className} style={{height: visible?'100%':'0px', opacity: visible?1:0}}>
+                        <>{days >  0 && (`${String(days).padStart(2, '0')}:`)}</>
+                        <>{hours > 0 && (`${String(hours).padStart(2, '0')}:`)}</>
+                        <>{`${String(minutes).padStart(2, '0')}:`}</>
+                        <>{`${String(seconds).padStart(2, '0')}`}</>
+                    </span>
+            
+                )}
+            
+            </React.Fragment>
+
         );
 
     },[]);
@@ -371,10 +389,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     };
 
-    const includedInViewState = (states: any) => {
+    const viewIncludeInCurrentState = (states: String[]) => {
 
         if(Array.isArray(states)){
-            return states.includes(currentViewState);
+            return states.includes(currentCallViewStateName);
         }
 
         return false;
@@ -383,13 +401,13 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onMuteToggle = () => {
 
-        isMuteOn ? onUnMuteHandler() : onMuteHandler();
+        currentCallActionMuted ? onUnMuteHandler() : onMuteHandler();
 
     };
 
     const onMuteHandler = () => {
 
-        setisMuteOn(true);
+        setCurrentCallActionMuted(true);
 
         onMute(getCallData());
 
@@ -399,7 +417,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onUnMuteHandler = () => {
 
-        setisMuteOn(false);
+        setCurrentCallActionMuted(false);
 
         onUnMute(getCallData());
 
@@ -409,7 +427,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onFrontCameraToggle = () => {
 
-        setIsFrontCamera(!isFrontCamera);
+        setCurrentCallModeIsUsingFrontCamera(!currentCallModeIsUsingFrontCamera);
 
         setNextVideoInputDevicesIndex();
 
@@ -417,7 +435,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onCameraToggle = () => {
 
-        if(isCameraOn){            
+        if(currentCallModeIsCameraTurnedON){            
             onCameraOffHandler();
         }else{
             onCameraOnHandler();
@@ -427,7 +445,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onCameraOnHandler = () => {
 
-        setIsCameraOn(true);
+        setCurrentCallModeIsCameraTurnedON(true);
 
         onCameraOn(getCallData());
 
@@ -435,7 +453,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onCameraOffHandler = () => {
 
-        setIsCameraOn(false);
+        setCurrentCallModeIsCameraTurnedON(false);
 
         onCameraOff(getCallData());
 
@@ -443,7 +461,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onLoudSpeakerToggle = () => {
 
-        isLoudSpeakerOn ? onLoudSpeakerOffHandler() : onLoudSpeakerOnHandler();
+        currentCallModeIsLoudSpeakerTurnedON ? onLoudSpeakerOffHandler() : onLoudSpeakerOnHandler();
 
         setNextAudioOutputDevicesIndex();
 
@@ -451,7 +469,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onLoudSpeakerOnHandler = () => {
 
-        setIsLoudSpeakerOn(true);
+        setCurrentCallModeIsLoudSpeakerTurnedON(true);
 
         onLoudSpeakerOn(getCallData());
 
@@ -459,7 +477,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onLoudSpeakerOffHandler = () => {
 
-        setIsLoudSpeakerOn(false);
+        setCurrentCallModeIsLoudSpeakerTurnedON(false);
 
         onLoudSpeakerOff(getCallData());
 
@@ -489,11 +507,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         disconnectCall();
         
-        setIsCallEnded(true);
+        setCurrentCallActionEnded(true);
 
-        setIsCallInProgress(false);
+        setCurrentCallActionInProgress(false);
 
-        setCurrentViewState(
+        setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.ENDED
         );
 
@@ -505,15 +523,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onHoldToggle = () => {
 
-        !isOnHold ? onHoldCallHandler():onUnHoldCallHandler();
+        !currentCallActionHold ? onHoldCallHandler():onUnHoldCallHandler();
 
     };
 
     const onHoldCallHandler = () => {
 
-        setIsOnHold(true);
+        setCurrentCallActionHold(true);
 
-        setCurrentViewState(
+        setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.PAUSED
         );
 
@@ -527,9 +545,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onUnHoldCallHandler = () => {
 
-        setIsOnHold(false);
+        setCurrentCallActionHold(false);
 
-        setCurrentViewState(
+        setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED
         );
 
@@ -549,13 +567,13 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             
             connectIncomingCallNow();
 
-            setIsCallAnswered(false);
-            setIsCallDeclined(false);
-            setIsCallInProgress(false);
+            setCurrentCallActionAnswered(false);
+            setCurrentCallActionDeclined(false);
+            setCurrentCallActionInProgress(false);
 
             onIncomingCall(getCallData());
 
-            setCurrentViewState(
+            setCurrentCallViewStateName(
                 K.ModuleComponentsLibs.im.callScreen.INCOMING
             );
 
@@ -569,11 +587,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         
         connectOutgoingCallNow();
 
-        setIsCallAnswered(false);
-        setIsCallDeclined(false);
-        setIsCallInProgress(false);
+        setCurrentCallActionAnswered(false);
+        setCurrentCallActionDeclined(false);
+        setCurrentCallActionInProgress(false);
 
-        setCallRedialAttempts([...callRedialAttempts, new Date().getTime()]);
+        setCurrentCallTimeDialAttempts([...currentCallTimeDialAttempts, new Date().getTime()]);
 
         onOutgoingCall(getCallData());
 
@@ -581,7 +599,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         // Local Notification: OUTGOING_CALL
 
-        setCurrentViewState(
+        setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.OUTGOING
         );
 
@@ -593,7 +611,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         ringingTone.pause();
 
-        setCurrentViewState( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
+        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
 
         // Send IM to caller: PEER_CONNECTING
 
@@ -605,7 +623,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
   
         ringingTone.pause();
 
-        setCurrentViewState(
+        setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED
         );
 
@@ -615,9 +633,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallData(_currentCallData);
 
-        setIsCallInProgress(false);
+        setCurrentCallActionInProgress(false);
 
-        setIsCallConnected(true);
+        setCurrentCallStateCONNECTED(true);
 
         f7.emit(K.ModuleComponentsLibs.im.callScreen.START_TIMER);
 
@@ -633,7 +651,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         const _currentCallData = currentCallData;
 
-        _currentCallData.dialAttempts = callRedialAttempts;
+        _currentCallData.dialAttempts = currentCallTimeDialAttempts;
 
         _currentCallData.callEnded = new Date().getTime();
 
@@ -651,9 +669,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallData(_currentCallData);
 
-        setIsCallInProgress(false);
+        setCurrentCallActionInProgress(false);
 
-        setIsCallConnected(false);
+        setCurrentCallStateCONNECTED(false);
 
         console.log("::: CALL SUMMARY :::", getCallData());
 
@@ -663,11 +681,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         onCallConnecting();
 
-        setIsCallAnswered(true);
+        setCurrentCallActionAnswered(true);
 
-        setIsCallDeclined(false);
+        setCurrentCallActionDeclined(false);
 
-        setIsCallInProgress(false);
+        setCurrentCallActionInProgress(false);
 
         onAnswerCall(getCallData());
 
@@ -677,11 +695,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         ringingTone.pause();
 
-        setIsCallAnswered(false);
+        setCurrentCallActionAnswered(false);
 
-        setIsCallDeclined(true);
+        setCurrentCallActionDeclined(true);
 
-        setCurrentViewState( K.ModuleComponentsLibs.im.callScreen.ENDED );
+        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.ENDED );
 
         onDeclineCall(getCallData());
 
@@ -813,19 +831,19 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallDuration(0);
         setCurrentCallTimeDialAttempts([]);
     
-        setCurrentViewState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
+        setCurrentCallViewStateName(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
         
-        setisMuteOn(false);
-        setIsCameraOn(isVideoCall);
-        setIsIncomingCall(isIncoming);
-        setIsFrontCamera(true);
-        setIsLoudSpeakerOn(false);
-        setIsOnHold(false);
-        setIsCallEnded(false);
-        setIsCallAnswered(false);
-        setIsCallDeclined(false);
-        setIsCallInProgress(false);
-        setCallRedialAttempts([]);
+        setCurrentCallActionMuted(false);
+        setCurrentCallModeIsCameraTurnedON(isVideoCall);
+        setCurrentCallTypeIsIncoming(isIncoming);
+        setCurrentCallModeIsUsingFrontCamera(true);
+        setCurrentCallModeIsLoudSpeakerTurnedON(false);
+        setCurrentCallActionHold(false);
+        setCurrentCallActionEnded(false);
+        setCurrentCallActionAnswered(false);
+        setCurrentCallActionDeclined(false);
+        setCurrentCallActionInProgress(false);
+        setCurrentCallTimeDialAttempts([]);
         setRingingTone(new Audio(song));
 
     }
@@ -879,10 +897,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         f7.on(
             K.ModuleComponentsLibs.im.callScreen.DISCONNECTED, () => {
 
-                setIsCallEnded(true);
-                setIsCallInProgress(false);
+                setCurrentCallActionEnded(true);
+                setCurrentCallActionInProgress(false);
 
-                setCurrentViewState(
+                setCurrentCallViewStateName(
                     K.ModuleComponentsLibs.im.callScreen.ENDED
                 );
 
@@ -911,9 +929,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         initCallObjectData();
 
-        setIsCameraOn(isVideoCall);
+        setCurrentCallModeIsCameraTurnedON(isVideoCall);
 
-        setIsIncomingCall(isIncoming);
+        setCurrentCallTypeIsIncoming(isIncoming);
 
         init(isIncoming);
 
@@ -944,7 +962,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 <div className="backdrop blurry" />
 
-                {isCameraOn && (
+                {currentCallModeIsCameraTurnedON && (
 
                 <div className={`videos visible`} >
 
@@ -980,7 +998,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                         <div className='player-container-duo'>
 
-                            <div id="remote" className={`remote ${isCallInProgress?'connected':'not-connected'}`} >
+                            <div id="remote" className={`remote ${currentCallActionInProgress?'connected':'not-connected'}`} >
                                 <MediaPlayer 
                                     uuid={`remote-video`} 
                                     user={remoteUsers[0]} 
@@ -988,7 +1006,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                     audioTrack={remoteUsers[0].audioTrack} />
                             </div>
 
-                            <div id="local" className={`local ${isCallInProgress?'connected':'not-connected'}`} >
+                            <div id="local" className={`local ${currentCallActionInProgress?'connected':'not-connected'}`} >
                                 <MediaPlayer 
                                     uuid={`local-video`}
                                     user={null}
@@ -1009,10 +1027,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 <PageContent>
                    
-                    <div className="call-remote-user" style={{visibility: isCameraOn?'hidden':'visible'}}>
+                    <div className="call-remote-user" style={{visibility: currentCallModeIsCameraTurnedON?'hidden':'visible'}}>
                         <img src={userDefinedData.displayPhoto??''} alt={``} />
                         <BlockTitle large>{userDefinedData.displayName}</BlockTitle>
-                        {includedInViewState(
+                        {viewIncludeInCurrentState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.INCOMING,
                                         K.ModuleComponentsLibs.im.callScreen.OUTGOING,
@@ -1020,10 +1038,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         ) && (
                             <BlockTitle medium style={{textAlign: 'center'}}>{userDefinedData.phoneNumber}</BlockTitle>
                         )}
-                        <BlockTitle medium style={{textAlign: 'center'}}>{currentViewState}</BlockTitle>
+                        <BlockTitle medium style={{textAlign: 'center'}}>{currentCallViewStateName}</BlockTitle>
                         <BlockTitle medium style={{textAlign: 'center'}}>
                             <CallTimer className={``} visible={
-                                includedInViewState(
+                                viewIncludeInCurrentState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                                         K.ModuleComponentsLibs.im.callScreen.ENDED,
@@ -1032,7 +1050,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         </BlockTitle>
                     </div>
                    
-                    {includedInViewState(
+                    {viewIncludeInCurrentState(
                         [K.ModuleComponentsLibs.im.callScreen.PAUSED]
                     ) && (
                     <div className="call-actions" onClick={onActionsHoldHandler}>
@@ -1040,7 +1058,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                     </div>
                     )}
 
-                    {includedInViewState(
+                    {viewIncludeInCurrentState(
                         [
                             K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                         ]
@@ -1069,7 +1087,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     )}
 
-                    {includedInViewState(
+                    {viewIncludeInCurrentState(
                         [
                             K.ModuleComponentsLibs.im.callScreen.OUTGOING,
                             K.ModuleComponentsLibs.im.callScreen.PAUSED,
@@ -1086,22 +1104,22 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             key="im-solid-rounded-loudspeaker"
                             className={`im-solid-rounded color-white ${audioOutputDevicesArray.length<2?'disabled':''}`}
                             onClick={onLoudSpeakerToggle} 
-                            iconIos={`f7:${isLoudSpeakerOn?'speaker_slash_fill':'speaker_2_fill'}`}
-                            iconMd={`material:${isLoudSpeakerOn?'volume_up':'volume_off'}`}
-                            iconAurora={`f7:${isLoudSpeakerOn?'speaker_slash_fill':'speaker_2_fill'}`}
+                            iconIos={`f7:${currentCallModeIsLoudSpeakerTurnedON?'speaker_slash_fill':'speaker_2_fill'}`}
+                            iconMd={`material:${currentCallModeIsLoudSpeakerTurnedON?'volume_up':'volume_off'}`}
+                            iconAurora={`f7:${currentCallModeIsLoudSpeakerTurnedON?'speaker_slash_fill':'speaker_2_fill'}`}
                             iconSize={24} 
                         />
 
-                        {isCameraOn ? (
+                        {currentCallModeIsCameraTurnedON ? (
 
                         <Button outline large disabled={videoInputDevicesArray.length<2}
                             id="im-solid-rounded-switch-camera"
                             key="im-solid-rounded-switch-camera"
-                            className={`im-solid-rounded ${isCameraOn?(isFrontCamera?'color-white':'color-yellow'):'color-white'}  ${videoInputDevicesArray.length<2?'disabled':''}`}
+                            className={`im-solid-rounded ${currentCallModeIsCameraTurnedON?(currentCallModeIsUsingFrontCamera?'color-white':'color-yellow'):'color-white'}  ${videoInputDevicesArray.length<2?'disabled':''}`}
                             onClick={onFrontCameraToggle} 
-                            iconIos={`f7:${isFrontCamera?'camera':'camera'}`}
-                            iconMd={`material:${isFrontCamera?'video_camera_front':'video_camera_back'}`}
-                            iconAurora={`f7:${isFrontCamera?'camera':'camera'}`}
+                            iconIos={`f7:${currentCallModeIsUsingFrontCamera?'camera':'camera'}`}
+                            iconMd={`material:${currentCallModeIsUsingFrontCamera?'video_camera_front':'video_camera_back'}`}
+                            iconAurora={`f7:${currentCallModeIsUsingFrontCamera?'camera':'camera'}`}
                             iconSize={24} 
                         />
                         
@@ -1112,9 +1130,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             key="im-solid-rounded-mute"
                             className="im-solid-rounded color-white"
                             onClick={onMuteToggle} 
-                            iconIos={`f7:${!isMuteOn?'mic_fill':'mic_slash_fill'}`}
-                            iconMd={`material:${!isMuteOn?'mic':'mic_off'}`}
-                            iconAurora={`f7:${!isMuteOn?'mic_fill':'mic_slash_fill'}`}
+                            iconIos={`f7:${!currentCallActionMuted?'mic_fill':'mic_slash_fill'}`}
+                            iconMd={`material:${!currentCallActionMuted?'mic':'mic_off'}`}
+                            iconAurora={`f7:${!currentCallActionMuted?'mic_fill':'mic_slash_fill'}`}
                             iconSize={24} 
                         />
 
@@ -1126,9 +1144,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             key="im-solid-rounded-camera"
                             className={`im-solid-rounded color-white  ${videoInputDevicesArray.length<1?'disabled':''}`}
                             onClick={onCameraToggle} 
-                            iconIos={`f7:${isCameraOn?'videocam':'videocam_fill'}`}
-                            iconMd={`material:${isCameraOn?'videocam_off':'videocam'}`}
-                            iconAurora={`f7:${isCameraOn?'videocam':'videocam_fill'}`}
+                            iconIos={`f7:${currentCallModeIsCameraTurnedON?'videocam':'videocam_fill'}`}
+                            iconMd={`material:${currentCallModeIsCameraTurnedON?'videocam_off':'videocam'}`}
+                            iconAurora={`f7:${currentCallModeIsCameraTurnedON?'videocam':'videocam_fill'}`}
                             iconSize={24} 
                         />
 
@@ -1137,9 +1155,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             key="im-solid-rounded-hangup"
                             className="im-solid-rounded"
                             onClick={onHangUpToggle} 
-                            iconIos={`f7:${isLoudSpeakerOn?'phone_down_fill':'phone_down_fill'}`}
-                            iconMd={`material:${isLoudSpeakerOn?'phone_enabled':'phone_enabled'}`}
-                            iconAurora={`f7:${isLoudSpeakerOn?'phone_down_fill':'phone_down_fill'}`}
+                            iconIos={`f7:${currentCallModeIsLoudSpeakerTurnedON?'phone_down_fill':'phone_down_fill'}`}
+                            iconMd={`material:${currentCallModeIsLoudSpeakerTurnedON?'phone_enabled':'phone_enabled'}`}
+                            iconAurora={`f7:${currentCallModeIsLoudSpeakerTurnedON?'phone_down_fill':'phone_down_fill'}`}
                             iconSize={24} 
                         />
 
@@ -1149,7 +1167,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                     
                 </PageContent>
 
-                {includedInViewState(
+                {viewIncludeInCurrentState(
                     [K.ModuleComponentsLibs.im.callScreen.ENDED]
                 ) && (
 
@@ -1164,7 +1182,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                     md="material:phone_enabled"></Icon>
                         </Fab>
 
-                        <span>{`Call ${isIncomingCall?'back':'again'}`}</span>
+                        <span>{`Call ${currentCallTypeIsIncoming?'back':'again'}`}</span>
 
                     </div>
 
@@ -1185,7 +1203,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 )}
 
-                {includedInViewState(
+                {viewIncludeInCurrentState(
                     [K.ModuleComponentsLibs.im.callScreen.INCOMING]
                 ) && (
 
@@ -1221,7 +1239,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 )}
 
-                {isCameraOn && includedInViewState(
+                {currentCallModeIsCameraTurnedON && viewIncludeInCurrentState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.OUTGOING,
                                         K.ModuleComponentsLibs.im.callScreen.INCOMING,
@@ -1230,10 +1248,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                     ]
                                 ) && (
 
-                <div className={`im-call-status-overlay ${!isCallInProgress ? 'black' : isOnHold ? 'red':'green'}`}>
+                <div className={`im-call-status-overlay ${!currentCallActionInProgress ? 'black' : currentCallActionHold ? 'red':'green'}`}>
                     <div className="info">
                         <span className="display-name">{userDefinedData.displayName}</span>
-                        {includedInViewState(
+                        {viewIncludeInCurrentState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.INCOMING,
                                         K.ModuleComponentsLibs.im.callScreen.OUTGOING,
@@ -1242,7 +1260,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             <span className="display-number">{userDefinedData.phoneNumber}</span>
                         )}
                         <CallTimer className="display-timer" visible={
-                                    includedInViewState(
+                                    viewIncludeInCurrentState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                                         K.ModuleComponentsLibs.im.callScreen.ENDED,
@@ -1251,37 +1269,37 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         />
                     </div>
                     <div className="status">
-                        {isCameraOn ? (
-                            isOnHold ? (
+                        {currentCallModeIsCameraTurnedON ? (
+                            currentCallActionHold ? (
                                 <Icon 
-                                    ios={`f7:${isIncomingCall?'videocam':'videocam'}`} 
-                                    aurora={`f7:${isIncomingCall?'videocam':'videocam'}`} 
-                                    md={`material:${isIncomingCall?'pause_circle_outline':'pause_circle_outline'}`} 
+                                    ios={`f7:${currentCallTypeIsIncoming?'videocam':'videocam'}`} 
+                                    aurora={`f7:${currentCallTypeIsIncoming?'videocam':'videocam'}`} 
+                                    md={`material:${currentCallTypeIsIncoming?'pause_circle_outline':'pause_circle_outline'}`} 
                                 />
                             ):(
                                 <Icon  
-                                    ios={`f7:${isIncomingCall?'videocam_fill':'videocam_fill'}`} 
-                                    aurora={`f7:${isIncomingCall?'videocam_fill':'videocam_fill'}`} 
-                                    md={`material:${isIncomingCall?'videocam':'videocam'}`} 
+                                    ios={`f7:${currentCallTypeIsIncoming?'videocam_fill':'videocam_fill'}`} 
+                                    aurora={`f7:${currentCallTypeIsIncoming?'videocam_fill':'videocam_fill'}`} 
+                                    md={`material:${currentCallTypeIsIncoming?'videocam':'videocam'}`} 
                                 />
                             )
                         ):(
-                            isOnHold ? (
+                            currentCallActionHold ? (
                                 <Icon 
-                                    ios={`f7:${isIncomingCall?'phone_arrow_down_left':'phone_arrow_up_right'}`} 
-                                    aurora={`f7:${isIncomingCall?'phone_arrow_down_left':'phone_arrow_up_right'}`} 
-                                    md={`material:${isIncomingCall?'phone_paused':'phone_paused'}`} 
+                                    ios={`f7:${currentCallTypeIsIncoming?'phone_arrow_down_left':'phone_arrow_up_right'}`} 
+                                    aurora={`f7:${currentCallTypeIsIncoming?'phone_arrow_down_left':'phone_arrow_up_right'}`} 
+                                    md={`material:${currentCallTypeIsIncoming?'phone_paused':'phone_paused'}`} 
                                 />
                             ):(
                                 <Icon 
-                                    ios={`f7:${isIncomingCall?'phone_fill_arrow_down_left':'phone_fill_arrow_up_right'}`} 
-                                    aurora={`f7:${isIncomingCall?'phone_fill_arrow_down_left':'phone_fill_arrow_up_right'}`} 
-                                    md={`material:${isIncomingCall?'phone':'phone'}`} 
+                                    ios={`f7:${currentCallTypeIsIncoming?'phone_fill_arrow_down_left':'phone_fill_arrow_up_right'}`} 
+                                    aurora={`f7:${currentCallTypeIsIncoming?'phone_fill_arrow_down_left':'phone_fill_arrow_up_right'}`} 
+                                    md={`material:${currentCallTypeIsIncoming?'phone':'phone'}`} 
                                 />
                             )
                         )}
                         <div className="display-state">
-                            {currentViewState}
+                            {currentCallViewStateName}
                         </div>
                     </div>
                 </div>
@@ -1314,9 +1332,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             key="im-solid-rounded-hangupx"
                             className="im-solid-rounded"
                             onClick={onHangUpToggle}
-                            iconIos={`f7:${isLoudSpeakerOn ? 'phone_down_fill' : 'phone_down_fill'}`}
-                            iconMd={`material:${isLoudSpeakerOn ? 'phone_enabled' : 'phone_enabled'}`}
-                            iconAurora={`f7:${isLoudSpeakerOn ? 'phone_down_fill' : 'phone_down_fill'}`}
+                            iconIos={`f7:${currentCallModeIsLoudSpeakerTurnedON ? 'phone_down_fill' : 'phone_down_fill'}`}
+                            iconMd={`material:${currentCallModeIsLoudSpeakerTurnedON ? 'phone_enabled' : 'phone_enabled'}`}
+                            iconAurora={`f7:${currentCallModeIsLoudSpeakerTurnedON ? 'phone_down_fill' : 'phone_down_fill'}`}
                             iconSize={24}
                         />
                         <Button large fill textColor="white" bgColor="red"
@@ -1324,9 +1342,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             key="im-solid-rounded-hangup"
                             className="im-solid-rounded"
                             onClick={onHangUpToggle}
-                            iconIos={`f7:${isLoudSpeakerOn ? 'phone_down_fill' : 'phone_down_fill'}`}
-                            iconMd={`material:${isLoudSpeakerOn ? 'phone_enabled' : 'phone_enabled'}`}
-                            iconAurora={`f7:${isLoudSpeakerOn ? 'phone_down_fill' : 'phone_down_fill'}`}
+                            iconIos={`f7:${currentCallModeIsLoudSpeakerTurnedON ? 'phone_down_fill' : 'phone_down_fill'}`}
+                            iconMd={`material:${currentCallModeIsLoudSpeakerTurnedON ? 'phone_enabled' : 'phone_enabled'}`}
+                            iconAurora={`f7:${currentCallModeIsLoudSpeakerTurnedON ? 'phone_down_fill' : 'phone_down_fill'}`}
                             iconSize={24}
                         />
                     </Block>
