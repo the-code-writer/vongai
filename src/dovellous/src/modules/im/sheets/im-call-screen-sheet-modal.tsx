@@ -926,7 +926,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     ):(
 
-                        <div className='player-container-duo'>
+                        <div className={`player-container-duo ${localTracksAvailable?'yes':'no'}`}>
 
                             {joinState && remoteUsers.length > 0 && (
 
@@ -941,6 +941,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             </div>
 
                             )}
+
+                            <div className={`remote connected ${localClientUID} `} >
+
+                                <MediaPlayer
+                                    uuid={`${localClientUID}`}
+                                    videoTrack={localVideoTrack}
+                                    isBackdrop={remoteUsers.length === 0} />
+
+                            </div>
 
                             {localTracksAvailable && (
 

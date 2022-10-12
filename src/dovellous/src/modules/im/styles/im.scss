@@ -1,3 +1,86 @@
+//FadeOut Red
+
+@-webkit-keyframes fade-in-red {
+  from { background-color: rgba(255,0,0,0); }
+  to { background-color: rgba(255,0,0,0.75); }
+}
+@-moz-keyframes fade-in-red {
+  from { background-color: rgba(255,0,0,0); }
+  to { background-color: rgba(255,0,0,0.75); }
+}
+@keyframes fade-in-red {
+  from { background-color: rgba(255,0,0,0); }
+  to { background-color: rgba(255,0,0,0.75); }
+}
+@-webkit-keyframes fade-out-red {
+  from { background-color: rgba(255,0,0,0.75); }
+  to { background-color: rgba(255,0,0,0); }
+}
+@-moz-keyframes fade-out-red {
+  from { background-color: rgba(255,0,0,0.75); }
+  to { background-color: rgba(255,0,0,0); }
+}
+@keyframes fade-out-red {
+  from { background-color: rgba(255,0,0,0.75); }
+  to { background-color: rgba(255,0,0,0); }
+}
+
+//FadeOut Green
+
+@-webkit-keyframes fade-in-green {
+  from { background-color: rgba(0,255,0,0); }
+  to { background-color: rgba(0,255,0,0.75); }
+}
+@-moz-keyframes fade-in-green {
+  from { background-color: rgba(0,255,0,0); }
+  to { background-color: rgba(0,255,0,0.75); }
+}
+@keyframes fade-in-green {
+  from { background-color: rgba(0,255,0,0); }
+  to { background-color: rgba(0,255,0,0.75); }
+}
+@-webkit-keyframes fade-out-green {
+  from { background-color: rgba(0,255,0,0.75); }
+  to { background-color: rgba(0,255,0,0); }
+}
+@-moz-keyframes fade-out-green {
+  from { background-color: rgba(0,255,0,0.75); }
+  to { background-color: rgba(0,255,0,0); }
+}
+@keyframes fade-out-green {
+  from { background-color: rgba(0,255,0,0.75); }
+  to { background-color: rgba(0,255,0,0); }
+}
+
+//FadeOut Black
+
+@-webkit-keyframes fade-in-black {
+  from { background-color: rgba(0,0,0,0); }
+  to { background-color: rgba(0,0,0,0.75); }
+}
+@-moz-keyframes fade-in-black {
+  from { background-color: rgba(0,0,0,0); }
+  to { background-color: rgba(0,0,0,0.75); }
+}
+@keyframes fade-in-black {
+  from { background-color: rgba(0,0,0,0); }
+  to { background-color: rgba(0,0,0,0.75); }
+}
+@-webkit-keyframes fade-out-black {
+  from { background-color: rgba(0,0,0,0.75); }
+  to { background-color: rgba(0,0,0,0); }
+}
+@-moz-keyframes fade-out-black {
+  from { background-color: rgba(0,0,0,0.75); }
+  to { background-color: rgba(0,0,0,0); }
+}
+@keyframes fade-out-black {
+  from { background-color: rgba(0,0,0,0.75); }
+  to { background-color: rgba(0,0,0,0); }
+}
+
+///
+
 @-webkit-keyframes fadein {
   from { opacity: 0.3; }
   to { opacity: 0.7; }
@@ -352,14 +435,24 @@ div.m-b-0.fab>a {
             &.not-connected{
               width: 100vw;
               height: 100vh;
-              background-color: rgb(255,0,255, 0.25);            
-              border-radius: 0;
+              background-color: rgba(0,0,0,0.75);
+              top: 0;
+              left: 0;
+              bottom: 0;
+              right: 0;
+              float: right;
+              border: 0px solid rgba(0,0,0,0.75);
+              box-shadow: 3px 3px 9px rgba(0,0,0,0.3);
 
-              video {
-                width: auto !important;
-                height: 100vh;
-                position: fixed;
-                left: calc(calc(100vw - 200%));
+              .im-vc-video-player-wrapper  {
+                width:  100%;
+                height: 100%;
+
+                video {
+                  width: 100%;
+                  height: 100%;
+                }
+
               }
 
             }
@@ -367,20 +460,19 @@ div.m-b-0.fab>a {
             &.connected{
               width: 100%;
               max-width: calc(100vw * 0.25);
-              background-color: transparent;
+              height: calc(calc(16 / 9) * 100vw * 0.25);
+              background-color: rgba(0,0,0,0.75);
               top: auto;
               left: auto;
-              bottom: 240px;
+              bottom: 140px;
               right: 24px;
-              height: auto;
               float: right;
-              border: 2px solid transparent;
-              box-shadow: 3px 3px 9px rgba(0,0,0,0.8);
+              border: 0px solid rgba(0,0,0,0.75);
+              box-shadow: 3px 3px 9px rgba(0,0,0,0.3);
 
-              div  {
-                width:  calc(100vw * 0.25) !important;
-                height: calc(100vh * 0.15) !important;
-                border-radius: 6px !important;
+              .im-vc-video-player-wrapper  {
+                width:  100%;
+                height: auto;
                 float: right !important;
                 margin-right: -8px !important;
                 position: absolute !important;
@@ -389,12 +481,10 @@ div.m-b-0.fab>a {
 
                 video {
                   width: 100%;
-                  box-shadow: 3px 3px 9px rgb(0 0 0 / 80%);
+                  height: 100%;
                 }
 
               }
-
-
 
             }
 
@@ -577,15 +667,24 @@ div.m-b-0.fab>a {
       animation: fadein 2s ease-in alternate infinite;
 
       &.green{
-        background-color: #00CC00;
+        //background-color: rgba(0,255,0,0.75);        
+        -webkit-animation: fade-in-green 1s ease-in alternate infinite;
+        -moz-animation: fade-in-green 1s ease-in alternate infinite;
+        animation: fade-in-green 1s ease-in alternate infinite;
       }
       
       &.red{
-        background-color: #CC0000;
+        //background-color: rgba(255,0,0,0.75);
+        -webkit-animation: fade-in-red 1s ease-in alternate infinite;
+        -moz-animation: fade-in-red 1s ease-in alternate infinite;
+        animation: fade-in-red 1s ease-in alternate infinite;
       }
 
       &.black{
-        background-color: #000000;
+        //background-color: rgba(0,0,0,0.75);
+        -webkit-animation: fade-in-black 1s ease-in alternate infinite;
+        -moz-animation: fade-in-black 1s ease-in alternate infinite;
+        animation: fade-in-black 1s ease-in alternate infinite;
       }
 
       .info {
