@@ -899,7 +899,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             {localTracksAvailable && (
 
-                            <div className={`local-wrapper ${localClientUID}`} key={localClientUID}>
+                            <div className={`local ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'backdrop':''} ${localClientUID}`} key={localClientUID}>
                                 
                                 <MediaPlayer
                                     uuid={`${localClientUID}`}
@@ -912,7 +912,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         
                             {remoteUsers.map(user => (
 
-                            <div className={`remote-wrapper ${user.uid}`} key={user.uid}>
+                            <div className={`remote ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'backdrop':''} ${user.uid}`} key={user.uid}>
                                 <MediaPlayer 
                                     uuid={user.uid} 
                                     user={user} 
@@ -930,7 +930,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             {joinState && remoteUsers.length > 0 && (
 
-                            <div className={`remote-wrapper remote connected ${remoteUsers[0].uid} ${remoteUsers.length === 0?'backdrop':''}`} >
+                            <div className={`remote ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'backdrop':''} ${remoteUsers[0].uid} `} >
 
                                 <MediaPlayer 
                                     uuid={remoteUsers[0].uid} 
@@ -944,7 +944,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             {localTracksAvailable && (
 
-                            <div className={`local-wrapper local connected ${localClientUID} ${remoteUsers.length === 0?'backdrop':''}`} key={localClientUID}>
+                            <div className={`local ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'backdrop':''} ${localClientUID}`} key={localClientUID}>
                                                             
                                 <MediaPlayer
                                     uuid={`${localClientUID}`}
