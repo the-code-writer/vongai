@@ -446,7 +446,11 @@ export default function useAgoraMediaService(
         videoInputDevicesConfig      
       );
 
-      client.join(appId, channel, token || null, uid || null)
+      //Remove the line below to go live
+
+      const testChannel = "CH0100";
+
+      client.join(appId, testChannel, token || null, uid || null)
       .then(async(newUUID:UID)=>{
 
         setLocalClientUID(newUUID);
@@ -500,6 +504,7 @@ export default function useAgoraMediaService(
   }
 
   async function leaveChannel() {
+
     if (localAudioTrack) {
       localAudioTrack.stop();
       localAudioTrack.close();
@@ -605,18 +610,18 @@ export default function useAgoraMediaService(
 
     setRemoteUsers(client.remoteUsers);
 
-    console.warn("::: CLIENT :::", client);
+      console.warn("::: CLIENT :::", client);
 
-      client?.on('user-published', handleUserPublished);
-      client?.on('user-unpublished', handleUserUnpublished);
-      client?.on('user-joined', handleUserJoined);
-      client?.on('user-left', handleUserLeft);
+      client.on('user-published', handleUserPublished);
+      client.on('user-unpublished', handleUserUnpublished);
+      client.on('user-joined', handleUserJoined);
+      client.on('user-left', handleUserLeft);
 
       return () => {
-        client?.off('user-published', handleUserPublished);
-        client?.off('user-unpublished', handleUserUnpublished);
-        client?.off('user-joined', handleUserJoined);
-        client?.off('user-left', handleUserLeft);
+        client.off('user-published', handleUserPublished);
+        client.off('user-unpublished', handleUserUnpublished);
+        client.off('user-joined', handleUserJoined);
+        client.off('user-left', handleUserLeft);
       };
 
   }, [client]);
