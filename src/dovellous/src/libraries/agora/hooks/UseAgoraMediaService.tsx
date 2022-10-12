@@ -396,7 +396,16 @@ export default function useAgoraMediaService(
     audioConfig?: MicrophoneAudioTrackInitConfig,
     videoConfig?: CameraVideoTrackInitConfig
   ): Promise<[IMicrophoneAudioTrack, ICameraVideoTrack]> {
-    const [microphoneTrack, cameraTrack] = await AgoraRTC.createMicrophoneAndCameraTracks(audioConfig, videoConfig);
+
+    //const [microphoneTrack, cameraTrack] = await AgoraRTC.createMicrophoneAndCameraTracks(audioConfig, videoConfig);
+    
+    const microphoneTrack :IMicrophoneAudioTrack= await AgoraRTC.createMicrophoneAudioTrack(audioConfig);
+
+    const cameraTrack :ICameraVideoTrack= await AgoraRTC.createCameraVideoTrack(videoConfig);
+    
+    microphoneTrack.setEnabled(true);
+    cameraTrack.setEnabled(true);
+
     setLocalAudioTrack(microphoneTrack);
     setLocalVideoTrack(cameraTrack);    
     setLocalTracksAvailable(true);
@@ -608,7 +617,7 @@ export default function useAgoraMediaService(
 
     }
 
-    setRemoteUsers(client.remoteUsers);
+      setRemoteUsers(client.remoteUsers);
 
       console.warn("::: CLIENT :::", client);
 
@@ -636,6 +645,8 @@ export default function useAgoraMediaService(
         mode: clientMode 
       }
     );
+
+    agoraClientInstance.setClientRole("host")
 
     setClient(agoraClientInstance);
 
