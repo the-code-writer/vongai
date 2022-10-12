@@ -4,7 +4,7 @@ import React, { useRef, useEffect } from "react";
 export interface VideoPlayerProps {
   uuid: any;
   user?: any;
-  isBackdrop?: boolean;
+  isLocal?: boolean;
   videoTrack: ILocalVideoTrack | IRemoteVideoTrack | undefined;
   audioTrack?: ILocalAudioTrack | IRemoteAudioTrack | undefined;
 }
@@ -27,7 +27,7 @@ const MediaPlayer = (props: VideoPlayerProps) => {
     };
   }, [props.audioTrack]);
   return (
-    <div ref={container}  className={`im-vc-video-player-wrapper ${props.isBackdrop?'backdrop':''}`} ></div>
+    <div ref={container}  className={`im-vc-video-player-wrapper ${props.uuid}`} ></div>
   );
 }
 

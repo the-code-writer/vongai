@@ -4,11 +4,11 @@ import AgoraRTC, {
 } from 'agora-rtc-sdk-ng';
 import K from '../../app/konstants';
 
-import * as IMCallTypeInterfaces from "../../../libraries/agora/apps/voice/IMCallTypeInterfaces";
+import * as IMCallTypeInterfaces from "../apps/voice/IMCallTypeInterfaces";
 
 import AIDenoiserEnabler from "./AIDenoiserEnabler";
 
-export default function useAgora(
+export default function useAgoraMediaService(
   Framework7Instance: any,
   onUserPublished: Function,
   onUserUnpublished: Function,
@@ -408,7 +408,7 @@ export default function useAgora(
 
     const callSessionChannel:string = String(callPayload.callSessionChannel).toLowerCase();
 
-    joinChannel(callSessionChannel, callPayload, undefined, `user_${callPayload.uid}`);
+    joinChannel(callSessionChannel, callPayload, undefined, callPayload.uid);
 
     setJoinState(false);
 
@@ -433,7 +433,7 @@ export default function useAgora(
 
   }
 
-  async function joinChannel(channel: string, callPayload:any, token?: string, uid?: UID | string | number | null) {
+  async function joinChannel(channel: string, callPayload:any, token?: string, uid?:  UID | null | undefined) {
 
     if (!client) return;
 
@@ -522,11 +522,10 @@ export default function useAgora(
   
   const handleUserPublished = async (user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') => {
     await client?.subscribe(user, mediaType);
-    // toggle rerender while state of remoteUsers changed.
 
-    const clientRemoteUsers:any = client?.remoteUsers;
+    console.warn(":::: AGORA :::: handleUserPublished", user, mediaType);
 
-    setRemoteUsers(remoteUsers => Array.from(clientRemoteUsers));
+    setRemoteUsers([...remoteUsers, user]);
 
     onUserPublished(user, mediaType);
 
@@ -534,9 +533,9 @@ export default function useAgora(
 
   const handleUserUnpublished = (user: IAgoraRTCRemoteUser) => {
 
-    const clientRemoteUsers:any = client?.remoteUsers;
+    console.warn(":::: AGORA :::: handleUserPublished", user);
 
-    setRemoteUsers(remoteUsers => Array.from(clientRemoteUsers));
+    setRemoteUsers([...remoteUsers, user]);
 
     onUserUnpublished(user);
 
@@ -544,19 +543,19 @@ export default function useAgora(
 
   const handleUserJoined = (user: IAgoraRTCRemoteUser) => {
 
-    const clientRemoteUsers:any = client?.remoteUsers;
+    console.warn(":::: AGORA :::: handleUserPublished", user);
 
-    setRemoteUsers(remoteUsers => Array.from(clientRemoteUsers));
-
+    setRemoteUsers([...remoteUsers, user]);
+    
     onUserJoined(user);
 
   }
 
   const handleUserLeft = (user: IAgoraRTCRemoteUser) => {
 
-    const clientRemoteUsers:any = client?.remoteUsers;
+    console.warn(":::: AGORA :::: handleUserPublished", user);
 
-    setRemoteUsers(remoteUsers => Array.from(clientRemoteUsers));
+    setRemoteUsers([...remoteUsers, user]);
 
     onUserLeft(user);
 

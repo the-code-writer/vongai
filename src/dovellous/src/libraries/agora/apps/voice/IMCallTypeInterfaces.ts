@@ -1,4 +1,6 @@
-interface UserDataObject {
+import {UID} from 'agora-rtc-sdk-ng';
+  
+  interface UserDataObject {
     username: string;
     displayName: string;
     displayStatus: string;
@@ -18,7 +20,7 @@ interface CallOriginObject {
 }
 
 interface CallDataObject {
-    uid: String;
+    uid: UID | null | undefined;
     userData: UserDataObject;
     destination: CallDestinationObject | null;
     origin: CallOriginObject | null;

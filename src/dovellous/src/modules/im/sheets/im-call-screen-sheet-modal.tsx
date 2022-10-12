@@ -1,6 +1,5 @@
-import { Block, BlockTitle, Button, Col, f7, Fab, FabButton, FabButtons, Icon, List, ListItem, PageContent, Row, Sheet } from "framework7-react";
+import { Block, BlockTitle, Button, f7, Fab, FabButton, FabButtons, Icon, List, ListItem, PageContent, Sheet } from "framework7-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useStopwatch } from 'react-timer-hook';
 
 import * as IMCallTypeInterfaces from "../../../libraries/agora/apps/voice/IMCallTypeInterfaces";
 
@@ -12,13 +11,22 @@ import song from '../../../../assets/aud/incoming-4.mp3';
 
 import { StorageIM, useStorageIM } from "../store/im-store";
 import Snippets from "../../../libraries/app/snippets";
-import useAgora from "../../../libraries/agora/hooks/useAgora";
+import useAgoraMediaService from "../../../libraries/agora/hooks/UseAgoraMediaService";
+import useAgoraIMCallDuration from "../../../libraries/agora/hooks/UseAgoraIMCallDuration";
 import MediaPlayer from "../../../libraries/agora/components/MediaPlayer";
 
-
-
-import AgoraRTC, { IAgoraRTCClient, IAgoraRTCRemoteUser, MicrophoneAudioTrackInitConfig, CameraVideoTrackInitConfig, IMicrophoneAudioTrack, ICameraVideoTrack, ILocalVideoTrack, ILocalAudioTrack } from 'agora-rtc-sdk-ng';
-
+import AgoraRTC, { 
+    IAgoraRTCClient, 
+    IAgoraRTCRemoteUser, 
+    MicrophoneAudioTrackInitConfig, 
+    CameraVideoTrackInitConfig, 
+    IMicrophoneAudioTrack, 
+    ICameraVideoTrack, 
+    ILocalVideoTrack, 
+    ILocalAudioTrack, 
+    UID 
+} from 'agora-rtc-sdk-ng';
+import { timeStamp } from "console";
 
 export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     onMute,
@@ -42,6 +50,64 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     
 }) => {
 
+    const [currentCallViewStateName, setCurrentCallViewStateName] = useState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
+
+    const [currentCallPayload, setCurrentCallPayload] = useState<IMCallTypeInterfaces.CallDataObject >({});
+
+    const [currentCallUUID, setCurrentCallUUID] = useState<UID | null | undefined>('UID');
+
+    const [currentCallSessionID, setCurrentCallSessionID] = useState<String>('SID');
+
+    const [currentCallSessionChannel, setCurrentCallSessionChannel] = useState<String>('SCH');
+
+    const [currentCallSummary, setCurrentCallSummary] = useState<any | undefined>(undefined);
+
+    const [currentCallUserData, setCurrentCallUserData] = useState<IMCallTypeInterfaces.UserDataObject>(userDefinedData);
+
+    const [currentCallUserOrigin, setCurrentCallUserOrigin] = useState<IMCallTypeInterfaces.CallOriginObject>({displayName:'DNO',phoneNumber:'000'});
+
+    const [currentCallUserDestination, setCurrentCallUserDestination] = useState<IMCallTypeInterfaces.CallDestinationObject>({displayName:'DND',phoneNumber:'001'});
+
+    const [currentCallTimeStarted, setCurrentCallTimeStarted] = useState<number>(0);
+    const [currentCallTimeAnswered, setCurrentCallTimeAnswered] = useState<number>(0);
+    const [currentCallTimeEnded, setCurrentCallTimeEnded] = useState<number>(0);
+    const [currentCallDialAttempts, setCurrentCallTimeStartedAttempts] = useState<String[]>([]);
+
+    const [currentCallStateLabel, setCurrentCallStateLabel] = useState<String[]>('Please wait...');
+
+    const [currentCallStateINITIALIZING, setCurrentCallStateINITIALIZING] = useState<boolean>(true);
+    const [currentCallStateDIALING, setCurrentCallStateDIALING] = useState<boolean>(false);
+    const [currentCallStateCONNECTING, setCurrentCallStateCONNECTING] = useState<boolean>(false);
+    const [currentCallStateCONNECTED, setCurrentCallStateCONNECTED] = useState<boolean>(false);
+    const [currentCallStateRECONNECTING, setCurrentCallStateRECONNECTING] = useState<boolean>(false);
+    const [currentCallStateDISCONNECTING, setCurrentCallStateDISCONNECTING] = useState<boolean>(false);
+    const [currentCallStateDISCONNECTED, setCurrentCallStateDISCONNECTED] = useState<boolean>(false);
+
+    const [currentCallActionAnswered, setCurrentCallActionAnswered] = useState<boolean>(false);
+    const [currentCallActionDeclined, setCurrentCallActionDeclined] = useState<boolean>(false);
+    const [currentCallActionInProgress, setCurrentCallActionInProgress] = useState<boolean>(false);
+    const [currentCallActionHold, setCurrentCallActionHold] = useState<boolean>(false);
+    const [currentCallActionMuted, setCurrentCallActionMuted] = useState<boolean>(false);
+    const [currentCallActionEnded, setCurrentCallActionEnded] = useState<boolean>(true);
+
+    const [currentCallTypeIsIncoming, setCurrentCallTypeIsIncoming] = useState<boolean>(isIncoming);
+    const [currentCallTypeIsVideo, setCurrentCallTypeIsVideo] = useState<boolean>(isVideoCall);
+
+    const [currentCallModeIsUsingFrontCamera, setCurrentCallModeIsUsingFrontCamera] = useState<boolean>(true);
+    const [currentCallModeIsCameraTurnedON, setCurrentCallModeIsCameraTurnedON] = useState<boolean>(isVideoCall);
+    const [currentCallModeIsLoudSpeakerTurnedON, setCurrentCallModeIsLoudSpeakerTurnedON] = useState<boolean>(false);
+
+    const [ringingTone, setRingingTone] = useState(new Audio(song));
+
+    const [isAgoraModuleReady, setIsAgoraModuleReady] = useState<boolean>(false);
+
+    
+    const {
+        agoraIMCallDurationStartTimer,
+        agoraIMCallDurationStopTimer,
+        agoraIMCallDurationText
+    } = useAgoraIMCallDuration();
+    
     const onUserPublishedHandler = async (user: IAgoraRTCRemoteUser, mediaType: 'audio' | 'video') => {
         
         console.warn(":::: === AGORA EVENT [onUserPublishedHandler] === :::", user, mediaType);
@@ -74,8 +140,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
   
       }
 
-
-    
     const { 
         client,
         localAudioTrack,
@@ -108,126 +172,13 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         videoInputDevicesObject,
         currentVideoInputDevicesIndex,
         currentVideoInputDevicesID
-    } = useAgora(
+    } = useAgoraMediaService(
         f7,
         onUserPublishedHandler,
         onUserUnpublishedHandler,
         onUserJoinedHandler,
         onUserLeftHandler
     );
-
-    const [currentCallViewStateName, setCurrentCallViewStateName] = useState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
-
-    const [currentCallPayload, setCurrentCallPayload] = useState<IMCallTypeInterfaces.CallDataObject | undefined>(undefined);
-
-    const [currentCallUUID, setCurrentCallUUID] = useState<String>('UID');
-
-    const [currentCallSessionID, setCurrentCallSessionID] = useState<String>('SID');
-
-    const [currentCallSessionChannel, setCurrentCallSessionChannel] = useState<String>('SCH');
-
-    const [currentCallSummary, setCurrentCallSummary] = useState<any | undefined>(undefined);
-
-    const [currentCallUserData, setCurrentCallUserData] = useState<IMCallTypeInterfaces.UserDataObject>(userDefinedData);
-
-    const [currentCallUserOrigin, setCurrentCallUserOrigin] = useState<IMCallTypeInterfaces.CallOriginObject>({displayName:'DNO',phoneNumber:'000'});
-
-    const [currentCallUserDestination, setCurrentCallUserDestination] = useState<IMCallTypeInterfaces.CallDestinationObject>({displayName:'DND',phoneNumber:'001'});
-
-    const [currentCallTimeStarted, setCurrentCallTimeStarted] = useState<Number>(0);
-    const [currentCallTimeAnswered, setCurrentCallTimeAnswered] = useState<Number>(0);
-    const [currentCallTimeEnded, setCurrentCallTimeEnded] = useState<Number>(0);
-    const [currentCallDialAttempts, setCurrentCallTimeStartedAttempts] = useState<String[]>([]);
-
-    const [currentCallStateLabel, setCurrentCallStateLabel] = useState<String[]>('Please wait...');
-
-    const [currentCallStateINITIALIZING, setCurrentCallStateINITIALIZING] = useState<Boolean>(true);
-    const [currentCallStateDIALING, setCurrentCallStateDIALING] = useState<Boolean>(false);
-    const [currentCallStateCONNECTING, setCurrentCallStateCONNECTING] = useState<Boolean>(false);
-    const [currentCallStateCONNECTED, setCurrentCallStateCONNECTED] = useState<Boolean>(false);
-    const [currentCallStateRECONNECTING, setCurrentCallStateRECONNECTING] = useState<Boolean>(false);
-    const [currentCallStateDISCONNECTING, setCurrentCallStateDISCONNECTING] = useState<Boolean>(false);
-    const [currentCallStateDISCONNECTED, setCurrentCallStateDISCONNECTED] = useState<Boolean>(false);
-
-    const [currentCallActionAnswered, setCurrentCallActionAnswered] = useState<Boolean>(false);
-    const [currentCallActionDeclined, setCurrentCallActionDeclined] = useState<Boolean>(false);
-    const [currentCallActionInProgress, setCurrentCallActionInProgress] = useState<Boolean>(false);
-    const [currentCallActionHold, setCurrentCallActionHold] = useState<Boolean>(false);
-    const [currentCallActionMuted, setCurrentCallActionMuted] = useState<Boolean>(false);
-    const [currentCallActionEnded, setCurrentCallActionEnded] = useState<Boolean>(true);
-
-    const [currentCallTypeIsIncoming, setCurrentCallTypeIsIncoming] = useState<Boolean>(isIncoming);
-    const [currentCallTypeIsVideo, setCurrentCallTypeIsVideo] = useState<Boolean>(isVideoCall);
-
-    const [currentCallModeIsUsingFrontCamera, setCurrentCallModeIsUsingFrontCamera] = useState<Boolean>(true);
-    const [currentCallModeIsCameraTurnedON, setCurrentCallModeIsCameraTurnedON] = useState<Boolean>(isVideoCall);
-    const [currentCallModeIsLoudSpeakerTurnedON, setCurrentCallModeIsLoudSpeakerTurnedON] = useState<Boolean>(false);
-
-    const [ringingTone, setRingingTone] = useState(new Audio(song));
-
-    const [isAgoraModuleReady, setIsAgoraModuleReady] = useState<Boolean>(false);
-
-    const CallTimer = useCallback(({visible, className}) => {
-
-        const {
-          seconds,
-          minutes,
-          hours,
-          days,
-          isRunning,
-          start,
-          pause,
-          reset,
-        } = useStopwatch({ autoStart: false });
-
-        useEffect(()=>{
-
-            f7.on(K.ModuleComponentsLibs.im.callScreen.START_TIMER, ()=>{
-
-                start();
-
-            });
-
-            f7.on(K.ModuleComponentsLibs.im.callScreen.PAUSE_TIMER, ()=>{
-
-                pause();
-
-            });
-
-            f7.on(K.ModuleComponentsLibs.im.callScreen.RESET_TIMER, ()=>{
-
-                reset();
-
-            });
-
-            f7.on(K.ModuleComponentsLibs.im.callScreen.STOP_TIMER, ()=>{
-
-                pause();
-
-            });
-
-        },[]);
-
-        return (
-
-            <React.Fragment>
-
-                {isRunning && (
-
-                    <span className={className} style={{height: visible?'100%':'0px', opacity: visible?1:0}}>
-                        <>{days >  0 && (`${String(days).padStart(2, '0')}:`)}</>
-                        <>{hours > 0 && (`${String(hours).padStart(2, '0')}:`)}</>
-                        <>{`${String(minutes).padStart(2, '0')}:`}</>
-                        <>{`${String(seconds).padStart(2, '0')}`}</>
-                    </span>
-            
-                )}
-            
-            </React.Fragment>
-
-        );
-
-    },[]);
 
     const currentCallPayloadSnapshot = () => {
 
@@ -503,24 +454,29 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
   
         ringingTone.pause();
 
-        setCurrentCallTimeAnswered(new Date().getTime());
+        const  timeStampAnswered:number = f7.utils.now();
+
+        setCurrentCallTimeAnswered(timeStampAnswered);
+
+        agoraIMCallDurationStartTimer(timeStampAnswered);
 
         setCurrentCallStateCONNECTED(true);
-        setCurrentCallActionInProgress(true);        
+        setCurrentCallActionInProgress(true); 
+        setCurrentCallActionEnded(false);       
 
         setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED
         );
 
-        f7.emit(K.ModuleComponentsLibs.im.callScreen.START_TIMER);
-
     }
 
     const onCallDisConnected = ()=>{
 
+        agoraIMCallDurationStopTimer();
+
         ringingTone.pause();
 
-        const endedTimestamp:number = new Date().getTime();
+        const endedTimestamp:number = f7.utils.now();
         let callDuration:number = 0;
         const callSummary:any = currentCallPayloadSnapshot();
 
@@ -542,6 +498,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
             setCurrentCallStateCONNECTED(false);
             setCurrentCallActionInProgress(false);
+            setCurrentCallActionEnded(true);
 
             setCurrentCallViewStateName(
                 K.ModuleComponentsLibs.im.callScreen.ENDED
@@ -625,7 +582,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     }
 
-    const init = async (_isIncomingCall: Boolean, _isVideoCall: Boolean) => {
+    const init = async (_isIncomingCall: boolean, _isVideoCall: boolean) => {
 
         //Setup user data
 
@@ -645,17 +602,21 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         const destinationDisplayName:String = userDefinedData.displayName;
 
-        console.log(":::setCurrentCallUserDestination:::", userDefinedData, userDefinedData.phoneNumber)
-
         const _destination: IMCallTypeInterfaces.CallDestinationObject = {displayName: destinationDisplayName, phoneNumber: destinationPhoneNumber};
 
         setCurrentCallUserDestination(_destination);
 
         //Set up call session
 
-        const _currentCallSessionData1 = String(`CALL:${new Date().getTime()}:${String(originPhoneNumber).replace(/\W/g, '')}:${String(destinationPhoneNumber).replace(/\W/g, '')}`);
+        const _currentTimestamp = f7.utils.now();
 
-        const _currentCallSessionData2 = Snippets.numbers.randomFloat(1000000, 9000000);
+        const _currentCallSessionData1 = String(`call:${_isVideoCall?'video':'audio'}:${_isIncomingCall?'incoming':'outgoing'}:${_currentTimestamp}:${String(originPhoneNumber).replace(/\W/g, '')}:${String(destinationPhoneNumber).replace(/\W/g, '')}`).toLowerCase();
+
+        const _currentCallSessionData2Float = Snippets.numbers.randomFloat(1000000, 9000000);
+
+        const _currentCallSessionData2String = f7.utils.id(`xxxxxx.xxxxxx.xxxxxx.xxxxxx.xxxxxx`, '0123456789abcdef');
+
+        const _currentCallSessionData2 = String(`${_currentCallSessionData2String}.${_currentCallSessionData2Float}`);
 
         const _currentCallUUID = _isIncomingCall ? 
         Snippets.encryption.sha1(`${String(destinationPhoneNumber).replace(/\W/g, '')}:${String(originPhoneNumber).replace(/\W/g, '')}`) : 
@@ -663,13 +624,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         const _currentCallSessionID= `${_currentCallSessionData1}/${_currentCallSessionData2}/${_currentCallUUID}`;
 
-        const _currentCallSessionChannel = Snippets.encryption.sha1(String(`${_currentCallSessionData1}/${_currentCallSessionData2}`));
-
-        const _currentTimestamp = new Date().getTime();
+        const _currentCallSessionChannel = Snippets.encryption.sha1(_currentCallSessionID);
 
         setCurrentCallUUID(_currentCallUUID.toLowerCase());
 
-        setCurrentCallSessionID(_currentCallSessionID.toLowerCase());
+        setCurrentCallSessionID(_currentCallSessionID.toUpperCase());
 
         setCurrentCallSessionChannel(_currentCallSessionChannel.toLowerCase());
 
@@ -711,7 +670,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const connectOutgoingCallNow = (callPayload: IMCallTypeInterfaces.CallDataObject) => {
 
-        setCurrentCallTimeStartedAttempts([...currentCallDialAttempts, new Date().getTime()]);
+        setCurrentCallTimeStartedAttempts([...currentCallDialAttempts, f7.utils.now()]);
 
         if(isAgoraModuleReady){
 
@@ -899,12 +858,12 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             {localTracksAvailable && (
 
-                            <div className={`local ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'backdrop':''} ${localClientUID}`} key={localClientUID}>
+                            <div className={`local ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
                                 
                                 <MediaPlayer
                                     uuid={`${localClientUID}`}
-                                    videoTrack={localVideoTrack}
-                                    isBackdrop={remoteUsers.length === 0} />
+                                    isLocal={true} 
+                                    videoTrack={localVideoTrack} />
                                 
                             </div>
 
@@ -912,10 +871,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         
                             {remoteUsers.map(user => (
 
-                            <div className={`remote ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'backdrop':''} ${user.uid}`} key={user.uid}>
+                            <div className={`remote ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'alone':''} ${user.uid}`} key={user.uid}>
                                 <MediaPlayer 
                                     uuid={user.uid} 
-                                    user={user} 
+                                    user={user}
+                                    isLocal={false} 
                                     videoTrack={user.videoTrack} 
                                     audioTrack={user.audioTrack} />
                             </div>
@@ -926,15 +886,16 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     ):(
 
-                        <div className={`player-container-duo ${localTracksAvailable?'yes':'no'}`}>
+                        <div className={`player-container-duo`}>
 
                             {joinState && remoteUsers.length > 0 && (
 
-                            <div className={`remote ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'backdrop':''} ${remoteUsers[0].uid} `} >
+                            <div className={`remote ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'alone':''} ${remoteUsers[0].uid} `} >
 
                                 <MediaPlayer 
                                     uuid={remoteUsers[0].uid} 
-                                    user={remoteUsers[0]} 
+                                    user={remoteUsers[0]}
+                                    isLocal={false}  
                                     videoTrack={remoteUsers[0].videoTrack} 
                                     audioTrack={remoteUsers[0].audioTrack} />
 
@@ -942,23 +903,14 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             )}
 
-                            <div className={`remote connected ${localClientUID} `} >
-
-                                <MediaPlayer
-                                    uuid={`${localClientUID}`}
-                                    videoTrack={localVideoTrack}
-                                    isBackdrop={remoteUsers.length === 0} />
-
-                            </div>
-
                             {localTracksAvailable && (
 
-                            <div className={`local ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'backdrop':''} ${localClientUID}`} key={localClientUID}>
+                            <div className={`local ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
                                                             
                                 <MediaPlayer
                                     uuid={`${localClientUID}`}
                                     videoTrack={localVideoTrack}
-                                    isBackdrop={remoteUsers.length === 0} />
+                                    isLocal={true} />
 
                             </div>
 
@@ -988,14 +940,16 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         )}
                         <BlockTitle medium style={{textAlign: 'center'}}>{currentCallViewStateName}</BlockTitle>
                         <BlockTitle medium style={{textAlign: 'center'}}>
-                            <CallTimer className={``} visible={
-                                viewIncludeInCurrentState(
+                            {viewIncludeInCurrentState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                                        K.ModuleComponentsLibs.im.callScreen.DISCONNECTING,
                                         K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
                                         K.ModuleComponentsLibs.im.callScreen.ENDED,
                                     ]
-                                )} />
+                            ) && (
+                                <span className="display-timer">{agoraIMCallDurationText}</span>
+                            )}
                         </BlockTitle>
                     </div>
                    
@@ -1204,23 +1158,28 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                 <div className={`im-call-status-overlay ${!currentCallActionInProgress ? 'black' : currentCallActionHold ? 'red':'green'}`}>
                     <div className="info">
                         <span className="display-name">{userDefinedData.displayName}</span>
+                        
                         {viewIncludeInCurrentState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.INCOMING,
                                         K.ModuleComponentsLibs.im.callScreen.OUTGOING,
+                                        K.ModuleComponentsLibs.im.callScreen.CONNECTING,
                                     ]
                         ) && (
                             <span className="display-number">{userDefinedData.phoneNumber}</span>
                         )}
-                        <CallTimer className="display-timer" visible={
-                                    viewIncludeInCurrentState(
+
+                        {viewIncludeInCurrentState(
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                                        K.ModuleComponentsLibs.im.callScreen.DISCONNECTING,
                                         K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
                                         K.ModuleComponentsLibs.im.callScreen.ENDED,
                                     ]
-                                )} 
-                        />
+                        ) && (
+                            <span className="display-timer">{agoraIMCallDurationText}</span>
+                        )}
+
                     </div>
                     <div className="status">
                         {currentCallModeIsCameraTurnedON ? (
