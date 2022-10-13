@@ -932,52 +932,64 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         (!currentCallTypeIsVideo && !currentCallModeIsCameraTurnedON) ||
                         (remoteUsers.length === 0 && currentCallModeIsCameraTurnedON) || 
                         (remoteUsers.length > 0 && !currentCallModeIsCameraTurnedON)
-                    ) 
+                    )
                     && 
-                (
+                    (
 
-                <div className="blink-container">
-                    <div className="circle-wrapper" style={{opacity: currentCallStateDISCONNECTED ? 0:1}}>
-                        <div className="circle" style={{animationDelay: "0s"}}></div>
-                        <div className="circle" style={{animationDelay: "1s"}}></div>
-                        <div className="circle" style={{animationDelay: "2s"}}></div>
-                        <div className="circle" style={{animationDelay: "3s"}}></div>
-                        <img 
-                            src={userDefinedData.displayPhoto??avatar}
-                            onError={({ currentTarget }) => {
-                                currentTarget.onerror = null; // prevents looping
-                                currentTarget.src=avatar;
-                            }}
-                            alt={``} />
-                    </div>
-                    <div className="call-remote-user" style={{visibility: (remoteUsers.length > 0)?'hidden':'visible'}}>
-                        
-                        <BlockTitle large>{userDefinedData.displayName}</BlockTitle>
-                        {viewIncludeInCurrentState(
-                                    [
-                                        K.ModuleComponentsLibs.im.callScreen.INCOMING,
-                                        K.ModuleComponentsLibs.im.callScreen.OUTGOING,
-                                    ]
-                        ) && (
-                            <BlockTitle medium style={{textAlign: 'center'}}>{userDefinedData.phoneNumber}</BlockTitle>
-                        )}
-                        <BlockTitle medium style={{textAlign: 'center'}}>
-                            <div className="blink"></div>
-                            <span>{currentCallViewStateName}</span>
-                        </BlockTitle>
-                        <BlockTitle medium style={{textAlign: 'center'}}>
-                            {viewIncludeInCurrentState(
-                                    [
-                                        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-                                        K.ModuleComponentsLibs.im.callScreen.DISCONNECTING,
-                                        K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
-                                    ]
-                            ) && (
-                                <span className="display-timer">{agoraIMCallDurationText}</span>
+                    <div className="blink-container">
+
+                        <div className="circle-wrapper" >
+                            
+                            { !currentCallStateDISCONNECTED && (
+
+                                <React.Fragment>
+
+                                    <div className="circle" style={{animationDelay: "0s"}}></div>
+                                    <div className="circle" style={{animationDelay: "1s"}}></div>
+                                    <div className="circle" style={{animationDelay: "2s"}}></div>
+                                    <div className="circle" style={{animationDelay: "3s"}}></div>
+
+                                </React.Fragment>
+
                             )}
-                        </BlockTitle>
+
+                            <img 
+                                src={userDefinedData.displayPhoto??avatar}
+                                onError={({ currentTarget }) => {
+                                    currentTarget.onerror = null; // prevents looping
+                                    currentTarget.src=avatar;
+                                }}
+                                alt={``} />
+                        </div>
+
+                        <div className="call-remote-user" style={{visibility: (remoteUsers.length > 0)?'hidden':'visible'}}>
+                            
+                            <BlockTitle large>{userDefinedData.displayName}</BlockTitle>
+                            {viewIncludeInCurrentState(
+                                        [
+                                            K.ModuleComponentsLibs.im.callScreen.INCOMING,
+                                            K.ModuleComponentsLibs.im.callScreen.OUTGOING,
+                                        ]
+                            ) && (
+                                <BlockTitle medium style={{textAlign: 'center'}}>{userDefinedData.phoneNumber}</BlockTitle>
+                            )}
+                            <BlockTitle medium style={{textAlign: 'center'}}>
+                                <div className="blink"></div>
+                                <span>{currentCallViewStateName}</span>
+                            </BlockTitle>
+                            <BlockTitle medium style={{textAlign: 'center'}}>
+                                {viewIncludeInCurrentState(
+                                        [
+                                            K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                                            K.ModuleComponentsLibs.im.callScreen.DISCONNECTING,
+                                            K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
+                                        ]
+                                ) && (
+                                    <span className="display-timer">{agoraIMCallDurationText}</span>
+                                )}
+                            </BlockTitle>
+                        </div>
                     </div>
-                </div>
 
                 )}
 
