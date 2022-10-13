@@ -381,7 +381,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
             ringingTone.loop = true;
             ringingTone.autoplay = true;
-            
+            ringingTone.load();
             ringingTone.play();
             
             setCurrentCallActionAnswered(false);
@@ -428,7 +428,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         ringingTone.pause();
 
-        ringingTone.load();
+        // ringingTone.load();
 
         setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
 
@@ -442,7 +442,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
   
         ringingTone.pause();
 
-        ringingTone.load();
+        // ringingTone.load();
 
         const  timeStampAnswered:number = f7.utils.now();
 
@@ -465,7 +465,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         ringingTone.pause();
 
-        ringingTone.load();
+        // ringingTone.load();
 
         const endedTimestamp:number = f7.utils.now();
 
@@ -530,7 +530,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         ringingTone.pause();
 
-        ringingTone.load();
+        // ringingTone.load();
 
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(true);
