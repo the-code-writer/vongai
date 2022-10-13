@@ -64,9 +64,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const [currentCallDialAttempts, setCurrentCallTimeStartedAttempts] = useState<String[]>([]);
 
     const [currentCallStateINITIALIZING, setCurrentCallStateINITIALIZING] = useState<boolean>(true);
-    const [currentCallStateDIALING, setCurrentCallStateDIALING] = useState<boolean>(false);
+    const [currentCallStateRINGING, setCurrentCallStateRINGING] = useState<boolean>(false);
     const [currentCallStateCONNECTING, setCurrentCallStateCONNECTING] = useState<boolean>(false);
     const [currentCallStateCONNECTED, setCurrentCallStateCONNECTED] = useState<boolean>(false);
+    const [currentCallStateONHOLD, setCurrentCallStateONHOLD] = useState<boolean>(false);
     const [currentCallStateRECONNECTING, setCurrentCallStateRECONNECTING] = useState<boolean>(false);
     const [currentCallStateDISCONNECTING, setCurrentCallStateDISCONNECTING] = useState<boolean>(false);
     const [currentCallStateDISCONNECTED, setCurrentCallStateDISCONNECTED] = useState<boolean>(false);
@@ -74,9 +75,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const [currentCallActionAnswered, setCurrentCallActionAnswered] = useState<boolean>(false);
     const [currentCallActionDeclined, setCurrentCallActionDeclined] = useState<boolean>(false);
     const [currentCallActionInProgress, setCurrentCallActionInProgress] = useState<boolean>(false);
-    const [currentCallActionHold, setCurrentCallActionHold] = useState<boolean>(false);
     const [currentCallActionMuted, setCurrentCallActionMuted] = useState<boolean>(false);
-    const [currentCallActionEnded, setCurrentCallActionEnded] = useState<boolean>(true);
 
     const [currentCallTypeIsIncoming, setCurrentCallTypeIsIncoming] = useState<boolean>(isIncoming);
     const [currentCallTypeIsVideo, setCurrentCallTypeIsVideo] = useState<boolean>(isVideoCall);
@@ -331,7 +330,21 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onEndedCallHandleDisconnections = () => {
 
-        disconnectCall();
+        setCurrentCallActionAnswered(false);
+        setCurrentCallActionDeclined(false);
+        setCurrentCallActionInProgress(false);
+
+        setCurrentCallStateINITIALIZING(false);
+        setCurrentCallStateRINGING(false);
+        setCurrentCallStateCONNECTING(false);
+        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateONHOLD(false);
+        setCurrentCallStateRECONNECTING(false);
+        setCurrentCallStateDISCONNECTING(true);
+        setCurrentCallStateDISCONNECTED(false);
+
+
+        await disconnectCall();
         
         onCallDisConnected();
 
@@ -341,13 +354,20 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onHoldToggle = () => {
 
-        !currentCallActionHold ? onHoldCallHandler():onUnHoldCallHandler();
+        !currentCallStateONHOLD ? onHoldCallHandler():onUnHoldCallHandler();
 
     };
 
     const onHoldCallHandler = () => {
 
-        setCurrentCallActionHold(true);
+        setCurrentCallStateINITIALIZING(false);
+        setCurrentCallStateRINGING(false);
+        setCurrentCallStateCONNECTING(false);
+        setCurrentCallStateCONNECTED(true);
+        setCurrentCallStateONHOLD(true);
+        setCurrentCallStateRECONNECTING(false);
+        setCurrentCallStateDISCONNECTING(false);
+        setCurrentCallStateDISCONNECTED(false);
 
         setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.ON_HOLD
@@ -363,7 +383,14 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onUnHoldCallHandler = () => {
 
-        setCurrentCallActionHold(false);
+        setCurrentCallStateINITIALIZING(false);
+        setCurrentCallStateRINGING(false);
+        setCurrentCallStateCONNECTING(false);
+        setCurrentCallStateCONNECTED(true);
+        setCurrentCallStateONHOLD(false);
+        setCurrentCallStateRECONNECTING(false);
+        setCurrentCallStateDISCONNECTING(false);
+        setCurrentCallStateDISCONNECTED(false);
 
         setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED
@@ -389,6 +416,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             setCurrentCallActionInProgress(false);
             setCurrentCallTypeIsIncoming(true);
 
+            setCurrentCallStateINITIALIZING(false);
+            setCurrentCallStateRINGING(true);
+            setCurrentCallStateCONNECTING(false);
+            setCurrentCallStateCONNECTED(false);
+            setCurrentCallStateONHOLD(false);
+            setCurrentCallStateRECONNECTING(false);
+            setCurrentCallStateDISCONNECTING(false);
+            setCurrentCallStateDISCONNECTED(false);
+
             onIncomingCall(currentCallPayloadSnapshot());
 
             // Local Notification: PEER_INCOMING_CALL
@@ -407,6 +443,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallActionDeclined(false);
         setCurrentCallActionInProgress(false);
         setCurrentCallTypeIsIncoming(false);
+
+        setCurrentCallStateINITIALIZING(false);
+        setCurrentCallStateRINGING(true);
+        setCurrentCallStateCONNECTING(false);
+        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateONHOLD(false);
+        setCurrentCallStateRECONNECTING(false);
+        setCurrentCallStateDISCONNECTING(false);
+        setCurrentCallStateDISCONNECTED(false);
 
         connectOutgoingCallNow(_currentCallPayload);
 
@@ -430,6 +475,19 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         // ringingTone.load();
 
+        setCurrentCallActionAnswered(true);
+        setCurrentCallActionDeclined(false);
+        setCurrentCallActionInProgress(false);
+
+        setCurrentCallStateINITIALIZING(false);
+        setCurrentCallStateRINGING(false);
+        setCurrentCallStateCONNECTING(true);
+        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateONHOLD(false);
+        setCurrentCallStateRECONNECTING(false);
+        setCurrentCallStateDISCONNECTING(false);
+        setCurrentCallStateDISCONNECTED(true);
+
         setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
 
         // Send IM to caller: PEER_CONNECTING
@@ -450,10 +508,18 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         agoraIMCallDurationStartTimer(timeStampAnswered);
 
+        setCurrentCallActionAnswered(false);
+        setCurrentCallActionDeclined(false);
+        setCurrentCallActionInProgress(true);
+
+        setCurrentCallStateINITIALIZING(false);
+        setCurrentCallStateRINGING(false);
+        setCurrentCallStateCONNECTING(false);
         setCurrentCallStateCONNECTED(true);
+        setCurrentCallStateONHOLD(false);
+        setCurrentCallStateRECONNECTING(false);
+        setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(false);
-        setCurrentCallActionInProgress(true); 
-        setCurrentCallActionEnded(false);       
 
         setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.CONNECTED
@@ -495,10 +561,18 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         }
 
-        setCurrentCallStateCONNECTED(false);
-        setCurrentCallStateDISCONNECTED(true);
+        setCurrentCallActionAnswered(false);
+        setCurrentCallActionDeclined(false);
         setCurrentCallActionInProgress(false);
-        setCurrentCallActionEnded(true);
+
+        setCurrentCallStateINITIALIZING(false);
+        setCurrentCallStateRINGING(false);
+        setCurrentCallStateCONNECTING(false);
+        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateONHOLD(false);
+        setCurrentCallStateRECONNECTING(false);
+        setCurrentCallStateDISCONNECTING(false);
+        setCurrentCallStateDISCONNECTED(true);
 
         setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
@@ -514,13 +588,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onAnswerCallHandler = () => {
 
-        setCurrentCallActionAnswered(true);
-        setCurrentCallActionDeclined(false);
-        setCurrentCallActionInProgress(false);
+        onCallConnecting();
 
         connectIncomingCallNow(currentCallPayload);
-
-        onCallConnecting();
 
         onAnswerCall(currentCallPayloadSnapshot());
 
@@ -535,6 +605,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(true);
         setCurrentCallActionInProgress(false);
+
+        setCurrentCallStateINITIALIZING(false);
+        setCurrentCallStateRINGING(false);
+        setCurrentCallStateCONNECTING(false);
+        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateONHOLD(false);
+        setCurrentCallStateRECONNECTING(false);
+        setCurrentCallStateDISCONNECTING(false);
+        setCurrentCallStateDISCONNECTED(true);
 
         setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED );
 
@@ -744,7 +823,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         console.warn("2.8. useEffect");
 
         setCurrentCallStateINITIALIZING(true);
-        setCurrentCallStateDIALING(false);
+        setCurrentCallStateRINGING(false);
         setCurrentCallStateCONNECTING(false);
         setCurrentCallStateCONNECTED(false);
         setCurrentCallStateRECONNECTING(false);
@@ -758,7 +837,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallActionInProgress(false);
         setCurrentCallActionHold(false);
         setCurrentCallActionMuted(false);
-        setCurrentCallActionEnded(true);
 
         console.warn("2.10. useEffect");
 
@@ -818,7 +896,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         f7.on( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED, () => {
 
-            setCurrentCallActionEnded(true);
             setCurrentCallActionInProgress(false);
 
             setCurrentCallViewStateName(
@@ -833,7 +910,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         f7.on( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED_BY_PEER, () => {
 
-            setCurrentCallActionEnded(true);
             setCurrentCallActionInProgress(false);
 
             setCurrentCallViewStateName(
@@ -974,7 +1050,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             {localTracksAvailable && (
 
-                            <div className={`local ${joinState?(remoteUsers.length > 0 ? 'connected':(currentCallViewStateName === K.ModuleComponentsLibs.im.callScreen.CONNECTED?'connected':'not-connected')):('not-connected')} ${currentCallStateDISCONNECTED ? 'call-disconnected':''}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
+                            <div className={`local ${joinState?(remoteUsers.length > 0 ? 'connected':(currentCallStateCONNECTED ? 'connected':'not-connected')):('not-connected')} ${currentCallStateDISCONNECTED ? 'call-disconnected':''}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
                                                             
                                 <MediaPlayer
                                     uuid={`${localClientUID}`}
