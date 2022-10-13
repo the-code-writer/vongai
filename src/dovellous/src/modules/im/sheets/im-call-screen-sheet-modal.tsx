@@ -333,9 +333,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         disconnectCall();
         
-        setCurrentCallActionEnded(true);
-        setCurrentCallActionInProgress(false);
-
         onCallDisConnected();
 
         onEndedCall(currentCallPayloadSnapshot());
@@ -449,6 +446,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         agoraIMCallDurationStartTimer(timeStampAnswered);
 
         setCurrentCallStateCONNECTED(true);
+        setCurrentCallStateDISCONNECTED(false);
         setCurrentCallActionInProgress(true); 
         setCurrentCallActionEnded(false);       
 
@@ -460,13 +458,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onCallDisConnected = ()=>{
 
-        agoraIMCallDurationStopTimer();
-
         ringingTone.pause();
 
         const endedTimestamp:number = f7.utils.now();
+
         let callDuration:number = 0;
+
         const callSummary:any = currentCallPayloadSnapshot();
+
+        agoraIMCallDurationStopTimer();
 
         setCurrentCallTimeEnded(endedTimestamp);
 
@@ -484,19 +484,24 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                 
             setCurrentCallSummary(callSummary);
 
-            setCurrentCallStateCONNECTED(false);
-            setCurrentCallActionInProgress(false);
-            setCurrentCallActionEnded(true);
-
-            setCurrentCallViewStateName(
-                K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
-            );
-
-            f7.emit(K.ModuleComponentsLibs.im.callScreen.SUMMARY, callSummary);
-        
-            console.warn("::::::*********** 1 * CALL DISCONNECTED : SUMMARY ************:::::: ", callSummary);
+            onCallSummaryHandler(callSummary);
 
         }
+
+        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateDISCONNECTED(true);
+        setCurrentCallActionInProgress(false);
+        setCurrentCallActionEnded(true);
+
+        setCurrentCallViewStateName(
+            K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
+        );
+
+    }
+
+    const onCallSummaryHandler = (callSummary: any) => {
+
+        console.warn("::::::*********** CALL DISCONNECTED : SUMMARY ************:::::: ", callSummary);
 
     }
 
@@ -923,12 +928,16 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                 )}
 
                 {
-                    (remoteUsers.length === 0 && currentCallModeIsCameraTurnedON) || 
-                    (remoteUsers.length > 0 && !currentCallModeIsCameraTurnedON) && 
+                    (
+                        (!currentCallTypeIsVideo && !currentCallModeIsCameraTurnedON) ||
+                        (remoteUsers.length === 0 && currentCallModeIsCameraTurnedON) || 
+                        (remoteUsers.length > 0 && !currentCallModeIsCameraTurnedON)
+                    ) 
+                    && 
                 (
 
                 <div className="blink-container">
-                    <div className="circle-wrapper">
+                    <div className="circle-wrapper" style={{opacity: currentCallStateDISCONNECTED ? 0:1}}>
                         <div className="circle" style={{animationDelay: "0s"}}></div>
                         <div className="circle" style={{animationDelay: "1s"}}></div>
                         <div className="circle" style={{animationDelay: "2s"}}></div>
