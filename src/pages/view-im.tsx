@@ -134,7 +134,7 @@ export default () => {
       
       console.log("::: VIEW IM :::", currentIMTab);
 
-      Framework7App.dovellousEventsOn(
+      Framework7App.on(
         K.ModuleComponentsLibs.im.callScreen.INCOMING,
         (callDataObject: any)=>{
           onIncomingIMCallHandler(callDataObject);

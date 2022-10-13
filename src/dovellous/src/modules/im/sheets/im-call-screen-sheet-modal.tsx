@@ -375,7 +375,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     };
 
-    const onIncomingCallHandler = () => {
+    const onIncomingCallHandler = (_currentCallPayload: any) => {
 
         if(Object.keys(userDefinedData).length > 0 && userDefinedData.hasOwnProperty('phoneNumber')){
 
@@ -383,31 +383,33 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             
             ringingTone.play();
             
-            connectIncomingCallNow(currentCallPayload);
-
             setCurrentCallActionAnswered(false);
             setCurrentCallActionDeclined(false);
             setCurrentCallActionInProgress(false);
+            setCurrentCallTypeIsIncoming(true);
+
+            connectIncomingCallNow(_currentCallPayload);
 
             onIncomingCall(currentCallPayloadSnapshot());
+
+            // Local Notification: PEER_INCOMING_CALL
 
             setCurrentCallViewStateName(
                 K.ModuleComponentsLibs.im.callScreen.INCOMING
             );
-
-            // Local Notification: PEER_INCOMING_CALL
-
+    
         }
 
     };
 
-    const onOutgoingCallHandler = () => {
+    const onOutgoingCallHandler = (_currentCallPayload:any) => {
         
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(false);
         setCurrentCallActionInProgress(false);
+        setCurrentCallTypeIsIncoming(false);
 
-        connectOutgoingCallNow(currentCallPayload);
+        connectOutgoingCallNow(_currentCallPayload);
 
         onOutgoingCall(currentCallPayloadSnapshot());
 
@@ -581,6 +583,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallUserData(userDefinedData);
 
+        console.warn("4.1. useEffect", userDefinedData);
+
         //Set up call participants
 
         const originPhoneNumber:String = "00263772123456";
@@ -591,6 +595,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallUserOrigin(_origin);
 
+        console.warn("4.2. useEffect : _origin", _origin);
+
         const destinationPhoneNumber:String = userDefinedData.phoneNumber;
 
         const destinationDisplayName:String = userDefinedData.displayName;
@@ -598,6 +604,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         const _destination: IMCallTypeInterfaces.CallDestinationObject = {displayName: destinationDisplayName, phoneNumber: destinationPhoneNumber};
 
         setCurrentCallUserDestination(_destination);
+
+        console.warn("4.3. useEffect : _destination", _destination);
 
         //Set up call session
 
@@ -619,11 +627,17 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         const _currentCallSessionChannel = Snippets.encryption.sha1(_currentCallSessionID);
 
-        setCurrentCallUUID(_currentCallUUID.toLowerCase());
+        setCurrentCallUUID(_currentCallUUID);
 
-        setCurrentCallSessionID(_currentCallSessionID.toUpperCase());
+        console.warn("4.4. useEffect : _currentCallUUID", _currentCallUUID);
 
-        setCurrentCallSessionChannel(_currentCallSessionChannel.toLowerCase());
+        setCurrentCallSessionID(_currentCallSessionID);
+
+        console.warn("4.5. useEffect : _currentCallSessionID", _currentCallSessionID);
+
+        setCurrentCallSessionChannel(_currentCallSessionChannel);
+
+        console.warn("4.6. useEffect : _currentCallSessionChannel", _currentCallSessionChannel);
 
         setCurrentCallTypeIsVideo(_isVideoCall);
 
@@ -633,28 +647,34 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         
         //Set up call payload
 
-        const callPayload: IMCallTypeInterfaces.CallDataObject = {
-            uid: _currentCallUUID.toLowerCase(),
+        const _callPayload: IMCallTypeInterfaces.CallDataObject = {
+            uid: _currentCallUUID,
             userData: userDefinedData,
             origin: _origin,
             destination: _destination,
             callStartedTimestamp: _currentTimestamp,
-            callSessionID: _currentCallSessionID.toLowerCase(),
-            callSessionChannel: _currentCallSessionChannel.toLowerCase(),
+            callSessionID: _currentCallSessionID,
+            callSessionChannel: _currentCallSessionChannel,
             isVideoCall: _isVideoCall,
             isIncoming: _isIncomingCall,
         }
 
-        setCurrentCallPayload(callPayload);
+        setCurrentCallPayload(_callPayload);
+
+        console.warn("4.7. useEffect : _callPayload", _callPayload);
         
-        _isIncomingCall ? connectIncomingCallNow(callPayload) : connectOutgoingCallNow(callPayload);
+        _isIncomingCall ? onIncomingCallHandler(_callPayload) : onOutgoingCallHandler(_callPayload);
   
     }
 
     const connectIncomingCallNow = (callPayload: IMCallTypeInterfaces.CallDataObject) => {
 
+        console.warn("7.1 connectIncomingCallNow : callPayload|isAgoraModuleReady", callPayload, isAgoraModuleReady);
+
         if(isAgoraModuleReady){
 
+            console.warn("7.2 connectIncomingCallNow : connectCall", callPayload);
+            
             connectCall( callPayload );
 
         }
@@ -663,9 +683,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const connectOutgoingCallNow = (callPayload: IMCallTypeInterfaces.CallDataObject) => {
 
-        setCurrentCallTimeStartedAttempts([...currentCallDialAttempts, f7.utils.now()]);
+        const newCallAttempts:String[] = [...currentCallDialAttempts, f7.utils.now()];
+
+        setCurrentCallTimeStartedAttempts(newCallAttempts);
+
+        console.warn("6.1 connectOutgoingCallNow : callPayload|isAgoraModuleReady|newCallAttempts", callPayload, isAgoraModuleReady, newCallAttempts);
 
         if(isAgoraModuleReady){
+
+            console.warn("6.2 connectIncomingCallNow : connectCall", callPayload);
 
             connectCall( callPayload );
 
@@ -675,22 +701,38 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const resetState = () => {   
 
+        console.warn("2.1. useEffect");
+
         removeEventListeners();
         
+        console.warn("2.2. useEffect");
+
         setCurrentCallViewStateName(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
+
+        console.warn("2.3. useEffect");
 
         setCurrentCallSessionID('SID');
 
+        console.warn("2.4. useEffect");
+
         setCurrentCallSessionChannel('SCH');
+
+        console.warn("2.5. useEffect");
 
         setCurrentCallUserOrigin({displayName:'DNO',phoneNumber:'000'});
 
+        console.warn("2.6. useEffect");
+
         setCurrentCallUserDestination({displayName:'DND',phoneNumber:'001'});
+
+        console.warn("2.7. useEffect");
 
         setCurrentCallTimeStarted(0);
         setCurrentCallTimeAnswered(0);
         setCurrentCallTimeEnded(0);
         setCurrentCallTimeStartedAttempts([]);
+
+        console.warn("2.8. useEffect");
 
         setCurrentCallStateINITIALIZING(true);
         setCurrentCallStateDIALING(false);
@@ -700,6 +742,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(false);
 
+        console.warn("2.9. useEffect");
+
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(false);
         setCurrentCallActionInProgress(false);
@@ -707,18 +751,24 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallActionMuted(false);
         setCurrentCallActionEnded(true);
 
+        console.warn("2.10. useEffect");
+
         setCurrentCallTypeIsIncoming(isIncoming);
         setCurrentCallTypeIsVideo(isVideoCall);
+
+        console.warn("2.11. useEffect");
 
         setCurrentCallModeIsUsingFrontCamera(true);
         setCurrentCallModeIsCameraTurnedON(isVideoCall);
         setCurrentCallModeIsLoudSpeakerTurnedON(false);
 
+        console.warn("2.12. useEffect");
+
     }
 
     const addEventListeners = () => {
         
-        f7.on( K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED, (module: any)=>{
+        f7.on( K.Events.Modules.Agora.App.ON_APP_INIT, (module: any)=>{
 
             setIsAgoraModuleReady(true);
 
@@ -791,11 +841,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const removeEventListeners = () => {
         
-        f7.off( K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED );
-
-        f7.off( K.ModuleComponentsLibs.im.callScreen.OUTGOING );
-
-        f7.off( K.ModuleComponentsLibs.im.callScreen.INCOMING );
+        f7.off( K.Events.Modules.Agora.App.ON_APP_INIT );
 
         f7.off( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
 
@@ -813,11 +859,17 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     useEffect(() => {
 
+        console.warn("1. useEffect");
+
         resetState();
+
+        addEventListeners();
+
+        console.warn("3. useEffect", userDefinedData, userDefinedData.hasOwnProperty('phoneNumber'), userDefinedData.phoneNumber !== undefined);
 
         if(userDefinedData.hasOwnProperty('phoneNumber') && userDefinedData.phoneNumber !== undefined){
 
-            addEventListeners();
+            console.warn("4. useEffect");
 
             setCurrentCallModeIsCameraTurnedON(isVideoCall);
 
@@ -828,6 +880,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             init(isIncoming, isVideoCall);
 
         }
+
+        console.warn("5. useEffect");
 
         return resetState;
 
@@ -856,9 +910,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 <div className="backdrop blurry" />
 
-                {currentCallModeIsCameraTurnedON && (
-
-                <div className={`videos visible`} >
+                <div className={`videos ${currentCallModeIsCameraTurnedON ? 'visible' : 'hidden'}`} >
 
                     {(remoteUsers.length > 1) ? (
 
@@ -931,13 +983,12 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 </div>
 
-                )}
-
                 {
                     (
-                        (!currentCallTypeIsVideo && !currentCallModeIsCameraTurnedON) ||
-                        (remoteUsers.length === 0 && currentCallModeIsCameraTurnedON) || 
-                        (remoteUsers.length > 0 && !currentCallModeIsCameraTurnedON)
+                        (!currentCallTypeIsVideo  && !currentCallModeIsCameraTurnedON) ||
+                        (remoteUsers.length === 0 && !currentCallModeIsCameraTurnedON) || 
+                        (remoteUsers.length === 0 &&  currentCallModeIsCameraTurnedON) || 
+                        (remoteUsers.length   > 0 && !currentCallModeIsCameraTurnedON) 
                     )
                     && 
                     (
@@ -981,7 +1032,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                 <BlockTitle medium style={{textAlign: 'center'}}>{userDefinedData.phoneNumber}</BlockTitle>
                             )}
                             <BlockTitle medium style={{textAlign: 'center'}}>
-                                <div className="blink"></div>
                                 <span>{currentCallViewStateName}</span>
                             </BlockTitle>
                             <BlockTitle medium style={{textAlign: 'center'}}>
@@ -1003,14 +1053,20 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                 )}
 
                 <PageContent>
-
+                    
                     {viewIncludeInCurrentState(
-                        [K.ModuleComponentsLibs.im.callScreen.ON_HOLD]
+                        [
+                            K.ModuleComponentsLibs.im.callScreen.ON_HOLD,
+                        ]
                     ) && (
-                    <div className="call-actions" onClick={onActionsHoldHandler}>
-                        <Button large outline round text="Resume Call" color="green" />
+                    <div className="call-current-state" onClick={onActionsHoldHandler}>
+                        <div className="blink-wrapper">                     
+                            <div className="blink"></div>
+                            <Icon color="black" ios="f7:phone_fill" aurora="f7:phone_fill" md="material:phone_paused" />
+                        </div>
                     </div>
                     )}
+
 
                     {viewIncludeInCurrentState(
                         [
@@ -1059,14 +1115,23 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     {viewIncludeInCurrentState(
                         [
+                            K.ModuleComponentsLibs.im.callScreen.ON_HOLD,
+                        ]
+                    ) && (
+                        <BlockTitle style={{textAlign: 'center'}}>
+                            <span>Call is on hold. Click to resume.</span>
+                        </BlockTitle>
+                    )}
+
+                    {viewIncludeInCurrentState(
+                        [
                             K.ModuleComponentsLibs.im.callScreen.INITIALIZING,
                             K.ModuleComponentsLibs.im.callScreen.OUTGOING,
-                            K.ModuleComponentsLibs.im.callScreen.ON_HOLD,
                             K.ModuleComponentsLibs.im.callScreen.CONNECTING,
                             K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                         ]
                     ) && (
-                    
+
                     <Block inset className={`call-controls`}>
                         
                         <Button outline large 
@@ -1146,7 +1211,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 <div className="im-call-controls-wrapper ended">
 
-                    <div className="im-call-button" onClick={onOutgoingCallHandler}>
+                    <div className="im-call-button" onClick={()=>onOutgoingCallHandler(currentCallPayload)}>
 
                         <Fab color="green" >
                                 <Icon 
@@ -1177,7 +1242,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                 )}
 
                 {viewIncludeInCurrentState(
-                    [K.ModuleComponentsLibs.im.callScreen.INCOMING]
+                    [
+                        K.ModuleComponentsLibs.im.callScreen.INCOMING
+                    ]
                 ) && (
 
                 <div className="im-call-controls-wrapper incoming">

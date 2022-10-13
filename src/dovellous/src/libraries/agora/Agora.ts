@@ -67,10 +67,6 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 				agoraLibrary: {},
 
-				agoraRTC: <AgoraTypeInterfaces.RTCInterface>{},
-
-				agoraClient: <IAgoraRTCClient>{},
-
 				agoraConfig: {},
 
 				agoraOptions: {},
@@ -87,25 +83,10 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 					parent.agoraConfig = agoraLibrary.options.config;
 
-					parent.agoraClient = AgoraRTC.createClient(
-						{ 
-							mode: "rtc", 
-							codec: "vp8" 
-						}
-					);
-
-					parent.agoraRTC = {
-						// For the local client.
-						client: null,
-						// For the local audio and video tracks.
-						localAudioTrack: null,
-						localVideoTrack: null,
-					};
-
 					await parent.imCall.init(f7);
 
 					f7.emit(
-						K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
+						K.Events.Modules.Agora.App.ON_APP_INIT,
 						{
 							app: parent,
 							f7: f7

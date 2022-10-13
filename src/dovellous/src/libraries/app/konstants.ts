@@ -192,6 +192,9 @@ const K = {
 				},
 			},
 			Agora: {
+				App: {
+					ON_APP_INIT: "ModulesAgoraAppCallOnAppInit",
+				},
 				AgoraDefaults: {
 					DEFAULT_TOKEN: "TK1000000000",
 					DEFAULT_CHANNEL: "CH1000000000",
@@ -302,7 +305,7 @@ const K = {
 				INITIALIZING: 'Initializing',
 				LINE_BUSY: 'LineBusy',
 				INCOMING: 'IncomingCall',
-				OUTGOING: 'Outgoing',
+				OUTGOING: 'OutgoingCall',
 				RECONNECTING: 'Reconnecting',
 				CONNECTING: 'Connecting',
 				CONNECTED: 'Connected',
@@ -310,7 +313,7 @@ const K = {
 				DISCONNECTING: 'Disconnecting',
 				DISCONNECTED: 'Disconnected',
 				DISCONNECTED_BY_PEER: 'DisconnectedByRemote',
-				ON_HOLD: 'OnHold',
+				ON_HOLD: 'CallOnHold',
 				SUMMARY: 'CallSummary',
 			}
 		}
