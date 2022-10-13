@@ -327,8 +327,8 @@ const K = {
 					Connected : 'Connected',
 					ConnectionError : 'Connection Error',
 					Disconnecting : 'Disconnecting...',
-					Disconnected : 'Disconnected',
-					DisconnectedByRemote : 'Disconnected',
+					Disconnected : 'Call Ended',
+					DisconnectedByRemote : 'Call Ended',
 					CallOnHold : 'Call On Hold',
 				},
 			}

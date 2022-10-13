@@ -940,7 +940,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                 closeByBackdropClick={false}
                 closeByOutsideClick={false}
                 closeOnEscape={false}
-                style={{backgroundImage: `url(${userDefinedData.displayPhoto})`}}
+                style={{backgroundImage: `url(${userDefinedData.displayPhoto})`, backgroundSize: `500%`, backgroundPosition: `center`}}
             >
 
                 <div className="backdrop blurry" />

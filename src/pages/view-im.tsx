@@ -135,7 +135,7 @@ export default () => {
       console.log("::: VIEW IM :::", currentIMTab);
 
       Framework7App.on(
-        K.ModuleComponentsLibs.im.callScreen.INCOMING,
+        K.ModuleComponentsLibs.im.callScreen.states.INCOMING,
         (callDataObject: any)=>{
           onIncomingIMCallHandler(callDataObject);
         }
