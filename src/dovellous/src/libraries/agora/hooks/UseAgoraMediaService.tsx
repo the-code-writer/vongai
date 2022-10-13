@@ -652,7 +652,9 @@ export default function useAgoraMediaService(
     );
 
     if(clientMode !== "rtc"){
+
       agoraClientInstance.setClientRole("host");
+      
     }
 
     setClient(agoraClientInstance);

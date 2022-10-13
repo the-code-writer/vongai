@@ -7,6 +7,7 @@ import K from "../../../libraries/app/konstants";
 
 import Dom7 from "dom7";
 
+import avatar from '../../../../assets/img/avatar/default.png';
 import song from '../../../../assets/aud/incoming-4.mp3';
 
 import { StorageIM, useStorageIM } from "../store/im-store";
@@ -901,7 +902,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             {localTracksAvailable && (
 
-                            <div className={`local ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
+                            <div className={`local ${joinState?(remoteUsers.length > 0 ? 'connected':'not-connected'):('not-connected')}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
                                                             
                                 <MediaPlayer
                                     uuid={`${localClientUID}`}
@@ -921,10 +922,22 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 )}
 
-                <PageContent>
-                   
+                <div className="blink-container">
+                    <div className="circle-wrapper">
+                        <div className="circle" style={{animationDelay: "0s"}}></div>
+                        <div className="circle" style={{animationDelay: "1s"}}></div>
+                        <div className="circle" style={{animationDelay: "2s"}}></div>
+                        <div className="circle" style={{animationDelay: "3s"}}></div>
+                        <img 
+                            src={userDefinedData.displayPhoto??avatar}
+                            onError={({ currentTarget }) => {
+                                currentTarget.onerror = null; // prevents looping
+                                currentTarget.src=avatar;
+                            }}
+                            alt={``} />
+                    </div>
                     <div className="call-remote-user" style={{visibility: currentCallModeIsCameraTurnedON?'hidden':'visible'}}>
-                        <img src={userDefinedData.displayPhoto??''} alt={``} />
+                        
                         <BlockTitle large>{userDefinedData.displayName}</BlockTitle>
                         {viewIncludeInCurrentState(
                                     [
@@ -934,7 +947,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         ) && (
                             <BlockTitle medium style={{textAlign: 'center'}}>{userDefinedData.phoneNumber}</BlockTitle>
                         )}
-                        <BlockTitle medium style={{textAlign: 'center'}}>{currentCallViewStateName}</BlockTitle>
+                        <BlockTitle medium style={{textAlign: 'center'}}>
+                            <div className="blink"></div>
+                            <span>{currentCallViewStateName}</span>
+                        </BlockTitle>
                         <BlockTitle medium style={{textAlign: 'center'}}>
                             {viewIncludeInCurrentState(
                                     [
@@ -947,6 +963,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             )}
                         </BlockTitle>
                     </div>
+                </div>
+
+                <PageContent>
+
+                    
                    
                     {viewIncludeInCurrentState(
                         [K.ModuleComponentsLibs.im.callScreen.ON_HOLD]
@@ -962,11 +983,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         ]
                     ) && (
                     
-                    <div className="call-actions" >
+                    <div className="call-current-state" >
                         {localTracksAvailable ? (
-                            <h5>Waiting for Peers...</h5>
+                            <span>Waiting for {userDefinedData.displayName} to join call.</span>
                         ):(
-                            <Preloader size={48} dark={true} />
+                            <Preloader size={50} dark={true} color="white" />
                         )}
                     </div>
 
@@ -1151,79 +1172,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     </div>
 
-                </div>
-
-                )}
-
-                {currentCallModeIsCameraTurnedON && viewIncludeInCurrentState(
-                                    [
-                                        K.ModuleComponentsLibs.im.callScreen.OUTGOING,
-                                        K.ModuleComponentsLibs.im.callScreen.INCOMING,
-                                        K.ModuleComponentsLibs.im.callScreen.CONNECTING,
-                                        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-                                        K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
-                                    ]
-                                ) && (
-
-                <div className={`im-call-status-overlay ${!currentCallActionInProgress ? 'black' : currentCallActionHold ? 'red':'green'}`}>
-                    <div className="info">
-                        <span className="display-name">{userDefinedData.displayName}</span>
-                        
-                        {viewIncludeInCurrentState(
-                                    [
-                                        K.ModuleComponentsLibs.im.callScreen.INCOMING,
-                                        K.ModuleComponentsLibs.im.callScreen.OUTGOING,
-                                        K.ModuleComponentsLibs.im.callScreen.CONNECTING,
-                                    ]
-                        ) && (
-                            <span className="display-number">{userDefinedData.phoneNumber}</span>
-                        )}
-
-                        {viewIncludeInCurrentState(
-                                    [
-                                        K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-                                        K.ModuleComponentsLibs.im.callScreen.DISCONNECTING,
-                                        K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
-                                    ]
-                        ) && (
-                            <span className="display-timer">{agoraIMCallDurationText}</span>
-                        )}
-
-                    </div>
-                    <div className="status">
-                        {currentCallModeIsCameraTurnedON ? (
-                            currentCallActionHold ? (
-                                <Icon 
-                                    ios={`f7:${currentCallTypeIsIncoming?'videocam':'videocam'}`} 
-                                    aurora={`f7:${currentCallTypeIsIncoming?'videocam':'videocam'}`} 
-                                    md={`material:${currentCallTypeIsIncoming?'pause_circle_outline':'pause_circle_outline'}`} 
-                                />
-                            ):(
-                                <Icon  
-                                    ios={`f7:${currentCallTypeIsIncoming?'videocam_fill':'videocam_fill'}`} 
-                                    aurora={`f7:${currentCallTypeIsIncoming?'videocam_fill':'videocam_fill'}`} 
-                                    md={`material:${currentCallTypeIsIncoming?'videocam':'videocam'}`} 
-                                />
-                            )
-                        ):(
-                            currentCallActionHold ? (
-                                <Icon 
-                                    ios={`f7:${currentCallTypeIsIncoming?'phone_arrow_down_left':'phone_arrow_up_right'}`} 
-                                    aurora={`f7:${currentCallTypeIsIncoming?'phone_arrow_down_left':'phone_arrow_up_right'}`} 
-                                    md={`material:${currentCallTypeIsIncoming?'phone_paused':'phone_paused'}`} 
-                                />
-                            ):(
-                                <Icon 
-                                    ios={`f7:${currentCallTypeIsIncoming?'phone_fill_arrow_down_left':'phone_fill_arrow_up_right'}`} 
-                                    aurora={`f7:${currentCallTypeIsIncoming?'phone_fill_arrow_down_left':'phone_fill_arrow_up_right'}`} 
-                                    md={`material:${currentCallTypeIsIncoming?'phone':'phone'}`} 
-                                />
-                            )
-                        )}
-                        <div className="display-state">
-                            {currentCallViewStateName}
-                        </div>
-                    </div>
                 </div>
 
                 )}
