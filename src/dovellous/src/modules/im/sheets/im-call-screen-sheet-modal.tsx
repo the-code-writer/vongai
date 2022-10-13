@@ -975,8 +975,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             <BlockTitle large>{userDefinedData.displayName}</BlockTitle>
                             {viewIncludeInCurrentState(
                                         [
-                                            K.ModuleComponentsLibs.im.callScreen.INCOMING,
-                                            K.ModuleComponentsLibs.im.callScreen.OUTGOING,
+                                            K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
                                         ]
                             ) && (
                                 <BlockTitle medium style={{textAlign: 'center'}}>{userDefinedData.phoneNumber}</BlockTitle>
@@ -988,6 +987,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             <BlockTitle medium style={{textAlign: 'center'}}>
                                 {viewIncludeInCurrentState(
                                         [
+                                            K.ModuleComponentsLibs.im.callScreen.INITIALIZING,
+                                            K.ModuleComponentsLibs.im.callScreen.CONNECTING,
                                             K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                                             K.ModuleComponentsLibs.im.callScreen.DISCONNECTING,
                                             K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
