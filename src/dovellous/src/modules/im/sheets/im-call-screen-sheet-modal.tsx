@@ -388,8 +388,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             setCurrentCallActionInProgress(false);
             setCurrentCallTypeIsIncoming(true);
 
-            connectIncomingCallNow(_currentCallPayload);
-
             onIncomingCall(currentCallPayloadSnapshot());
 
             // Local Notification: PEER_INCOMING_CALL
@@ -512,6 +510,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallActionAnswered(true);
         setCurrentCallActionDeclined(false);
         setCurrentCallActionInProgress(false);
+
+        connectIncomingCallNow(currentCallPayload);
 
         onCallConnecting();
 
