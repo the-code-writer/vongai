@@ -460,6 +460,8 @@ export default function useAgoraMediaService(
 
       const testChannel = "CH0100";
 
+      console.warn("=== testChannel, appId, testChannel, token, uid ===", testChannel, appId, testChannel, token, uid);
+
       client.join(appId, testChannel, token || null, uid || null)
       .then(async(newUUID:UID)=>{
 
@@ -654,7 +656,7 @@ export default function useAgoraMediaService(
     if(clientMode !== "rtc"){
 
       agoraClientInstance.setClientRole("host");
-      
+
     }
 
     setClient(agoraClientInstance);
