@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import AgoraRTC, {
-  IAgoraRTCClient, IAgoraRTCRemoteUser, MicrophoneAudioTrackInitConfig, CameraVideoTrackInitConfig, IMicrophoneAudioTrack, ICameraVideoTrack, ILocalVideoTrack, ILocalAudioTrack, SDK_CODEC, SDK_MODE, UID
+  IAgoraRTCClient, IAgoraRTCRemoteUser, MicrophoneAudioTrackInitConfig, CameraVideoTrackInitConfig, IMicrophoneAudioTrack, ICameraVideoTrack, ILocalVideoTrack, ILocalAudioTrack, ILocalTrack, SDK_CODEC, SDK_MODE, UID
 } from 'agora-rtc-sdk-ng';
 import K from '../../app/konstants';
 
@@ -56,13 +56,13 @@ export default function useAgoraMediaService(
   const [clientCodec, setClientCodec] = useState<SDK_CODEC>('vp8');
   const [clientMode, setClientMode] = useState<SDK_MODE>('rtc');
   const [appId, setAppId] = useState<string>('');
-  const [localVideoTrack, setLocalVideoTrack] = useState<ILocalVideoTrack | undefined>(undefined);
-  const [localAudioTrack, setLocalAudioTrack] = useState<ILocalAudioTrack | undefined>(undefined);
+  const [localVideoTrack, setLocalVideoTrack] = useState<ILocalVideoTrack | ICameraVideoTrack | ILocalTrack | undefined>(undefined);
+  const [localAudioTrack, setLocalAudioTrack] = useState<ILocalAudioTrack | IMicrophoneAudioTrack | ILocalTrack | undefined>(undefined);
   const [localClientUID, setLocalClientUID] = useState<UID | undefined>(undefined);
   const [localClientChannel, setLocalClientChannel] = useState<UID | undefined>(undefined);
   const [localClientSessionID, setLocalClientSessionID] = useState<UID | undefined>(undefined);
   const [localClientSessionToken, setLocalClientSessionToken] = useState<UID | undefined>(undefined)
-  
+ 
   const [localTracksAvailable, setLocalTracksAvailable] = useState<boolean>(false);
 
   const [joinState, setJoinState] = useState<boolean>(false);
@@ -411,6 +411,7 @@ export default function useAgoraMediaService(
     setLocalTracksAvailable(true);
 
     return [microphoneTrack, cameraTrack];
+
   }
 
   const connectCall = (callPayload: IMCallTypeInterfaces.CallDataObject) => {
@@ -474,18 +475,22 @@ export default function useAgoraMediaService(
 
         setJoiningState(false);
 
-        await enableDenoiser4AudioTrack.enabler(microphoneTrack);
+        //await enableDenoiser4AudioTrack.enabler(microphoneTrack);
 
-        await client.publish([microphoneTrack, cameraTrack]);
+        //await client.publish([microphoneTrack, cameraTrack]);
 
+        await enableDenoiser4AudioTrack.enabler(localAudioTrack);
+
+        await client.publish([localAudioTrack, localVideoTrack]);
+        
         (window as any).client = client;
-        (window as any).videoTrack = cameraTrack;
-        (window as any).audioTrack = microphoneTrack;
+        (window as any).videoTrack = localVideoTrack;
+        (window as any).audioTrack = localAudioTrack;
 
         const payload:any = {
           client: client,
-          videoTrack: cameraTrack,
-          audioTrack: microphoneTrack,
+          videoTrack: localVideoTrack,
+          audioTrack: localAudioTrack,
           callPayload: callPayload,
           channel: channel,
           token: token,
@@ -646,7 +651,9 @@ export default function useAgoraMediaService(
       }
     );
 
-    agoraClientInstance.setClientRole("host")
+    if(clientMode !== "rtc"){
+      agoraClientInstance.setClientRole("host");
+    }
 
     setClient(agoraClientInstance);
 

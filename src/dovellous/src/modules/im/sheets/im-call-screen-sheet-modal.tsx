@@ -1,4 +1,4 @@
-import { Block, BlockTitle, Button, f7, Fab, FabButton, FabButtons, Icon, List, ListItem, PageContent, Sheet } from "framework7-react";
+import { Block, BlockTitle, Button, f7, Fab, FabButton, FabButtons, Icon, List, ListItem, PageContent, Preloader, Sheet } from "framework7-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import * as IMCallTypeInterfaces from "../../../libraries/agora/apps/voice/IMCallTypeInterfaces";
@@ -15,18 +15,7 @@ import useAgoraMediaService from "../../../libraries/agora/hooks/UseAgoraMediaSe
 import useAgoraIMCallDuration from "../../../libraries/agora/hooks/UseAgoraIMCallDuration";
 import MediaPlayer from "../../../libraries/agora/components/MediaPlayer";
 
-import AgoraRTC, { 
-    IAgoraRTCClient, 
-    IAgoraRTCRemoteUser, 
-    MicrophoneAudioTrackInitConfig, 
-    CameraVideoTrackInitConfig, 
-    IMicrophoneAudioTrack, 
-    ICameraVideoTrack, 
-    ILocalVideoTrack, 
-    ILocalAudioTrack, 
-    UID 
-} from 'agora-rtc-sdk-ng';
-import { timeStamp } from "console";
+import AgoraRTC, { IAgoraRTCRemoteUser, UID } from 'agora-rtc-sdk-ng';
 
 export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     onMute,
@@ -72,8 +61,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const [currentCallTimeAnswered, setCurrentCallTimeAnswered] = useState<number>(0);
     const [currentCallTimeEnded, setCurrentCallTimeEnded] = useState<number>(0);
     const [currentCallDialAttempts, setCurrentCallTimeStartedAttempts] = useState<String[]>([]);
-
-    const [currentCallStateLabel, setCurrentCallStateLabel] = useState<String[]>('Please wait...');
 
     const [currentCallStateINITIALIZING, setCurrentCallStateINITIALIZING] = useState<boolean>(true);
     const [currentCallStateDIALING, setCurrentCallStateDIALING] = useState<boolean>(false);
@@ -501,10 +488,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             setCurrentCallActionEnded(true);
 
             setCurrentCallViewStateName(
-                K.ModuleComponentsLibs.im.callScreen.ENDED
+                K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
             );
-
-            f7.emit(K.ModuleComponentsLibs.im.callScreen.STOP_TIMER);
 
             f7.emit(K.ModuleComponentsLibs.im.callScreen.SUMMARY, callSummary);
         
@@ -534,7 +519,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallActionDeclined(true);
         setCurrentCallActionInProgress(false);
 
-        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.ENDED );
+        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED );
 
         onCloseThisCallScreen();
 
@@ -699,8 +684,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallTimeEnded(0);
         setCurrentCallTimeStartedAttempts([]);
 
-        setCurrentCallStateLabel('...');
-
         setCurrentCallStateINITIALIZING(true);
         setCurrentCallStateDIALING(false);
         setCurrentCallStateCONNECTING(false);
@@ -772,7 +755,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             setCurrentCallActionInProgress(false);
 
             setCurrentCallViewStateName(
-                K.ModuleComponentsLibs.im.callScreen.ENDED
+                K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
             );
 
             onCallDisConnected();
@@ -781,7 +764,16 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         });
 
-        f7.on( K.ModuleComponentsLibs.im.callScreen.ENDED_BY_REMOTE_USER, () => {
+        f7.on( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED_BY_PEER, () => {
+
+            setCurrentCallActionEnded(true);
+            setCurrentCallActionInProgress(false);
+
+            setCurrentCallViewStateName(
+                K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
+            );
+
+            onCallDisConnected();
 
             onEndedCallHandler();
 
@@ -793,6 +785,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         
         f7.off( K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED );
 
+        f7.off( K.ModuleComponentsLibs.im.callScreen.OUTGOING );
+
+        f7.off( K.ModuleComponentsLibs.im.callScreen.INCOMING );
+
         f7.off( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
 
         f7.off( K.ModuleComponentsLibs.im.callScreen.CONNECTED );
@@ -803,7 +799,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         f7.off( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED );
 
-        f7.off( K.ModuleComponentsLibs.im.callScreen.ENDED_BY_REMOTE_USER );
+        f7.off( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED_BY_PEER);
 
     }
 
@@ -945,7 +941,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                         K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                                         K.ModuleComponentsLibs.im.callScreen.DISCONNECTING,
                                         K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
-                                        K.ModuleComponentsLibs.im.callScreen.ENDED,
                                     ]
                             ) && (
                                 <span className="display-timer">{agoraIMCallDurationText}</span>
@@ -959,6 +954,22 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                     <div className="call-actions" onClick={onActionsHoldHandler}>
                         <Button large outline round text="Resume Call" color="green" />
                     </div>
+                    )}
+
+                    {viewIncludeInCurrentState(
+                        [
+                            K.ModuleComponentsLibs.im.callScreen.CONNECTING,
+                        ]
+                    ) && (
+                    
+                    <div className="call-actions" >
+                        {localTracksAvailable ? (
+                            <h5>Waiting for Peers...</h5>
+                        ):(
+                            <Preloader size={48} dark={true} />
+                        )}
+                    </div>
+
                     )}
 
                     {viewIncludeInCurrentState(
@@ -1072,7 +1083,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 {viewIncludeInCurrentState(
                     [
-                        K.ModuleComponentsLibs.im.callScreen.ENDED,
                         K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
                     ]
                 ) && (
@@ -1149,9 +1159,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                     [
                                         K.ModuleComponentsLibs.im.callScreen.OUTGOING,
                                         K.ModuleComponentsLibs.im.callScreen.INCOMING,
+                                        K.ModuleComponentsLibs.im.callScreen.CONNECTING,
                                         K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                                         K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
-                                        K.ModuleComponentsLibs.im.callScreen.ENDED,
                                     ]
                                 ) && (
 
@@ -1174,7 +1184,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                         K.ModuleComponentsLibs.im.callScreen.CONNECTED,
                                         K.ModuleComponentsLibs.im.callScreen.DISCONNECTING,
                                         K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
-                                        K.ModuleComponentsLibs.im.callScreen.ENDED,
                                     ]
                         ) && (
                             <span className="display-timer">{agoraIMCallDurationText}</span>
