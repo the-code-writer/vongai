@@ -676,8 +676,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallUserData(userDefinedData);
 
-        console.warn("4.1. useEffect", userDefinedData);
-
         //Set up call participants
 
         const originPhoneNumber:String = "00263772123456";
@@ -688,8 +686,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallUserOrigin(_origin);
 
-        console.warn("4.2. useEffect : _origin", _origin);
-
         const destinationPhoneNumber:String = userDefinedData.phoneNumber;
 
         const destinationDisplayName:String = userDefinedData.displayName;
@@ -697,8 +693,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         const _destination: IMCallTypeInterfaces.CallDestinationObject = {displayName: destinationDisplayName, phoneNumber: destinationPhoneNumber};
 
         setCurrentCallUserDestination(_destination);
-
-        console.warn("4.3. useEffect : _destination", _destination);
 
         //Set up call session
 
@@ -722,15 +716,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallUUID(_currentCallUUID);
 
-        console.warn("4.4. useEffect : _currentCallUUID", _currentCallUUID);
-
         setCurrentCallSessionID(_currentCallSessionID);
 
-        console.warn("4.5. useEffect : _currentCallSessionID", _currentCallSessionID);
-
         setCurrentCallSessionChannel(_currentCallSessionChannel);
-
-        console.warn("4.6. useEffect : _currentCallSessionChannel", _currentCallSessionChannel);
 
         setCurrentCallTypeIsVideo(_isVideoCall);
 
@@ -753,8 +741,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         }
 
         setCurrentCallPayload(_callPayload);
-
-        console.warn("4.7. useEffect : _callPayload", _callPayload);
         
         _isIncomingCall ? onIncomingCallHandler(_callPayload) : onOutgoingCallHandler(_callPayload);
   
@@ -762,11 +748,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const connectIncomingCallNow = (callPayload: IMCallTypeInterfaces.CallDataObject) => {
 
-        console.warn("7.1 connectIncomingCallNow : callPayload|isAgoraModuleReady", callPayload, isAgoraModuleReady);
-
         if(isAgoraModuleReady){
-
-            console.warn("7.2 connectIncomingCallNow : connectCall", callPayload);
             
             connectCall( callPayload );
 
@@ -780,11 +762,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallTimeStartedAttempts(newCallAttempts);
 
-        console.warn("6.1 connectOutgoingCallNow : callPayload|isAgoraModuleReady|newCallAttempts", callPayload, isAgoraModuleReady, newCallAttempts);
-
         if(isAgoraModuleReady){
-
-            console.warn("6.2 connectIncomingCallNow : connectCall", callPayload);
 
             connectCall( callPayload );
 
@@ -792,40 +770,24 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     }
 
-    const resetState = () => {   
-
-        console.warn("2.1. useEffect");
+    const resetState = () => {
 
         removeEventListeners();
-        
-        console.warn("2.2. useEffect");
 
         setCurrentCallViewStateName(K.ModuleComponentsLibs.im.callScreen.states.INITIALIZING);
 
-        console.warn("2.3. useEffect");
-
         setCurrentCallSessionID('SID');
-
-        console.warn("2.4. useEffect");
 
         setCurrentCallSessionChannel('SCH');
 
-        console.warn("2.5. useEffect");
-
         setCurrentCallUserOrigin({displayName:'DNO',phoneNumber:'000'});
 
-        console.warn("2.6. useEffect");
-
         setCurrentCallUserDestination({displayName:'DND',phoneNumber:'001'});
-
-        console.warn("2.7. useEffect");
 
         setCurrentCallTimeStarted(0);
         setCurrentCallTimeAnswered(0);
         setCurrentCallTimeEnded(0);
         setCurrentCallTimeStartedAttempts([]);
-
-        console.warn("2.8. useEffect");
 
         setCurrentCallStateINITIALIZING(true);
         setCurrentCallStateRINGING(false);
@@ -835,26 +797,17 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(false);
 
-        console.warn("2.9. useEffect");
-
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(false);
         setCurrentCallActionInProgress(false);
-        setCurrentCallActionHold(false);
         setCurrentCallActionMuted(false);
-
-        console.warn("2.10. useEffect");
 
         setCurrentCallTypeIsIncoming(isIncoming);
         setCurrentCallTypeIsVideo(isVideoCall);
 
-        console.warn("2.11. useEffect");
-
         setCurrentCallModeIsUsingFrontCamera(true);
         setCurrentCallModeIsCameraTurnedON(isVideoCall);
         setCurrentCallModeIsLoudSpeakerTurnedON(false);
-
-        console.warn("2.12. useEffect");
 
     }
 
@@ -949,17 +902,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     useEffect(() => {
 
-        console.warn("1. useEffect");
-
         resetState();
 
         addEventListeners();
 
-        console.warn("3. useEffect", userDefinedData, userDefinedData.hasOwnProperty('phoneNumber'), userDefinedData.phoneNumber !== undefined);
-
         if(userDefinedData.hasOwnProperty('phoneNumber') && userDefinedData.phoneNumber !== undefined){
-
-            console.warn("4. useEffect");
 
             setCurrentCallModeIsCameraTurnedON(isVideoCall);
 
@@ -970,8 +917,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             init(isIncoming, isVideoCall);
 
         }
-
-        console.warn("5. useEffect");
 
         return resetState;
 
