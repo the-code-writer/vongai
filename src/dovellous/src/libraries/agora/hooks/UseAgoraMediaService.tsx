@@ -7,6 +7,7 @@ import K from '../../app/konstants';
 import * as IMCallTypeInterfaces from "../apps/voice/IMCallTypeInterfaces";
 
 import AIDenoiserEnabler from "./AIDenoiserEnabler";
+import { f7 } from 'framework7-react';
 
 export default function useAgoraMediaService(
   Framework7Instance: any,
@@ -425,21 +426,23 @@ export default function useAgoraMediaService(
     setJoiningState(true);
     
     Framework7Instance.emit(
-      K.ModuleComponentsLibs.im.callScreen.CONNECTING,
+      K.ModuleComponentsLibs.im.callScreen.states.CONNECTING,
       callPayload
     );
 
   }
 
-  const disconnectCall = (callData: any) => {
+  const disconnectCall = async (callData: any) : Promise <any> => {
 
     console.warn("::: DISCONNECT CALL :::", callData);
 
-    leaveChannel();
+    await leaveChannel();
 
     Framework7Instance.emit(
-      K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
+      K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED
     );
+
+    return callData;
 
   }
 
@@ -496,7 +499,7 @@ export default function useAgoraMediaService(
         };
 
         Framework7Instance.emit(
-          K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+          K.ModuleComponentsLibs.im.callScreen.states.CONNECTED,
           payload
         );
 
@@ -515,7 +518,7 @@ export default function useAgoraMediaService(
 
   }
 
-  async function leaveChannel() {
+  async function leaveChannel() : Promise <number> {
 
     if (localAudioTrack) {
       localAudioTrack.stop();
@@ -533,6 +536,8 @@ export default function useAgoraMediaService(
     setJoinState(false);
 
     setJoiningState(false);
+
+    return f7.utils.now();
 
   }
 

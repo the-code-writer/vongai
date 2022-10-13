@@ -40,7 +40,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     
 }) => {
 
-    const [currentCallViewStateName, setCurrentCallViewStateName] = useState(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
+    const [currentCallViewStateName, setCurrentCallViewStateName] = useState(K.ModuleComponentsLibs.im.callScreen.states.INITIALIZING);
 
     const [currentCallPayload, setCurrentCallPayload] = useState<IMCallTypeInterfaces.CallDataObject >({});
 
@@ -214,6 +214,12 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     };
 
+    const getCurrentCallViewStateLabel = (state: string) => {
+
+        return K.ModuleComponentsLibs.im.callScreen.labels[state];
+
+    }
+
     const viewIncludeInCurrentState = (states: String[]) => {
 
         if(Array.isArray(states)){
@@ -328,7 +334,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     };
 
-    const onEndedCallHandleDisconnections = () => {
+    const onEndedCallHandleDisconnections = async () => {
 
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(false);
@@ -342,7 +348,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(true);
         setCurrentCallStateDISCONNECTED(false);
-
 
         await disconnectCall();
         
@@ -370,7 +375,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateDISCONNECTED(false);
 
         setCurrentCallViewStateName(
-            K.ModuleComponentsLibs.im.callScreen.ON_HOLD
+            K.ModuleComponentsLibs.im.callScreen.states.ON_HOLD
         );
 
         onHoldCall(currentCallPayloadSnapshot());
@@ -393,7 +398,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateDISCONNECTED(false);
 
         setCurrentCallViewStateName(
-            K.ModuleComponentsLibs.im.callScreen.CONNECTED
+            K.ModuleComponentsLibs.im.callScreen.states.CONNECTED
         );
 
         onUnHoldCall(currentCallPayloadSnapshot());
@@ -430,7 +435,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             // Local Notification: PEER_INCOMING_CALL
 
             setCurrentCallViewStateName(
-                K.ModuleComponentsLibs.im.callScreen.INCOMING
+                K.ModuleComponentsLibs.im.callScreen.states.INCOMING
             );
     
         }
@@ -462,7 +467,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         // Local Notification: OUTGOING_CALL
 
         setCurrentCallViewStateName(
-            K.ModuleComponentsLibs.im.callScreen.OUTGOING
+            K.ModuleComponentsLibs.im.callScreen.states.OUTGOING
         );
 
     };
@@ -488,7 +493,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(true);
 
-        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
+        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.CONNECTING );
 
         // Send IM to caller: PEER_CONNECTING
 
@@ -522,7 +527,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateDISCONNECTED(false);
 
         setCurrentCallViewStateName(
-            K.ModuleComponentsLibs.im.callScreen.CONNECTED
+            K.ModuleComponentsLibs.im.callScreen.states.CONNECTED
         );
 
     }
@@ -575,7 +580,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateDISCONNECTED(true);
 
         setCurrentCallViewStateName(
-            K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
+            K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED
         );
 
     }
@@ -615,7 +620,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(true);
 
-        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED );
+        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED );
 
         onCloseThisCallScreen();
 
@@ -795,7 +800,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         
         console.warn("2.2. useEffect");
 
-        setCurrentCallViewStateName(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
+        setCurrentCallViewStateName(K.ModuleComponentsLibs.im.callScreen.states.INITIALIZING);
 
         console.warn("2.3. useEffect");
 
@@ -863,7 +868,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 enumerateDevices((devices: any) => {
 
-                    f7.emit( K.ModuleComponentsLibs.im.callScreen.DEVICES_ENUMERATED, devices );
+                    f7.emit( K.ModuleComponentsLibs.im.callScreen.states.DEVICES_ENUMERATED, devices );
                     
                     setAgoraAppParams(
                         agoraConfigurations.appId,
@@ -882,24 +887,24 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         );
 
-        f7.on( K.ModuleComponentsLibs.im.callScreen.CONNECTING, () => {
+        f7.on( K.ModuleComponentsLibs.im.callScreen.states.CONNECTING, () => {
             
             onCallConnecting();
             
         });
 
-        f7.on( K.ModuleComponentsLibs.im.callScreen.CONNECTED, ( connectedCallDetails: any ) => {
+        f7.on( K.ModuleComponentsLibs.im.callScreen.states.CONNECTED, ( connectedCallDetails: any ) => {
             
             onCallConnected(connectedCallDetails);
             
         });
 
-        f7.on( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED, () => {
+        f7.on( K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED, () => {
 
             setCurrentCallActionInProgress(false);
 
             setCurrentCallViewStateName(
-                K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
+                K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED
             );
 
             onCallDisConnected();
@@ -908,12 +913,12 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         });
 
-        f7.on( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED_BY_PEER, () => {
+        f7.on( K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED_BY_PEER, () => {
 
             setCurrentCallActionInProgress(false);
 
             setCurrentCallViewStateName(
-                K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
+                K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED
             );
 
             onCallDisConnected();
@@ -928,17 +933,17 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         
         f7.off( K.Events.Modules.Agora.App.ON_APP_INIT );
 
-        f7.off( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
+        f7.off( K.ModuleComponentsLibs.im.callScreen.states.CONNECTING );
 
-        f7.off( K.ModuleComponentsLibs.im.callScreen.CONNECTED );
+        f7.off( K.ModuleComponentsLibs.im.callScreen.states.CONNECTED );
 
-        f7.off( K.ModuleComponentsLibs.im.callScreen.RECONNECTING );
+        f7.off( K.ModuleComponentsLibs.im.callScreen.states.RECONNECTING );
 
-        f7.off( K.ModuleComponentsLibs.im.callScreen.DISCONNECTING );
+        f7.off( K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTING );
 
-        f7.off( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED );
+        f7.off( K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED );
 
-        f7.off( K.ModuleComponentsLibs.im.callScreen.DISCONNECTED_BY_PEER);
+        f7.off( K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED_BY_PEER);
 
     }
 
@@ -1111,22 +1116,24 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             <BlockTitle large>{userDefinedData.displayName}</BlockTitle>
                             {viewIncludeInCurrentState(
                                         [
-                                            K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
+                                            K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED,
                                         ]
                             ) && (
                                 <BlockTitle medium style={{textAlign: 'center'}}>{userDefinedData.phoneNumber}</BlockTitle>
                             )}
                             <BlockTitle medium style={{textAlign: 'center'}}>
-                                <span>{currentCallViewStateName}</span>
+                                <span>
+                                    {K.ModuleComponentsLibs.im.callScreen.labels[currentCallViewStateName]}
+                                </span>
                             </BlockTitle>
                             <BlockTitle medium style={{textAlign: 'center'}}>
                                 {viewIncludeInCurrentState(
                                         [
-                                            K.ModuleComponentsLibs.im.callScreen.INITIALIZING,
-                                            K.ModuleComponentsLibs.im.callScreen.CONNECTING,
-                                            K.ModuleComponentsLibs.im.callScreen.CONNECTED,
-                                            K.ModuleComponentsLibs.im.callScreen.DISCONNECTING,
-                                            K.ModuleComponentsLibs.im.callScreen.DISCONNECTED,
+                                            K.ModuleComponentsLibs.im.callScreen.states.INITIALIZING,
+                                            K.ModuleComponentsLibs.im.callScreen.states.CONNECTING,
+                                            K.ModuleComponentsLibs.im.callScreen.states.CONNECTED,
+                                            K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTING,
+                                            K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED,
                                         ]
                                 ) && (
                                     <span className="display-timer">{agoraIMCallDurationText}</span>
@@ -1141,7 +1148,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                     
                     {viewIncludeInCurrentState(
                         [
-                            K.ModuleComponentsLibs.im.callScreen.ON_HOLD,
+                            K.ModuleComponentsLibs.im.callScreen.states.ON_HOLD,
                         ]
                     ) && (
                     <div className="call-current-state" onClick={onActionsHoldHandler}>
@@ -1155,7 +1162,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     {viewIncludeInCurrentState(
                         [
-                            K.ModuleComponentsLibs.im.callScreen.CONNECTING,
+                            K.ModuleComponentsLibs.im.callScreen.states.CONNECTING,
                         ]
                     ) && (
                     
@@ -1171,7 +1178,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     {viewIncludeInCurrentState(
                         [
-                            K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                            K.ModuleComponentsLibs.im.callScreen.states.CONNECTED,
                         ]
                     ) && (
                     
@@ -1200,7 +1207,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     {viewIncludeInCurrentState(
                         [
-                            K.ModuleComponentsLibs.im.callScreen.ON_HOLD,
+                            K.ModuleComponentsLibs.im.callScreen.states.ON_HOLD,
                         ]
                     ) && (
                         <BlockTitle style={{textAlign: 'center'}}>
@@ -1210,10 +1217,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     {viewIncludeInCurrentState(
                         [
-                            K.ModuleComponentsLibs.im.callScreen.INITIALIZING,
-                            K.ModuleComponentsLibs.im.callScreen.OUTGOING,
-                            K.ModuleComponentsLibs.im.callScreen.CONNECTING,
-                            K.ModuleComponentsLibs.im.callScreen.CONNECTED,
+                            K.ModuleComponentsLibs.im.callScreen.states.INITIALIZING,
+                            K.ModuleComponentsLibs.im.callScreen.states.OUTGOING,
+                            K.ModuleComponentsLibs.im.callScreen.states.CONNECTING,
+                            K.ModuleComponentsLibs.im.callScreen.states.CONNECTED,
                         ]
                     ) && (
 
@@ -1290,7 +1297,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 {viewIncludeInCurrentState(
                     [
-                        K.ModuleComponentsLibs.im.callScreen.DISCONNECTED
+                        K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED
                     ]
                 ) && (
 
@@ -1328,7 +1335,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 {viewIncludeInCurrentState(
                     [
-                        K.ModuleComponentsLibs.im.callScreen.INCOMING
+                        K.ModuleComponentsLibs.im.callScreen.states.INCOMING
                     ]
                 ) && (
 
