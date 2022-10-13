@@ -565,10 +565,12 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onCloseThisCallScreen = () => {
 
-        onCloseAllCallScreenSheetsHandler();
-
         resetState();
 
+        onCloseAllCallScreenSheetsHandler();
+        
+        //userDefinedData = {};
+        
         f7.sheet.close(`.${id}`);
 
     }
@@ -672,7 +674,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     }
 
     const resetState = () => {   
-        
+
         removeEventListeners();
         
         setCurrentCallViewStateName(K.ModuleComponentsLibs.im.callScreen.INITIALIZING);
@@ -813,15 +815,19 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         resetState();
 
-        addEventListeners();
+        if(userDefinedData.hasOwnProperty('phoneNumber') && userDefinedData.phoneNumber !== undefined){
 
-        setCurrentCallModeIsCameraTurnedON(isVideoCall);
+            addEventListeners();
 
-        setCurrentCallTypeIsVideo(isVideoCall);
+            setCurrentCallModeIsCameraTurnedON(isVideoCall);
 
-        setCurrentCallTypeIsIncoming(isIncoming);
+            setCurrentCallTypeIsVideo(isVideoCall);
 
-        init(isIncoming, isVideoCall);
+            setCurrentCallTypeIsIncoming(isIncoming);
+
+            init(isIncoming, isVideoCall);
+
+        }
 
         return resetState;
 
@@ -860,7 +866,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             {localTracksAvailable && (
 
-                            <div className={`local ${joinState?'connected':'not-connected'}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
+                            <div className={`local ${joinState?'connected':'not-connected'} ${currentCallStateDISCONNECTED ? 'call-disconnected':''}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
                                 
                                 <MediaPlayer
                                     uuid={`${localClientUID}`}
@@ -907,7 +913,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             {localTracksAvailable && (
 
-                            <div className={`local ${joinState?(remoteUsers.length > 0 ? 'connected':'not-connected'):('not-connected')}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
+                            <div className={`local ${joinState?(remoteUsers.length > 0 ? 'connected':'not-connected'):('not-connected')} ${currentCallStateDISCONNECTED ? 'call-disconnected':''}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
                                                             
                                 <MediaPlayer
                                     uuid={`${localClientUID}`}
@@ -948,6 +954,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                     <div className="circle" style={{animationDelay: "1s"}}></div>
                                     <div className="circle" style={{animationDelay: "2s"}}></div>
                                     <div className="circle" style={{animationDelay: "3s"}}></div>
+                                    <div className="circle" style={{animationDelay: "4s"}}></div>
+                                    <div className="circle" style={{animationDelay: "5s"}}></div>
 
                                 </React.Fragment>
 
@@ -995,8 +1003,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 <PageContent>
 
-                    
-                   
                     {viewIncludeInCurrentState(
                         [K.ModuleComponentsLibs.im.callScreen.ON_HOLD]
                     ) && (
@@ -1052,6 +1058,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                     {viewIncludeInCurrentState(
                         [
+                            K.ModuleComponentsLibs.im.callScreen.INITIALIZING,
                             K.ModuleComponentsLibs.im.callScreen.OUTGOING,
                             K.ModuleComponentsLibs.im.callScreen.ON_HOLD,
                             K.ModuleComponentsLibs.im.callScreen.CONNECTING,
