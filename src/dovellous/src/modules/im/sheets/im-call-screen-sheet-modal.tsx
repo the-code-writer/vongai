@@ -922,6 +922,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 )}
 
+                {
+                    (remoteUsers.length === 0 && currentCallModeIsCameraTurnedON) || 
+                    (remoteUsers.length > 0 && !currentCallModeIsCameraTurnedON) && 
+                (
+
                 <div className="blink-container">
                     <div className="circle-wrapper">
                         <div className="circle" style={{animationDelay: "0s"}}></div>
@@ -936,7 +941,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             }}
                             alt={``} />
                     </div>
-                    <div className="call-remote-user" style={{visibility: currentCallModeIsCameraTurnedON?'hidden':'visible'}}>
+                    <div className="call-remote-user" style={{visibility: (remoteUsers.length > 0)?'hidden':'visible'}}>
                         
                         <BlockTitle large>{userDefinedData.displayName}</BlockTitle>
                         {viewIncludeInCurrentState(
@@ -964,6 +969,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         </BlockTitle>
                     </div>
                 </div>
+
+                )}
 
                 <PageContent>
 
