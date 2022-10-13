@@ -974,7 +974,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             {localTracksAvailable && (
 
-                            <div className={`local ${joinState?(remoteUsers.length > 0 ? 'connected':'not-connected'):('not-connected')} ${currentCallStateDISCONNECTED ? 'call-disconnected':''}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
+                            <div className={`local ${joinState?(remoteUsers.length > 0 ? 'connected':(currentCallViewStateName === K.ModuleComponentsLibs.im.callScreen.CONNECTED?'connected':'not-connected')):('not-connected')} ${currentCallStateDISCONNECTED ? 'call-disconnected':''}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
                                                             
                                 <MediaPlayer
                                     uuid={`${localClientUID}`}

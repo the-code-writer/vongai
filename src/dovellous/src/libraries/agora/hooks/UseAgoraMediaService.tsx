@@ -477,22 +477,18 @@ export default function useAgoraMediaService(
 
         setJoiningState(false);
 
-        //await enableDenoiser4AudioTrack.enabler(microphoneTrack);
+        await enableDenoiser4AudioTrack.enabler(microphoneTrack);
 
-        //await client.publish([microphoneTrack, cameraTrack]);
-
-        await enableDenoiser4AudioTrack.enabler(localAudioTrack);
-
-        await client.publish([localAudioTrack, localVideoTrack]);
+        await client.publish([microphoneTrack, cameraTrack]);
         
         (window as any).client = client;
-        (window as any).videoTrack = localVideoTrack;
-        (window as any).audioTrack = localAudioTrack;
+        (window as any).videoTrack = cameraTrack;
+        (window as any).audioTrack = microphoneTrack;
 
         const payload:any = {
           client: client,
-          videoTrack: localVideoTrack,
-          audioTrack: localAudioTrack,
+          videoTrack: cameraTrack,
+          audioTrack: microphoneTrack,
           callPayload: callPayload,
           channel: channel,
           token: token,
