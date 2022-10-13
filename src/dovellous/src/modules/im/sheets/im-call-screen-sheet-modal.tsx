@@ -380,6 +380,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         if(Object.keys(userDefinedData).length > 0 && userDefinedData.hasOwnProperty('phoneNumber')){
 
             ringingTone.loop = true;
+            ringingTone.autoplay = true;
             
             ringingTone.play();
             
@@ -427,6 +428,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         ringingTone.pause();
 
+        ringingTone.load();
+
         setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.CONNECTING );
 
         // Send IM to caller: PEER_CONNECTING
@@ -438,6 +441,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         console.warn("::::::*********** CALL CONNECTED ************:::::: ", connectedCallDetails);
   
         ringingTone.pause();
+
+        ringingTone.load();
 
         const  timeStampAnswered:number = f7.utils.now();
 
@@ -459,6 +464,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const onCallDisConnected = ()=>{
 
         ringingTone.pause();
+
+        ringingTone.load();
 
         const endedTimestamp:number = f7.utils.now();
 
@@ -522,6 +529,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const onDeclineCallHandler = () => {
 
         ringingTone.pause();
+
+        ringingTone.load();
 
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(true);
