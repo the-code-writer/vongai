@@ -90,31 +90,36 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const [ringingToneIncomingCall, setRingingToneIncomingCall] = useState(new Audio(ringtoneIncomingCall));
     const [ringingToneOutgoingCall, setRingingToneOutgoingCall] = useState(new Audio(ringtoneOutgoingCall));
 
-    const ringinTonePlayIncomingCall = () => {
-        ringingToneIncomingCall.loop = true;
-        ringingToneIncomingCall.autoplay = true;
-        ringingToneIncomingCall.load();
-        ringingToneIncomingCall.play();
+    const ringingTonePlayIncomingCall = () => {
+        f7.utils.nextTick(()=>{
+            ringingToneIncomingCall.loop = true;
+            ringingToneIncomingCall.autoplay = true;
+            ringingToneIncomingCall.load();
+            ringingToneIncomingCall.play();
+        },1000);
     }
 
-    const ringinToneStopIncomingCall = () => {
+    const ringingToneStopIncomingCall = () => {
         ringingToneIncomingCall.pause();
     }
 
-    const ringinTonePlayOutgoingCall = () => {
-        ringingToneOutgoingCall.loop = true;
-        ringingToneOutgoingCall.autoplay = true;
-        ringingToneOutgoingCall.load();
-        ringingToneOutgoingCall.play();
+    const ringingTonePlayOutgoingCall = () => {
+        f7.utils.nextTick(()=>{
+            ringingToneOutgoingCall.loop = true;
+            ringingToneOutgoingCall.autoplay = true;
+            ringingToneOutgoingCall.volume = 0.3;
+            ringingToneOutgoingCall.load();
+            ringingToneOutgoingCall.play();
+        },1000);
     }
 
-    const ringinToneStopOutgoingCall = () => {
+    const ringingToneStopOutgoingCall = () => {
         ringingToneOutgoingCall.pause();
     }
 
     const ringingToneStop = () => {
-        ringinToneStopOutgoingCall();
-        ringinToneStopIncomingCall();
+        ringingToneStopOutgoingCall();
+        ringingToneStopIncomingCall();
     }
 
     const {
@@ -439,7 +444,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         if(Object.keys(userDefinedData).length > 0 && userDefinedData.hasOwnProperty('phoneNumber')){
 
-            ringinTonePlayIncomingCall();
+            ringingTonePlayIncomingCall();
             
             setCurrentCallActionAnswered(false);
             setCurrentCallActionDeclined(false);
@@ -469,7 +474,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onOutgoingCallHandler = (_currentCallPayload:any) => {
 
-        ringinTonePlayOutgoingCall();
+        ringingTonePlayOutgoingCall();
         
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(false);
@@ -1055,10 +1060,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                                 <React.Fragment>
 
-                                    <div className="circle" style={{animationDelay: "0s"}}></div>
+                                    <div className={`circle ${currentCallStateCONNECTING?'connecting':''}  ${currentCallStateRECONNECTING?'reconnecting':''}  ${currentCallStateCONNECTED?'connected':''} `} style={{animationDelay: "0s"}}></div>
                                     <div className="circle" style={{animationDelay: "1s"}}></div>
                                     <div className="circle" style={{animationDelay: "2s"}}></div>
-                                    <div className="circle" style={{animationDelay: "3s"}}></div>
+                                    <div className={`circle ${currentCallStateCONNECTING?'connecting':''}  ${currentCallStateRECONNECTING?'reconnecting':''}  ${currentCallStateCONNECTED?'connected':''} `} style={{animationDelay: "3s"}}></div>
                                     <div className="circle" style={{animationDelay: "4s"}}></div>
                                     <div className="circle" style={{animationDelay: "5s"}}></div>
 
