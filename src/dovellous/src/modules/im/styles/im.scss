@@ -435,19 +435,18 @@ div.m-b-0.fab>a {
             &.not-connected{
               width: 1px;
               height: 1px;
-              background-color: rgb(255,0,0, 0.25);
+              background-color: rgb(0,0,0,0);
             }
 
             &.connected{
               width: 100vw;
               height: 100vh;
-              background-color: rgba(255,0,0,0.75);
+              background-color: rgba(0,0,0,0);
               top: 0;
               left: 0;
               bottom: 0;
               right: 0;
               float: right;
-              border: 0px solid rgba(0,0,0,0.75);
               box-shadow: 3px 3px 9px rgba(0,0,0,0.3);
 
               .im-vc-video-player-wrapper  {
@@ -476,13 +475,12 @@ div.m-b-0.fab>a {
             &.not-connected{
               width: 100vw;
               height: 100vh;
-              background-color: rgba(0,0,0,0.75);
+              background-color: rgba(0,0,0,0);
               top: 0;
               left: 0;
               bottom: 0;
               right: 0;
               float: right;
-              border: 0px solid rgba(0,0,0,0.75);
               box-shadow: 3px 3px 9px rgba(0,0,0,0.3);
               
               .im-vc-video-player-wrapper  {
@@ -509,14 +507,13 @@ div.m-b-0.fab>a {
             &.connected{
               width: 100%;
               max-width: calc(100vw * 0.25);
-              height: calc(calc(16 / 9) * 100vw * 0.25);
+              height: calc(100vh * 0.175);
               background-color: rgba(0,0,0,0);
               top: auto;
               left: auto;
               bottom: 140px;
               right: 24px;
               float: right;
-              border: 0px solid rgba(0,0,0,0.75);
               box-shadow: 3px 3px 9px rgba(0,0,0,0.3);
 
               .im-vc-video-player-wrapper  {

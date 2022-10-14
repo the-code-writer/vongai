@@ -8,7 +8,8 @@ import K from "../../../libraries/app/konstants";
 import Dom7 from "dom7";
 
 import avatar from '../../../../assets/img/avatar/default.png';
-import song from '../../../../assets/aud/incoming-4.mp3';
+import ringtoneIncomingCall from '../../../../assets/aud/incoming-0.mp3';
+import ringtoneOutgoingCall from '../../../../assets/aud/outgoing-0.mp3';
 
 import { StorageIM, useStorageIM } from "../store/im-store";
 import Snippets from "../../../libraries/app/snippets";
@@ -84,11 +85,38 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const [currentCallModeIsCameraTurnedON, setCurrentCallModeIsCameraTurnedON] = useState<boolean>(isVideoCall);
     const [currentCallModeIsLoudSpeakerTurnedON, setCurrentCallModeIsLoudSpeakerTurnedON] = useState<boolean>(false);
 
-    const [ringingTone, setRingingTone] = useState(new Audio(song));
-
     const [isAgoraModuleReady, setIsAgoraModuleReady] = useState<boolean>(false);
 
-    
+    const [ringingToneIncomingCall, setRingingToneIncomingCall] = useState(new Audio(ringtoneIncomingCall));
+    const [ringingToneOutgoingCall, setRingingToneOutgoingCall] = useState(new Audio(ringtoneOutgoingCall));
+
+    const ringinTonePlayIncomingCall = () => {
+        ringingToneIncomingCall.loop = true;
+        ringingToneIncomingCall.autoplay = true;
+        ringingToneIncomingCall.load();
+        ringingToneIncomingCall.play();
+    }
+
+    const ringinToneStopIncomingCall = () => {
+        ringingToneIncomingCall.pause();
+    }
+
+    const ringinTonePlayOutgoingCall = () => {
+        ringingToneOutgoingCall.loop = true;
+        ringingToneOutgoingCall.autoplay = true;
+        ringingToneOutgoingCall.load();
+        ringingToneOutgoingCall.play();
+    }
+
+    const ringinToneStopOutgoingCall = () => {
+        ringingToneOutgoingCall.pause();
+    }
+
+    const ringingToneStop = () => {
+        ringinToneStopOutgoingCall();
+        ringinToneStopIncomingCall();
+    }
+
     const {
         agoraIMCallDurationStartTimer,
         agoraIMCallDurationStopTimer,
@@ -411,10 +439,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         if(Object.keys(userDefinedData).length > 0 && userDefinedData.hasOwnProperty('phoneNumber')){
 
-            ringingTone.loop = true;
-            ringingTone.autoplay = true;
-            ringingTone.load();
-            ringingTone.play();
+            ringinTonePlayIncomingCall();
             
             setCurrentCallActionAnswered(false);
             setCurrentCallActionDeclined(false);
@@ -443,6 +468,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     };
 
     const onOutgoingCallHandler = (_currentCallPayload:any) => {
+
+        ringinTonePlayOutgoingCall();
         
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(false);
@@ -476,9 +503,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         console.warn("::::::*********** CALL CONNECTING ************:::::: ", currentCallPayloadSnapshot());
 
-        ringingTone.pause();
-
-        // ringingTone.load();
+        ringingToneStop();
 
         setCurrentCallActionAnswered(true);
         setCurrentCallActionDeclined(false);
@@ -503,9 +528,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         
         console.warn("::::::*********** CALL CONNECTED ************:::::: ", connectedCallDetails);
   
-        ringingTone.pause();
-
-        // ringingTone.load();
+        ringingToneStop();
 
         const  timeStampAnswered:number = f7.utils.now();
 
@@ -534,9 +557,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onCallDisConnected = ()=>{
 
-        ringingTone.pause();
-
-        // ringingTone.load();
+        ringingToneStop();
 
         const endedTimestamp:number = f7.utils.now();
 
@@ -603,9 +624,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onDeclineCallHandler = () => {
 
-        ringingTone.pause();
-
-        // ringingTone.load();
+        ringingToneStop();
 
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(true);
