@@ -51,6 +51,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const [currentCallSessionChannel, setCurrentCallSessionChannel] = useState<String>('SCH');
 
+    const [currentCallSessionPayload, setCurrentCallSessionPayload] = useState<any>({});
+
     const [currentCallSummary, setCurrentCallSummary] = useState<any | undefined>(undefined);
 
     const [currentCallUserData, setCurrentCallUserData] = useState<IMCallTypeInterfaces.UserDataObject>(userDefinedData);
@@ -66,8 +68,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const [currentCallStateINITIALIZING, setCurrentCallStateINITIALIZING] = useState<boolean>(true);
     const [currentCallStateRINGING, setCurrentCallStateRINGING] = useState<boolean>(false);
-    const [currentCallStateCONNECTING, setCurrentCallStateCONNECTING] = useState<boolean>(false);
-    const [currentCallStateCONNECTED, setCurrentCallStateCONNECTED] = useState<boolean>(false);
+    const [currentCallStateCONNECTING_LOCAL_USER, setCurrentCallStateCONNECTING_LOCAL_USER] = useState<boolean>(false);
+    const [currentCallStateCONNECTING_REMOTE_USER, setCurrentCallStateCONNECTING_REMOTE_USER] = useState<boolean>(false);
+    const [currentCallStateCONNECTED_LOCAL_USER, setCurrentCallStateCONNECTED_LOCAL_USER] = useState<boolean>(false);
+    const [currentCallStateCONNECTED_REMOTE_USER,  setCurrentCallStateCONNECTED_REMOTE_USER] = useState<boolean>(false);
+    const [currentCallStateCONNECTED_REMOTE_USER_COUNT,  setCurrentCallStateCONNECTED_REMOTE_USER_COUNT] = useState<number[]>([0,0]);
     const [currentCallStateONHOLD, setCurrentCallStateONHOLD] = useState<boolean>(false);
     const [currentCallStateRECONNECTING, setCurrentCallStateRECONNECTING] = useState<boolean>(false);
     const [currentCallStateDISCONNECTING, setCurrentCallStateDISCONNECTING] = useState<boolean>(false);
@@ -107,7 +112,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         f7.utils.nextTick(()=>{
             ringingToneOutgoingCall.loop = true;
             ringingToneOutgoingCall.autoplay = true;
-            ringingToneOutgoingCall.volume = 0.3;
+            ringingToneOutgoingCall.volume = 0.05;
             ringingToneOutgoingCall.load();
             ringingToneOutgoingCall.play();
         },1000);
@@ -148,8 +153,20 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
   
         console.warn(":::: === AGORA EVENT [onUserJoinedHandler] === :::", user);
 
-        onUserJoined(user);
+        const remoteUsersTotal:number = currentCallStateCONNECTED_REMOTE_USER_COUNT[0] + 1;
+
+        // Check which one is the best
+
+        setCurrentCallStateCONNECTED_REMOTE_USER_COUNT([remoteUsersTotal, remoteUsers.length]);
+
+        if(remoteUsers.length === 1){
+
+            onCallConnected();
+
+        }
   
+        onUserJoined(user);
+
       }
   
       const onUserLeftHandler  = (user: IAgoraRTCRemoteUser) => {
@@ -157,6 +174,16 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         console.warn(":::: === AGORA EVENT [onUserLeftHandler] === :::", user);
 
         onUserLeft(user);
+  
+      }
+  
+      const onHostJoinedHandler  = (payload: any) => {
+  
+        console.warn(":::: === AGORA EVENT [onHostJoined] === :::", payload);
+
+        setCurrentCallSessionPayload(payload);
+
+        setCurrentCallStateCONNECTED_LOCAL_USER(true);
   
       }
 
@@ -194,6 +221,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         currentVideoInputDevicesID
     } = useAgoraMediaService(
         f7,
+        onHostJoinedHandler,
         onUserPublishedHandler,
         onUserUnpublishedHandler,
         onUserJoinedHandler,
@@ -365,6 +393,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         onEndedCallHandleDisconnections();
 
+        //TODO: Must be called when app receives Call Ended by remote
+
     };
 
     const onEndedCallHandleDisconnections = async () => {
@@ -375,8 +405,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallStateINITIALIZING(false);
         setCurrentCallStateRINGING(false);
-        setCurrentCallStateCONNECTING(false);
-        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateCONNECTING_LOCAL_USER(false);
+        setCurrentCallStateCONNECTING_REMOTE_USER(false);
+        setCurrentCallStateCONNECTED_LOCAL_USER(false);
+        setCurrentCallStateCONNECTED_REMOTE_USER(false);
         setCurrentCallStateONHOLD(false);
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(true);
@@ -400,8 +432,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallStateINITIALIZING(false);
         setCurrentCallStateRINGING(false);
-        setCurrentCallStateCONNECTING(false);
-        setCurrentCallStateCONNECTED(true);
+        setCurrentCallStateCONNECTING_LOCAL_USER(false);
+        setCurrentCallStateCONNECTING_REMOTE_USER(false);
+        setCurrentCallStateCONNECTED_LOCAL_USER(true);
+        setCurrentCallStateCONNECTED_REMOTE_USER(true);
         setCurrentCallStateONHOLD(true);
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
@@ -413,8 +447,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         onHoldCall(currentCallPayloadSnapshot());
 
-        f7.sheet.open('.im-callscreen-action-onhold');
-
         //TODO: Mute video and audio
 
     };
@@ -423,8 +455,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallStateINITIALIZING(false);
         setCurrentCallStateRINGING(false);
-        setCurrentCallStateCONNECTING(false);
-        setCurrentCallStateCONNECTED(true);
+        setCurrentCallStateCONNECTING_LOCAL_USER(false);
+        setCurrentCallStateCONNECTING_REMOTE_USER(false);
+        setCurrentCallStateCONNECTED_LOCAL_USER(true);
+        setCurrentCallStateCONNECTED_REMOTE_USER(true);
         setCurrentCallStateONHOLD(false);
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
@@ -453,8 +487,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
             setCurrentCallStateINITIALIZING(false);
             setCurrentCallStateRINGING(true);
-            setCurrentCallStateCONNECTING(false);
-            setCurrentCallStateCONNECTED(false);
+            setCurrentCallStateCONNECTING_LOCAL_USER(false);
+            setCurrentCallStateCONNECTING_REMOTE_USER(false);
+            setCurrentCallStateCONNECTED_LOCAL_USER(false);
+            setCurrentCallStateCONNECTED_REMOTE_USER(false);
             setCurrentCallStateONHOLD(false);
             setCurrentCallStateRECONNECTING(false);
             setCurrentCallStateDISCONNECTING(false);
@@ -482,9 +518,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallTypeIsIncoming(false);
 
         setCurrentCallStateINITIALIZING(false);
-        setCurrentCallStateRINGING(true);
-        setCurrentCallStateCONNECTING(false);
-        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateRINGING(false);
+        setCurrentCallStateCONNECTING_LOCAL_USER(false);
+        setCurrentCallStateCONNECTING_REMOTE_USER(false);
+        setCurrentCallStateCONNECTED_LOCAL_USER(false);
+        setCurrentCallStateCONNECTED_REMOTE_USER(false);
         setCurrentCallStateONHOLD(false);
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
@@ -504,34 +542,87 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     };
 
-    const onCallConnecting = ()=>{
+    const onCallConnectingRemote = ( )=>{
 
-        console.warn("::::::*********** CALL CONNECTING ************:::::: ", currentCallPayloadSnapshot());
+        // Invoked when remote clicks 'ANSWER'
+        // Send IM to FB [{Groups: {ABC: {calls: '0x837...3eca': {host: {uid}, users: {uid: {phoneNumber:12345}}}}}] : {callSessionID: '0x837...3eca', user: {displayName: '', phoneNumber: '', username: ''}}
+        // App checks for group calls / user 1 on 1 calls
+
+        console.warn("::::::*********** CALL CONNECTING PEER ************:::::: ", currentCallPayloadSnapshot());
 
         ringingToneStop();
 
         setCurrentCallActionAnswered(true);
         setCurrentCallActionDeclined(false);
         setCurrentCallActionInProgress(false);
-
-        setCurrentCallStateINITIALIZING(false);
         setCurrentCallStateRINGING(false);
-        setCurrentCallStateCONNECTING(true);
-        setCurrentCallStateCONNECTED(false);
-        setCurrentCallStateONHOLD(false);
-        setCurrentCallStateRECONNECTING(false);
-        setCurrentCallStateDISCONNECTING(false);
-        setCurrentCallStateDISCONNECTED(true);
+        setCurrentCallStateCONNECTING_REMOTE_USER(true);
 
-        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.CONNECTING );
+        if(remoteUsers.length===1){
+            setCurrentCallStateCONNECTED_REMOTE_USER(false);
+            setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.CONNECTING );
+        }
 
         // Send IM to caller: PEER_CONNECTING
 
     }
 
-    const onCallConnected = (connectedCallDetails: any)=>{
+    const onCallConnectedRemote = ( )=>{
+
+        // Connected remote
+
+        console.warn("::::::*********** CALL CONNECTING PEER ************:::::: ", currentCallPayloadSnapshot());
+
+        setCurrentCallStateCONNECTING_REMOTE_USER(false);
+        setCurrentCallStateCONNECTED_REMOTE_USER(true);
         
-        console.warn("::::::*********** CALL CONNECTED ************:::::: ", connectedCallDetails);
+        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.CONNECTED);
+
+        // Send IM to caller: PEER_CONNECTING
+
+    }
+
+    const onCallConnectingLocal = ( )=>{
+
+        // Invoked when remote clicks 'ANSWER'
+        // Send IM to FB [{Groups: {ABC: {calls: '0x837...3eca': {host: {uid}, users: {uid: {phoneNumber:12345}}}}}] : {callSessionID: '0x837...3eca', user: {displayName: '', phoneNumber: '', username: ''}}
+        // App checks for group calls / user 1 on 1 calls
+
+        console.warn("::::::*********** CALL CONNECTING PEER ************:::::: ", currentCallPayloadSnapshot());
+
+        setCurrentCallActionAnswered(false);
+        setCurrentCallActionDeclined(false);
+        setCurrentCallActionInProgress(false);
+        setCurrentCallStateRINGING(true);
+        setCurrentCallStateCONNECTING_LOCAL_USER(true);
+
+        if(remoteUsers.length===1){
+            setCurrentCallStateCONNECTED_REMOTE_USER(false);
+            setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.CONNECTING );
+        }
+
+        // Send IM to caller: PEER_CONNECTING
+
+    }
+
+    const onCallConnectedLocal = ( )=>{
+
+        // Connected remote
+
+        console.warn("::::::*********** CALL CONNECTING PEER ************:::::: ", currentCallPayloadSnapshot());
+
+        setCurrentCallStateCONNECTING_LOCAL_USER(false);
+        setCurrentCallStateCONNECTED_LOCAL_USER(true);
+        
+        setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.CONNECTED);
+
+        // Send IM to caller: PEER_CONNECTING
+
+    }
+
+    const onCallConnected = ()=>{
+        
+        console.warn("::::::*********** CALL CONNECTED ************:::::: ", currentCallSessionPayload);
   
         ringingToneStop();
 
@@ -547,8 +638,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallStateINITIALIZING(false);
         setCurrentCallStateRINGING(false);
-        setCurrentCallStateCONNECTING(false);
-        setCurrentCallStateCONNECTED(true);
+        setCurrentCallStateCONNECTING_LOCAL_USER(false);
+        setCurrentCallStateCONNECTING_REMOTE_USER(false);
+        setCurrentCallStateCONNECTED_LOCAL_USER(true);
+        setCurrentCallStateCONNECTED_REMOTE_USER(true);
         setCurrentCallStateONHOLD(false);
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
@@ -598,8 +691,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallStateINITIALIZING(false);
         setCurrentCallStateRINGING(false);
-        setCurrentCallStateCONNECTING(false);
-        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateCONNECTING_LOCAL_USER(false);
+        setCurrentCallStateCONNECTING_REMOTE_USER(false);
+        setCurrentCallStateCONNECTED_LOCAL_USER(false);
+        setCurrentCallStateCONNECTED_REMOTE_USER(false);
         setCurrentCallStateONHOLD(false);
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
@@ -619,7 +714,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onAnswerCallHandler = () => {
 
-        onCallConnecting();
+        onCallConnecting( true );
 
         connectIncomingCallNow(currentCallPayload);
 
@@ -637,8 +732,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallStateINITIALIZING(false);
         setCurrentCallStateRINGING(false);
-        setCurrentCallStateCONNECTING(false);
-        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateCONNECTING_LOCAL_USER(false);
+        setCurrentCallStateCONNECTING_REMOTE_USER(false);
+        setCurrentCallStateCONNECTED_LOCAL_USER(false);
+        setCurrentCallStateCONNECTED_REMOTE_USER(false);
         setCurrentCallStateONHOLD(false);
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
@@ -815,8 +912,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         setCurrentCallStateINITIALIZING(true);
         setCurrentCallStateRINGING(false);
-        setCurrentCallStateCONNECTING(false);
-        setCurrentCallStateCONNECTED(false);
+        setCurrentCallStateCONNECTING_LOCAL_USER(false);
+        setCurrentCallStateCONNECTING_REMOTE_USER(false);
+        setCurrentCallStateCONNECTED_LOCAL_USER(false);
+        setCurrentCallStateCONNECTED_REMOTE_USER(false);
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(false);
@@ -864,43 +963,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         );
 
-        f7.on( K.ModuleComponentsLibs.im.callScreen.states.CONNECTING, () => {
-            
-            onCallConnecting();
-            
-        });
-
-        f7.on( K.ModuleComponentsLibs.im.callScreen.states.CONNECTED, ( connectedCallDetails: any ) => {
-            
-            onCallConnected(connectedCallDetails);
-            
-        });
-
         f7.on( K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED, () => {
 
-            setCurrentCallActionInProgress(false);
-
-            setCurrentCallViewStateName(
-                K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED
-            );
-
             onCallDisConnected();
-
-            onEndCall(currentCallPayloadSnapshot());
 
         });
 
         f7.on( K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED_BY_PEER, () => {
 
-            setCurrentCallActionInProgress(false);
-
-            setCurrentCallViewStateName(
-                K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED
-            );
-
             onCallDisConnected();
-
-            onEndedCallHandler();
 
         });
 
@@ -1024,7 +1095,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                             {localTracksAvailable && (
 
-                            <div className={`local ${joinState?(remoteUsers.length > 0 ? 'connected':(currentCallStateCONNECTED ? 'connected':'not-connected')):('not-connected')} ${currentCallStateDISCONNECTED ? 'call-disconnected':''}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
+                            <div className={`local ${joinState?(remoteUsers.length > 0 ? 'connected':(currentCallStateCONNECTED_REMOTE_USER ? 'connected':'not-connected')):('not-connected')} ${currentCallStateDISCONNECTED ? 'call-disconnected':''}  ${remoteUsers.length === 0?'alone':''} ${localClientUID}`} key={localClientUID}>
                                                             
                                 <MediaPlayer
                                     uuid={`${localClientUID}`}
@@ -1060,10 +1131,10 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                                 <React.Fragment>
 
-                                    <div className={`circle ${currentCallStateCONNECTING?'connecting':''}  ${currentCallStateRECONNECTING?'reconnecting':''}  ${currentCallStateCONNECTED?'connected':''} `} style={{animationDelay: "0s"}}></div>
+                                    <div className={`circle ${currentCallStateCONNECTING_LOCAL_USER || currentCallStateCONNECTING_REMOTE_USER ?'connecting':''}  ${currentCallStateRECONNECTING?'reconnecting':''}  ${currentCallStateCONNECTED_REMOTE_USER?'connected':''} `} style={{animationDelay: "0s"}}></div>
                                     <div className="circle" style={{animationDelay: "1s"}}></div>
                                     <div className="circle" style={{animationDelay: "2s"}}></div>
-                                    <div className={`circle ${currentCallStateCONNECTING?'connecting':''}  ${currentCallStateRECONNECTING?'reconnecting':''}  ${currentCallStateCONNECTED?'connected':''} `} style={{animationDelay: "3s"}}></div>
+                                    <div className={`circle ${currentCallStateCONNECTING_LOCAL_USER || currentCallStateCONNECTING_REMOTE_USER ?'connecting':''}  ${currentCallStateRECONNECTING?'reconnecting':''}  ${currentCallStateCONNECTED_REMOTE_USER?'connected':''} `} style={{animationDelay: "3s"}}></div>
                                     <div className="circle" style={{animationDelay: "4s"}}></div>
                                     <div className="circle" style={{animationDelay: "5s"}}></div>
 
@@ -1092,7 +1163,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             )}
                             <BlockTitle medium style={{textAlign: 'center'}}>
                                 <span>
-                                    {K.ModuleComponentsLibs.im.callScreen.labels[currentCallViewStateName]}
+                                    {(!isIncoming && currentCallStateRINGING && K.ModuleComponentsLibs.im.callScreen.states.CONNECTING === currentCallViewStateName) ? 'Ringing' : K.ModuleComponentsLibs.im.callScreen.labels[currentCallViewStateName]}
                                 </span>
                             </BlockTitle>
                             <BlockTitle medium style={{textAlign: 'center'}}>

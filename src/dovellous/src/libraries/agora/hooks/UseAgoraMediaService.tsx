@@ -11,6 +11,7 @@ import { f7 } from 'framework7-react';
 
 export default function useAgoraMediaService(
   Framework7Instance: any,
+  onHostJoined: Function,
   onUserPublished: Function,
   onUserUnpublished: Function,
   onUserJoined: Function,
@@ -425,11 +426,6 @@ export default function useAgoraMediaService(
 
     setJoiningState(true);
     
-    Framework7Instance.emit(
-      K.ModuleComponentsLibs.im.callScreen.states.CONNECTING,
-      callPayload
-    );
-
   }
 
   const disconnectCall = async (callData: any) : Promise <any> => {
@@ -498,10 +494,7 @@ export default function useAgoraMediaService(
           uid: uid
         };
 
-        Framework7Instance.emit(
-          K.ModuleComponentsLibs.im.callScreen.states.CONNECTED,
-          payload
-        );
+        onHostJoined(payload);
 
       })
       .catch((error: any)=>{
