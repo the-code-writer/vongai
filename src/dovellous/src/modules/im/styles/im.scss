@@ -106,7 +106,7 @@
 @keyframes scaleInBlink {
   from {
     transform: scale(.25, .25);
-    opacity: .15;
+    opacity: .25;
   }
   to {
     transform: scale(3, 3);
