@@ -316,6 +316,8 @@ const K = {
 					DISCONNECTED: 'Disconnected',
 					DISCONNECTED_BY_PEER: 'DisconnectedByRemote',
 					ON_HOLD: 'CallOnHold',
+					FAILED: 'CallFailed',
+					MISSED: 'CallMissed',
 					SUMMARY: 'CallSummary',
 				},
 				labels: {
@@ -332,6 +334,8 @@ const K = {
 					Disconnected : 'Call Ended',
 					DisconnectedByRemote : 'Call Ended',
 					CallOnHold : 'Call On Hold',
+					CallFailed : 'Call Failed',
+					CallMissed : 'Missed Call'
 				},
 			}
 		}

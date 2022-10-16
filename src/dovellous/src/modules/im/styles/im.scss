@@ -584,6 +584,7 @@ div.m-b-0.fab>a {
           .circle {
             border: 3px solid rgb(255, 255, 255);
             background-color: rgb(255, 255, 255);
+            backdrop-filter: blur(10px);
             border-radius: 50%;            
             width: 33vw;
             height: 33vw;

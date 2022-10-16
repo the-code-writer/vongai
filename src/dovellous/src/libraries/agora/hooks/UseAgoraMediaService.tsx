@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AgoraRTC, {
   IAgoraRTCClient, IAgoraRTCRemoteUser, MicrophoneAudioTrackInitConfig, CameraVideoTrackInitConfig, IMicrophoneAudioTrack, ICameraVideoTrack, ILocalVideoTrack, ILocalAudioTrack, ILocalTrack, SDK_CODEC, SDK_MODE, UID
 } from 'agora-rtc-sdk-ng';
@@ -11,11 +11,11 @@ import { f7 } from 'framework7-react';
 
 export default function useAgoraMediaService(
   Framework7Instance: any,
-  onHostJoined: Function,
   onUserPublished: Function,
   onUserUnpublished: Function,
   onUserJoined: Function,
-  onUserLeft: Function
+  onUserLeft: Function,
+  onHostJoined: Function,
 )
   : {
     client:IAgoraRTCClient | undefined,
@@ -92,8 +92,6 @@ export default function useAgoraMediaService(
   const [videoInputDevicesObject, setVideoInputDevicesObject] = useState<any>({});
   const [currentVideoInputDevicesIndex, setCurrentVideoInputDevicesIndex] = useState<number>(0);
   const [currentVideoInputDevicesID, setCurrentVideoInputDevicesID] = useState<string>('default');
-
-  // Set AudioaudioConfig?: MicrophoneAudioTrackInitConfig, 
 
   const setNextAudioInputDevicesIndex = (deviceId?: string) => {
 
@@ -494,7 +492,7 @@ export default function useAgoraMediaService(
           uid: uid
         };
 
-        onHostJoined(payload);
+        onHostJoined(payload);        
 
       })
       .catch((error: any)=>{

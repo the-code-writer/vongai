@@ -8,13 +8,14 @@ import K from "../../../libraries/app/konstants";
 import Dom7 from "dom7";
 
 import avatar from '../../../../assets/img/avatar/default.png';
-import ringtoneIncomingCall from '../../../../assets/aud/incoming-0.mp3';
+import ringtoneIncomingCall from '../../../../assets/aud/over-the-horizon-6.mp3';
 import ringtoneOutgoingCall from '../../../../assets/aud/outgoing-0.mp3';
 
 import { StorageIM, useStorageIM } from "../store/im-store";
 import Snippets from "../../../libraries/app/snippets";
 import useAgoraMediaService from "../../../libraries/agora/hooks/UseAgoraMediaService";
 import useAgoraIMCallDuration from "../../../libraries/agora/hooks/UseAgoraIMCallDuration";
+import useAgoraIMFirebase from "../../../libraries/agora/hooks/UseAgoraIMFirebase";
 import MediaPlayer from "../../../libraries/agora/components/MediaPlayer";
 
 import AgoraRTC, { IAgoraRTCRemoteUser, UID } from 'agora-rtc-sdk-ng';
@@ -47,9 +48,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const [currentCallUUID, setCurrentCallUUID] = useState<UID | null | undefined>('UID');
 
-    const [currentCallSessionID, setCurrentCallSessionID] = useState<String>('SID');
+    const [currentCallSession, setCurrentCallSession] = useState<String>('SID');
 
-    const [currentCallSessionChannel, setCurrentCallSessionChannel] = useState<String>('SCH');
+    const [currentCallChannel, setCurrentCallChannel] = useState<String>('SCH');
 
     const [currentCallSessionPayload, setCurrentCallSessionPayload] = useState<any>({});
 
@@ -77,6 +78,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const [currentCallStateRECONNECTING, setCurrentCallStateRECONNECTING] = useState<boolean>(false);
     const [currentCallStateDISCONNECTING, setCurrentCallStateDISCONNECTING] = useState<boolean>(false);
     const [currentCallStateDISCONNECTED, setCurrentCallStateDISCONNECTED] = useState<boolean>(false);
+    const [currentCallStateFAILED, setCurrentCallStateFAILED] = useState<boolean>(false);
+    const [currentCallStateCUSTOM, setCurrentCallStateCUSTOM] = useState<boolean>(false);
+    const [currentCallStateCUSTOM_MESSAGE, setCurrentCallStateCUSTOM_MESSAGE] = useState<string | undefined>('');
+    const [currentCallStateCUSTOM_ICON, setCurrentCallStateCUSTOM_ICON] = useState<any>({ios:'',aurora:'', md:''});
+    const [currentCallStateTimeoutCancelled, setCurrentStateTimeoutCancelled] = useState<boolean>(false);
 
     const [currentCallActionAnswered, setCurrentCallActionAnswered] = useState<boolean>(false);
     const [currentCallActionDeclined, setCurrentCallActionDeclined] = useState<boolean>(false);
@@ -112,7 +118,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         f7.utils.nextTick(()=>{
             ringingToneOutgoingCall.loop = true;
             ringingToneOutgoingCall.autoplay = true;
-            ringingToneOutgoingCall.volume = 0.05;
+            ringingToneOutgoingCall.volume = 0.2;
             ringingToneOutgoingCall.load();
             ringingToneOutgoingCall.play();
         },1000);
@@ -127,6 +133,24 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         ringingToneStopIncomingCall();
     }
 
+    const {
+        firebaseAppReady,
+        firebaseFirestoreReady,
+        firebaseRealtimeDatabaseReady,
+        firebaseRealtimeDatabaseCreateData,
+        firebaseRealtimeDatabaseReadData,
+        firebaseRealtimeDatabaseUpdateData,
+        firebaseRealtimeDatabaseDeleteData,
+        firebaseFirestoreCreateCollection,
+        firebaseFirestoreCreateDocument,
+        firebaseFirestoreReadCollection,
+        firebaseFirestoreReadDocument,
+        firebaseFirestoreUpdateCollection,
+        firebaseFirestoreUpdateDocument,
+        firebaseFirestoreDeleteDocument,
+        firebaseFirestoreDeleteCollection,
+    } = useAgoraIMFirebase([7]);
+    
     const {
         agoraIMCallDurationStartTimer,
         agoraIMCallDurationStopTimer,
@@ -187,6 +211,22 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
   
       }
 
+      const onCallAttemptFailedHandler  = () => {
+  
+        console.warn(":::: === AGORA EVENT [onCallAttemptFailedHandler] === :::",);
+
+        onCallConnectionFailed(K.ModuleComponentsLibs.im.callScreen.states.FAILED);
+  
+      }
+
+      const onMissedCallHandler  = () => {
+  
+        console.warn(":::: === AGORA EVENT [onMissedCallHandler] === :::",);
+
+        onCallConnectionFailed("CALL_CONNECTION_MISSED", "Missed Call (7)", {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'});
+  
+      }
+
     const { 
         client,
         localAudioTrack,
@@ -221,11 +261,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         currentVideoInputDevicesID
     } = useAgoraMediaService(
         f7,
-        onHostJoinedHandler,
         onUserPublishedHandler,
         onUserUnpublishedHandler,
         onUserJoinedHandler,
-        onUserLeftHandler
+        onUserLeftHandler,
+        onHostJoinedHandler,
     );
 
     const currentCallPayloadSnapshot = () => {
@@ -237,8 +277,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         _currentCallPayload.origin = currentCallUserOrigin;
         _currentCallPayload.destination = currentCallUserDestination;
         _currentCallPayload.callStartedTimestamp = currentCallTimeStarted;
-        _currentCallPayload.callSessionID = currentCallSessionID;
-        _currentCallPayload.callSessionChannel = currentCallSessionChannel;
+        _currentCallPayload.callSession = currentCallSession;
+        _currentCallPayload.callChannel = currentCallChannel;
         _currentCallPayload.isVideoCall = currentCallTypeIsVideo;
         _currentCallPayload.isIncoming= currentCallTypeIsIncoming;
 
@@ -413,6 +453,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(true);
         setCurrentCallStateDISCONNECTED(false);
+        setCurrentCallStateFAILED(false);
+        // setCurrentCallStateMISSED(false);
+        setCurrentCallStateCUSTOM(false);
+        setCurrentCallStateCUSTOM_MESSAGE('');
+        setCurrentCallStateCUSTOM_ICON({ios:'',aurora:'', md:''});
 
         await disconnectCall();
         
@@ -440,6 +485,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(false);
+        setCurrentCallStateFAILED(false);
+        // setCurrentCallStateMISSED(false);
+        setCurrentCallStateCUSTOM(false);
+        setCurrentCallStateCUSTOM_MESSAGE('');
+        setCurrentCallStateCUSTOM_ICON({ios:'',aurora:'', md:''});
 
         setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.states.ON_HOLD
@@ -463,6 +513,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(false);
+        setCurrentCallStateFAILED(false);
+        // setCurrentCallStateMISSED(false);
+        setCurrentCallStateCUSTOM(false);
+        setCurrentCallStateCUSTOM_MESSAGE('');
+        setCurrentCallStateCUSTOM_ICON({ios:'',aurora:'', md:''});
 
         setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.states.CONNECTED
@@ -479,6 +534,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         if(Object.keys(userDefinedData).length > 0 && userDefinedData.hasOwnProperty('phoneNumber')){
 
             ringingTonePlayIncomingCall();
+
+            waitForPeerConnectTimeout(30);
             
             setCurrentCallActionAnswered(false);
             setCurrentCallActionDeclined(false);
@@ -495,6 +552,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             setCurrentCallStateRECONNECTING(false);
             setCurrentCallStateDISCONNECTING(false);
             setCurrentCallStateDISCONNECTED(false);
+            setCurrentCallStateFAILED(false);
+            // setCurrentCallStateMISSED(false);
+            setCurrentCallStateCUSTOM(false);
+            setCurrentCallStateCUSTOM_MESSAGE('');
+            setCurrentCallStateCUSTOM_ICON({ios:'',aurora:'', md:''});
 
             onIncomingCall(currentCallPayloadSnapshot());
 
@@ -508,10 +570,79 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     };
 
+    
+    const  waitForCallAttemptTimeout = useCallback(
+        (seconds: number) => {
+
+            const t1:number = f7.utils.now();
+
+            console.warn("::: TIMEOUT #1 :::", seconds, t1);
+
+            setTimeout(()=>{
+
+                const t2:number = f7.utils.now();
+
+                console.warn("::: TIMEOUT #2 :::", t2-t1, t1, t2);
+        
+                if(
+                (joinState && remoteUsers.length === 0) ||
+                (!joinState)
+                ){
+
+                console.warn("::: CALL FAILED ::: REMOTE FAILED TO CONNECT", joinState && remoteUsers.length === 0);
+
+                console.warn("::: CALL FAILED ::: LOCAL FAILED TO CONNECT", !joinState);
+
+                onCallAttemptFailedHandler();
+
+                }else{
+                
+                console.warn("::: CALL SUCCESS ::: REMOTE CONNECT", joinState, remoteUsers.length);
+
+                console.warn("::: CALL SUCCESS ::: LOCAL CONNECT", joinState);
+
+                }
+
+                setCurrentStateTimeoutCancelled(true);
+
+            }, seconds * 1000);
+
+    },[]);
+      
+    const  waitForPeerConnectTimeout = useCallback(
+        (seconds: number) => {
+
+            const t1:number = f7.utils.now();
+
+            console.warn("::: TIMEOUT #1 :::", seconds, t1);
+
+            setTimeout(()=>{
+
+                const t2:number = f7.utils.now();
+
+                console.warn("::: TIMEOUT #2 :::", t2-t1, t1, t2);
+        
+                if( !currentCallActionAnswered ){
+
+                console.warn("::: CALL MISSED ::: ", currentCallActionAnswered);
+
+                onMissedCallHandler();
+
+                }else{
+                    
+                    console.warn("::: CALL SUCCESS :::", currentCallActionAnswered);
+
+                }
+
+                setCurrentStateTimeoutCancelled(true);
+
+            }, seconds * 1000);
+
+    },[]);
+  
+
     const onOutgoingCallHandler = (_currentCallPayload:any) => {
 
-        ringingTonePlayOutgoingCall();
-        
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(false);
         setCurrentCallActionInProgress(false);
@@ -527,14 +658,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(false);
+        setCurrentCallStateFAILED(false);
+        // setCurrentCallStateMISSED(false);
+        setCurrentCallStateCUSTOM(false);
+        setCurrentCallStateCUSTOM_MESSAGE('');
+        setCurrentCallStateCUSTOM_ICON({ios:'',aurora:'', md:''});
 
         connectOutgoingCallNow(_currentCallPayload);
 
         onOutgoingCall(currentCallPayloadSnapshot());
-
-        // Send IM to calee: PEER_INCOMING_CALL
-
-        // Local Notification: OUTGOING_CALL
 
         setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.states.OUTGOING
@@ -545,7 +677,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const onCallConnectingRemote = ( )=>{
 
         // Invoked when remote clicks 'ANSWER'
-        // Send IM to FB [{Groups: {ABC: {calls: '0x837...3eca': {host: {uid}, users: {uid: {phoneNumber:12345}}}}}] : {callSessionID: '0x837...3eca', user: {displayName: '', phoneNumber: '', username: ''}}
+        // Send IM to FB [{Groups: {ABC: {calls: '0x837...3eca': {host: {uid}, users: {uid: {phoneNumber:12345}}}}}] : {callSession: '0x837...3eca', user: {displayName: '', phoneNumber: '', username: ''}}
         // App checks for group calls / user 1 on 1 calls
 
         console.warn("::::::*********** CALL CONNECTING PEER ************:::::: ", currentCallPayloadSnapshot());
@@ -585,7 +717,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const onCallConnectingLocal = ( )=>{
 
         // Invoked when remote clicks 'ANSWER'
-        // Send IM to FB [{Groups: {ABC: {calls: '0x837...3eca': {host: {uid}, users: {uid: {phoneNumber:12345}}}}}] : {callSessionID: '0x837...3eca', user: {displayName: '', phoneNumber: '', username: ''}}
+        // Send IM to FB [{Groups: {ABC: {calls: '0x837...3eca': {host: {uid}, users: {uid: {phoneNumber:12345}}}}}] : {callSession: '0x837...3eca', user: {displayName: '', phoneNumber: '', username: ''}}
         // App checks for group calls / user 1 on 1 calls
 
         console.warn("::::::*********** CALL CONNECTING PEER ************:::::: ", currentCallPayloadSnapshot());
@@ -593,7 +725,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(false);
         setCurrentCallActionInProgress(false);
-        setCurrentCallStateRINGING(true);
+        setCurrentCallStateRINGING(false);
         setCurrentCallStateCONNECTING_LOCAL_USER(true);
 
         if(remoteUsers.length===1){
@@ -615,6 +747,64 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateCONNECTED_LOCAL_USER(true);
         
         setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.CONNECTED);
+
+        // Send IM to caller: PEER_CONNECTING
+
+    }
+
+    const onCallConnectionFailed = ( status:string, message?:string, icons?: any )=>{
+
+         console.warn("::::::*********** CALL CONNECTING FAILED ************:::::: ", status,  currentCallPayloadSnapshot());
+
+         ringingToneStop();
+
+         clearTimeout();
+
+         setCurrentCallActionAnswered(false);
+         setCurrentCallActionDeclined(false);
+         setCurrentCallActionInProgress(false);
+ 
+         setCurrentCallStateINITIALIZING(false);
+         setCurrentCallStateRINGING(false);
+         setCurrentCallStateCONNECTING_LOCAL_USER(false);
+         setCurrentCallStateCONNECTING_REMOTE_USER(false);
+         setCurrentCallStateCONNECTED_LOCAL_USER(false);
+         setCurrentCallStateCONNECTED_REMOTE_USER(false);
+         setCurrentCallStateONHOLD(false);
+         setCurrentCallStateRECONNECTING(false);
+         setCurrentCallStateDISCONNECTING(false);
+         setCurrentCallStateDISCONNECTED(false);
+
+         switch( status ){
+
+            case K.ModuleComponentsLibs.im.callScreen.states.FAILED : {
+                setCurrentCallStateFAILED(true);
+                // setCurrentCallStateMISSED(false);
+                setCurrentCallStateCUSTOM(false);
+                setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.FAILED);
+                break;
+            }
+
+            default : {
+                setCurrentCallStateFAILED(false);
+                // setCurrentCallStateMISSED(false);
+                setCurrentCallStateCUSTOM(true);
+                setCurrentCallStateCUSTOM_MESSAGE(message);
+                if(icons) {
+                    setCurrentCallStateCUSTOM_ICON(icons);
+                }
+                setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.FAILED);
+                //Play network error sound
+                break;
+            }
+
+        }
+         
+         setTimeout(()=>{
+
+            onCloseThisCallScreen();
+
+        }, 5000);
 
         // Send IM to caller: PEER_CONNECTING
 
@@ -646,6 +836,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(false);
+        setCurrentCallStateFAILED(false);
+        // setCurrentCallStateMISSED(false);
+        setCurrentCallStateCUSTOM(false);
 
         setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.states.CONNECTED
@@ -699,6 +892,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(true);
+        setCurrentCallStateFAILED(false);
+        // setCurrentCallStateMISSED(false);
+        setCurrentCallStateCUSTOM(false);
+        setCurrentCallStateCUSTOM_MESSAGE('');
+        setCurrentCallStateCUSTOM_ICON({ios:'',aurora:'', md:''});
 
         setCurrentCallViewStateName(
             K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED
@@ -714,7 +912,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const onAnswerCallHandler = () => {
 
-        onCallConnecting( true );
+        clearTimeout();
+
+        onCallConnectingLocal();
 
         connectIncomingCallNow(currentCallPayload);
 
@@ -725,6 +925,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const onDeclineCallHandler = () => {
 
         ringingToneStop();
+
+        clearTimeout();
 
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(true);
@@ -740,6 +942,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(true);
+        setCurrentCallStateFAILED(false);
+        // setCurrentCallStateMISSED(false);
+        setCurrentCallStateCUSTOM(false);
+        setCurrentCallStateCUSTOM_MESSAGE('');
+        setCurrentCallStateCUSTOM_ICON({ios:'',aurora:'', md:''});
 
         setCurrentCallViewStateName( K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED );
 
@@ -780,7 +987,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     }
 
     const onCloseThisCallScreen = () => {
-
+        
+        ringingToneStop();
+        clearTimeout();
         resetState();
 
         onCloseAllCallScreenSheetsHandler();
@@ -831,15 +1040,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         Snippets.encryption.sha1(`${String(destinationPhoneNumber).replace(/\W/g, '')}:${String(originPhoneNumber).replace(/\W/g, '')}`) : 
         Snippets.encryption.sha1(`${String(originPhoneNumber).replace(/\W/g, '')}:${String(destinationPhoneNumber).replace(/\W/g, '')}`);
 
-        const _currentCallSessionID= `${_currentCallSessionData1}/${_currentCallSessionData2}/${_currentCallUUID}`;
+        const _currentCallSession= `${_currentCallSessionData1}/${_currentCallSessionData2}/${_currentCallUUID}`;
 
-        const _currentCallSessionChannel = Snippets.encryption.sha1(_currentCallSessionID);
+        const _currentCallChannel = Snippets.encryption.sha1(_currentCallSession);
 
         setCurrentCallUUID(_currentCallUUID);
 
-        setCurrentCallSessionID(_currentCallSessionID);
+        setCurrentCallSession(_currentCallSession);
 
-        setCurrentCallSessionChannel(_currentCallSessionChannel);
+        setCurrentCallChannel(_currentCallChannel);
 
         setCurrentCallTypeIsVideo(_isVideoCall);
 
@@ -855,8 +1064,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             origin: _origin,
             destination: _destination,
             callStartedTimestamp: _currentTimestamp,
-            callSessionID: _currentCallSessionID,
-            callSessionChannel: _currentCallSessionChannel,
+            callSession: _currentCallSession,
+            callChannel: _currentCallChannel,
             isVideoCall: _isVideoCall,
             isIncoming: _isIncomingCall,
         }
@@ -877,6 +1086,74 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     }
 
+    const generateOutgoingCallPayload = (callPayload: IMCallTypeInterfaces.CallDataObject) : IMCallTypeInterfaces.CallItem => {
+
+        const outgoingCallPayloadObject: IMCallTypeInterfaces.CallItem | any = new Object();
+
+        Object.defineProperties(outgoingCallPayloadObject, {
+            startedTimestamp: {
+				value: callPayload.callStartedTimestamp,
+				writable: false
+			},
+			endedTimestamp: {
+				value: 0,
+				writable: true
+			},
+			origin: {
+				value: callPayload.origin,
+				writable: true
+			},
+			destination: {
+				value: callPayload.destination,
+				writable: true
+			},
+			isVideoCall: {
+				value: callPayload.isVideoCall,
+				writable: false
+			},
+			isGroupCall: {
+				value: false,
+				writable: true
+			},
+			isIncoming: {
+				value: callPayload.isIncoming,
+				writable: false
+			},
+			isEncrypted: {
+				value: false,
+				writable: true
+			},
+			groupId: {
+				value: 0,
+				writable: true
+			},
+			channel: {
+				value: callPayload.callChannel,
+				writable: false
+			},
+			session: {
+				value: callPayload.callSession,
+				writable: false
+			},
+          });
+
+        if(callPayload.hasOwnProperty('isGroupCall')){
+            outgoingCallPayloadObject.isGroupCall = callPayload.isGroupCall;
+            outgoingCallPayloadObject.groupId = callPayload.uid;
+        }else{
+            outgoingCallPayloadObject.isGroupCall = false;
+        }
+        
+        if(callPayload.hasOwnProperty('isEncrypted')){
+            outgoingCallPayloadObject.isEncrypted = callPayload.isEncrypted;
+        }else{
+            outgoingCallPayloadObject.isEncrypted = false;
+        }
+          
+        return outgoingCallPayloadObject;
+
+    }
+
     const connectOutgoingCallNow = (callPayload: IMCallTypeInterfaces.CallDataObject) => {
 
         const newCallAttempts:String[] = [...currentCallDialAttempts, f7.utils.now()];
@@ -884,22 +1161,64 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallTimeStartedAttempts(newCallAttempts);
 
         if(isAgoraModuleReady){
+            
+            if(firebaseRealtimeDatabaseReady){
 
-            connectCall( callPayload );
+                const outgoingCallPayload: IMCallTypeInterfaces.CallItem  = generateOutgoingCallPayload(callPayload);
+
+                let isGroupCall: boolean = false;
+
+                let path: string = String(`/accounts/users/${outgoingCallPayload.destination.uid}/calls/incoming/`);
+
+                if(outgoingCallPayload.isGroupCall){
+
+                    isGroupCall = true;
+
+                    path = String(`/groups/${outgoingCallPayload.groupId}/calls/incoming/`);
+
+                }
+
+                firebaseRealtimeDatabaseCreateData(path, outgoingCallPayload, (result: any)=>{
+
+                    console.warn("::: FIRE BASE RESULT ::: firebaseRealtimeDatabaseCreateData :::", result);
+
+                    if(result){
+                        
+                        ringingTonePlayOutgoingCall();
+            
+                        setCurrentCallStateRINGING(true);
+                        
+                        waitForCallAttemptTimeout(30);
+        
+                        return connectCall( callPayload );
+
+                    }else{
+
+                        return onCallConnectionFailed("CALL_CONNECTION_FAILED", "Network Error", {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'});
+                    
+                    }
+
+                });
+
+            }
 
         }
+
+        
 
     }
 
     const resetState = () => {
 
+        clearTimeout();
+
         removeEventListeners();
 
         setCurrentCallViewStateName(K.ModuleComponentsLibs.im.callScreen.states.INITIALIZING);
 
-        setCurrentCallSessionID('SID');
+        setCurrentCallSession('SID');
 
-        setCurrentCallSessionChannel('SCH');
+        setCurrentCallChannel('SCH');
 
         setCurrentCallUserOrigin({displayName:'DNO',phoneNumber:'000'});
 
@@ -919,6 +1238,11 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         setCurrentCallStateRECONNECTING(false);
         setCurrentCallStateDISCONNECTING(false);
         setCurrentCallStateDISCONNECTED(false);
+        setCurrentCallStateFAILED(false);
+        // setCurrentCallStateMISSED(false);
+        setCurrentCallStateCUSTOM(false);
+        setCurrentCallStateCUSTOM_MESSAGE('');
+        setCurrentCallStateCUSTOM_ICON({ios:'',aurora:'', md:''});
 
         setCurrentCallActionAnswered(false);
         setCurrentCallActionDeclined(false);
@@ -1127,7 +1451,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                         <div className="circle-wrapper" >
                             
-                            { !currentCallStateDISCONNECTED && (
+                            { !currentCallStateDISCONNECTED && !currentCallStateFAILED && (
 
                                 <React.Fragment>
 
@@ -1157,13 +1481,34 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             {viewIncludeInCurrentState(
                                         [
                                             K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED,
+                                            K.ModuleComponentsLibs.im.callScreen.states.FAILED,
                                         ]
                             ) && (
                                 <BlockTitle medium style={{textAlign: 'center'}}>{userDefinedData.phoneNumber}</BlockTitle>
                             )}
                             <BlockTitle medium style={{textAlign: 'center'}}>
+                                <span style={{marginRight: '8px'}}>
+                                    {
+                                        currentCallStateCUSTOM &&
+                                        (
+                                            <Icon size={16}
+                                                ios={`f7:${currentCallStateCUSTOM_ICON.ios}`}
+                                                aurora={`f7:${currentCallStateCUSTOM_ICON.aurora}`} 
+                                                md={`material:${currentCallStateCUSTOM_ICON.md}`}
+                                            />
+                                        )
+                                    }
+                                </span>
                                 <span>
-                                    {(!isIncoming && currentCallStateRINGING && K.ModuleComponentsLibs.im.callScreen.states.CONNECTING === currentCallViewStateName) ? 'Ringing' : K.ModuleComponentsLibs.im.callScreen.labels[currentCallViewStateName]}
+                                    {
+                                        currentCallStateCUSTOM ?
+                                        currentCallStateCUSTOM_MESSAGE :
+                                        (
+                                            (!isIncoming && currentCallStateRINGING && K.ModuleComponentsLibs.im.callScreen.states.CONNECTING === currentCallViewStateName) ? 
+                                            'Ringing' :
+                                            K.ModuleComponentsLibs.im.callScreen.labels[currentCallViewStateName]
+                                        )
+                                    }
                                 </span>
                             </BlockTitle>
                             <BlockTitle medium style={{textAlign: 'center'}}>
@@ -1324,7 +1669,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                             className="im-solid-rounded"
                             onClick={onHangUpToggle} 
                             iconIos={`f7:${currentCallModeIsLoudSpeakerTurnedON?'phone_down_fill':'phone_down_fill'}`}
-                            iconMd={`material:${currentCallModeIsLoudSpeakerTurnedON?'phone_enabled':'phone_enabled'}`}
+                            iconMd={`material:${currentCallModeIsLoudSpeakerTurnedON?'phone_disabled':'phone_disabled'}`}
                             iconAurora={`f7:${currentCallModeIsLoudSpeakerTurnedON?'phone_down_fill':'phone_down_fill'}`}
                             iconSize={24} 
                         />
@@ -1337,7 +1682,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 {viewIncludeInCurrentState(
                     [
-                        K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED
+                        K.ModuleComponentsLibs.im.callScreen.states.DISCONNECTED,
+                        K.ModuleComponentsLibs.im.callScreen.states.FAILED,
                     ]
                 ) && (
 
@@ -1400,7 +1746,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                 <Icon 
                                     ios="f7:phone_down_fill" 
                                     aurora="f7:phone_down_fill" 
-                                    md="material:phone_enabled" />
+                                    md="material:phone_disabled" />
                         </Fab>
 
                         <span>Decline</span>

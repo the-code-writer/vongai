@@ -9,6 +9,14 @@ import {UID} from 'agora-rtc-sdk-ng';
     emailAddress: string;
 }
 
+interface CallUserObject {
+    uid: string;
+    phoneNumber: any;
+    displayName: string;
+    displayPhoto?: string;
+    username?: string;
+}
+
 interface CallDestinationObject {
     phoneNumber: any;
     displayName: any;
@@ -29,16 +37,51 @@ interface CallDataObject {
     callEndedTimestamp?: Number;
     callDuration?: Number;
     callDialAttempts?: any;
-    callSessionID: String;
-    callSessionChannel: String;
+    callSession: String;
+    callChannel: String;
     callHooks?: any;
     isVideoCall: Boolean;
     isIncoming: Boolean;
+    isGroupCall?: Boolean;
+    isEncrypted?: Boolean;
+}
+
+interface CallParticipant {
+    uid: string;
+    startedTimestamp: number;
+    endedTimestamp: number;
+    phoneNumber: any;
+    displayName: string;
+    displayPhoto: any;
+    username?: string;
+}
+
+interface CallItem {
+    startedTimestamp: number;
+    endedTimestamp?: number;
+    origin: CallUserObject;
+    destination: CallUserObject;
+    isVideoCall: boolean;
+    isGroupCall: boolean;
+    isIncoming?: boolean;
+    isEncrypted?: boolean;
+    groupId?:string;
+    channel: string;
+    session: string;
+}
+
+interface CallParticipantsSession {
+    payload: CallItem;
+    participants: CallParticipant[];
 }
 
 export { 
     UserDataObject, 
+    CallUserObject,
     CallDestinationObject,
     CallOriginObject,
     CallDataObject,
+    CallItem,
+    CallParticipant,
+    CallParticipantsSession,
 } 
