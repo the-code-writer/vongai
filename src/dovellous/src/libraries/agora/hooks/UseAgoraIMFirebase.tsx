@@ -213,6 +213,22 @@ export default function useAgoraIMFirebase(firebaseConfig: any)
         
     }
     
+    const addEventListeners:Function = () : any => {
+        const db = getDatabase();
+        const commentsRef = ref(db, 'post-comments/' + postId);
+        onChildAdded(commentsRef, (data) => {
+            addCommentElement(postElement, data.key, data.val().text, data.val().author);
+        });
+
+        onChildChanged(commentsRef, (data) => {
+            setCommentValues(postElement, data.key, data.val().text, data.val().author);
+        });
+
+        onChildRemoved(commentsRef, (data) => {
+            deleteComment(postElement, data.key);
+        });
+    }
+    
     useEffect(() => {
 
         firebaseInit(firebaseConfig, ()=>{
@@ -223,6 +239,8 @@ export default function useAgoraIMFirebase(firebaseConfig: any)
             setFirebaseApp(app);
 
             setFirebaseAppReady(true);
+
+            addEventListeners();
 
             firebaseRealtimeDatabaseInit(()=>{
 
