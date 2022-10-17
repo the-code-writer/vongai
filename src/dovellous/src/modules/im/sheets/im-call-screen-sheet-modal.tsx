@@ -2,7 +2,7 @@ import { Block, BlockTitle, Button, f7, Fab, FabButton, FabButtons, Icon, List, 
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import Speech from 'speak-tts';
-
+import { LocalNotifications } from '@capacitor/local-notifications';
 import * as IMCallTypeInterfaces from "../../../libraries/agora/apps/voice/IMCallTypeInterfaces";
 
 import K from "../../../libraries/app/konstants";
@@ -1125,6 +1125,14 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     }
 
+                const getCallStatusIcons = (status: any) => {
+                    if (status && K.ModuleComponentsLibs.im.callScreen.currentStatusIcons.hasOwnProperty(status)) {
+                        return K.ModuleComponentsLibs.im.callScreen.currentStatusIcons[status];
+                    } else {
+                        return K.ModuleComponentsLibs.im.callScreen.currentStatusIcons.DEFAULT;
+                    }
+                }
+
     const connectOutgoingCallNow = (callPayload: IMCallTypeInterfaces.CallDataObject) => {
 
         const newCallAttempts: String[] = [...currentCallDialAttempts, f7.utils.now()];
@@ -1139,7 +1147,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 let isGroupCall: boolean = false;
 
-                let path: string = String(`/accounts/users/${outgoingCallPayload.destination.uid}/calls/incoming/`);
+                const uid:any = `u${Snippets.encryption.sha1(outgoingCallPayload.destination.phoneNumber)}`;
+
+                let path: string = String(`/accounts/users/${uid}/calls/incoming/`);
 
                 if (outgoingCallPayload.isGroupCall) {
 
@@ -1149,13 +1159,23 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 }
 
-                const getCallStatusIcons = (status: any) => {
-                    if (status && K.ModuleComponentsLibs.im.callScreen.currentStatusIcons.hasOwnProperty(status)) {
-                        return K.ModuleComponentsLibs.im.callScreen.currentStatusIcons[status];
-                    } else {
-                        return K.ModuleComponentsLibs.im.callScreen.currentStatusIcons.DEFAULT;
-                    }
-                }
+                LocalNotifications.schedule({
+                    notifications: [
+                      {
+                        title: "Outgoing Call",
+                        body: "Tichaona C. Mahwite",
+                        id: 1,
+                        smallIcon: 'local_phone',
+                        actionTypeId: 'OPEN_PRODUCT',
+                        
+                        schedule: {
+                          every: "minute"
+                        },
+              
+                        extra: null
+                      }
+                    ]
+                });
 
                 firebaseRealtimeDatabaseCreateData(path, outgoingCallPayload, (result: any) => {
 
@@ -1165,6 +1185,18 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                         K.ModuleComponentsLibs.im.callScreen.currentStatus.DEFAULT
                     );
                     let callFailed: boolean = false;
+
+                    /*
+                    result = {
+                        
+                    }
+
+                    
+                    result.status = K.ModuleComponentsLibs.im.callScreen.currentStatus.NOT_AVAILABLE;
+                    result.message = K.ModuleComponentsLibs.im.callScreen.currentStatus.NOT_AVAILABLE;
+                    result.tts = "Sorry, the number you have dialed is not available at the moment. Please try again later.";
+                    */
+
 
                     if (result) {
 
@@ -1609,7 +1641,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                                             currentCallStateFAILED ?
                                             currentCallStateCUSTOM_MESSAGE :
                                             (
-                                                (!isIncoming && currentCallStateRINGING && K.ModuleComponentsLibs.im.callScreen.states.CONNECTING === currentCallViewStateName) ?
+                                                (!isIncoming && currentCallStateRINGING) ?
                                                 'Ringing' :
                                                 K.ModuleComponentsLibs.im.callScreen.labels[currentCallViewStateName]
                                             )
@@ -1798,8 +1830,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                                 <Fab color="green" >
                                     <Icon
-                                        ios="f7:phone_up_fill"
-                                        aurora="f7:phone_up_fill"
+                                        ios="f7:phone_fill"
+                                        aurora="f7:phone_fill"
                                         md="material:phone_enabled"></Icon>
                                 </Fab>
 
@@ -1811,8 +1843,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                                 <Fab color="red" >
                                     <Icon
-                                        ios="f7:close"
-                                        aurora="f7:close"
+                                        ios="f7:xmark"
+                                        aurora="f7:xmark"
                                         md="material:close"></Icon>
                                 </Fab>
 
@@ -1836,8 +1868,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                                 <Fab color="green" >
                                     <Icon
-                                        ios="f7:phone_up_fill"
-                                        aurora="f7:phone_up_fill"
+                                        ios="f7:phone_fill"
+                                        aurora="f7:phone_fill"
                                         md="material:phone_enabled" />
                                 </Fab>
 

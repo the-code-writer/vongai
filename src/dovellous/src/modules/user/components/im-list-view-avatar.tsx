@@ -191,6 +191,8 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                 width={canvasWidth}
                 height={canvasWidth}
                 className="im-list-view-user-avatar-canvas rounded"
+                style={{objectFit:"cover"}}
+                
             />
         </React.Fragment>
     );
