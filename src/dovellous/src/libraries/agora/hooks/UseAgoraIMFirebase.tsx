@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { f7 } from 'framework7-react';
+import K from '../../app/konstants';
 
 export default function useAgoraIMFirebase(firebaseConfig: any)
   : {
@@ -67,13 +68,19 @@ export default function useAgoraIMFirebase(firebaseConfig: any)
         
         console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseCreateData :::", path, data);
 
-        data.status = "INSUFFICIENT_CREDIT";
-        data.status = "INSUFFICIENT_CREDIT";
-        data.status = "INSUFFICIENT_CREDIT";
+        data.status = K.ModuleComponentsLibs.im.callScreen.currentStatus.NOT_AVAILABLE;
+        data.message = K.ModuleComponentsLibs.im.callScreen.currentStatus.NOT_AVAILABLE;
+        data.tts = "Sorry, the number you have dialed is not available at the moment. Please try again later.";
 
-        callbackFunction(data);
+        setTimeout(()=>{
 
-    }
+            data.status = "Success";
+
+            callbackFunction(data);
+
+        },3000);
+
+    } 
     
     const firebaseRealtimeDatabaseReadData:Function = () : any => {
         

@@ -15650,6 +15650,11 @@
     "select-hose" "^2.0.0"
     "spdy-transport" "^3.0.0"
 
+"speak-tts@^2.0.8":
+  "integrity" "sha512-VY6Q6mRjdou6bF+x0LspvM7GJhBxHx8CLyGPTNQQ7jrztiGutyI4QNZn0cA17c4uk0FnFbA4PaMI3skeZ6PiFg=="
+  "resolved" "https://registry.npmjs.org/speak-tts/-/speak-tts-2.0.8.tgz"
+  "version" "2.0.8"
+
 "split-string@^3.0.1", "split-string@^3.0.2":
   "integrity" "sha512-NzNVhJDYpwceVVii8/Hu6DKfD2G+NrQHlS/V/qgv763EYudVwEcMQNxd2lh+0VrUByXN/oJkl5grOhYWvQUYiw=="
   "resolved" "https://registry.npmjs.org/split-string/-/split-string-3.1.0.tgz"

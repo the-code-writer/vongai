@@ -109,6 +109,7 @@
     "reshake": "^1.2.4",
     "sharp": "^0.31.0",
     "skeleton-elements": "^4.0.0",
+    "speak-tts": "^2.0.8",
     "styled-components": "^5.3.5",
     "swiper": "^8.3.2",
     "web-vitals": "^3.0.1",

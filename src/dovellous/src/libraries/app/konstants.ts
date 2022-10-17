@@ -297,13 +297,20 @@ const K = {
 			callScreen: {
 				currentStatus: {
 					SUCCESS: 'Success',
+					MISSED_CALL: 'Missed Call',
+					NOT_AVAILABLE: 'Not Available',
 					LINE_BUSY: 'Line Busy',
 					NETWORK_ERROR: 'Network Error',
+					INSUFFICIENT_CREDIT: 'Insufficient Credit',
 					DEFAULT: 'Call Failed'
 				},
 				currentStatusIcons: {
-					LINE_BUSY: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'},
-					NETWORK_ERROR: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'},
+					SUCCESS: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'},
+					MISSED_CALL: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_missed'},
+					NOT_AVAILABLE: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'system_security_update_warning'},
+					LINE_BUSY: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'remember_me'},
+					NETWORK_ERROR: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'signal_cellular_nodata'},
+					INSUFFICIENT_CREDIT: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'stay_current_portrait'},
 					DEFAULT: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'}
 				},
 				states: {
