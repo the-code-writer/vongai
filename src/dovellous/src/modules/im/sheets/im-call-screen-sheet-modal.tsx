@@ -223,7 +223,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
   
         console.warn(":::: === AGORA EVENT [onMissedCallHandler] === :::",);
 
-        onCallConnectionFailed("CALL_CONNECTION_MISSED", "Missed Call (7)", {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'});
+        onCallConnectionFailed("CALL_CONNECTION_MISSED", "Missed Call (1)", {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'});
   
       }
 
@@ -1178,25 +1178,81 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 }
 
+                const getCallStatusIcons = (status: any) => {
+                    if(status && K.ModuleComponentsLibs.im.callScreen.currentStatusIcons.hasOwnProperty(status)){
+                        return K.ModuleComponentsLibs.im.callScreen.currentStatusIcons[status];
+                    }else{                        
+                        return K.ModuleComponentsLibs.im.callScreen.currentStatusIcons.DEFAULT;
+                    }                    
+                }
+
                 firebaseRealtimeDatabaseCreateData(path, outgoingCallPayload, (result: any)=>{
 
-                    console.warn("::: FIRE BASE RESULT ::: firebaseRealtimeDatabaseCreateData :::", result);
+                    let callStatus:string = 'CALL_STATUS_FAILED';
+                    let callStatusMessage:string = K.ModuleComponentsLibs.im.callScreen.currentStatus.DEFAULT;
+                    let callStatusIcons:any = getCallStatusIcons(
+                        K.ModuleComponentsLibs.im.callScreen.currentStatus.NETWORK_ERROR
+                    );
+                    let callFailed:boolean = false;
 
                     if(result){
-                        
-                        ringingTonePlayOutgoingCall();
-            
-                        setCurrentCallStateRINGING(true);
-                        
-                        waitForCallAttemptTimeout(30);
-        
-                        return connectCall( callPayload );
 
-                    }else{
+                        if(result.hasOwnProperty('status')){
 
-                        return onCallConnectionFailed("CALL_CONNECTION_FAILED", "Network Error", {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'});
+                            switch(result.status){
+
+                                case K.ModuleComponentsLibs.im.callScreen.currentStatus.SUCCESS:{
+
+                                    ringingTonePlayOutgoingCall();
+                
+                                    setCurrentCallStateRINGING(true);
+                                    
+                                    waitForCallAttemptTimeout(30);
                     
-                    }
+                                    connectCall( callPayload );
+        
+                                    break;
+                                }
+
+                                case K.ModuleComponentsLibs.im.callScreen.currentStatus.LINE_BUSY:{
+
+                                    callFailed = true;
+                                    callStatus = result.status;
+                                    callStatusMessage = result.message;
+                                    callStatusIcons = getCallStatusIcons(
+                                        K.ModuleComponentsLibs.im.callScreen.currentStatus.LINE_BUSY
+                                    );
+
+                                    // Play busy sound
+                                    break;
+                                    
+                                }
+
+                                default: {
+
+                                    callFailed = true;
+                                    callStatus = result.status;
+                                    callStatusMessage = result.message;
+                                    callStatusIcons = getCallStatusIcons(
+                                        K.ModuleComponentsLibs.im.callScreen.currentStatus.NETWORK_ERROR
+                                    );
+
+                                    // Network busy sound
+
+                                    break;
+                                }
+
+                            }
+                        
+                        }
+
+                    }                   
+
+                    onCallConnectionFailed(
+                        callStatus,
+                        callStatusMessage,
+                        callStatusIcons
+                    );
 
                 });
 

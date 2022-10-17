@@ -145,6 +145,7 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                                     imageLocalFilename,
                                     imageData
                                 );
+                                
                             } catch (e) {
 
                                 //console.log( "::IMAGE DATA ERROR :: saveImageToLocalFileSystem ::", e );
@@ -158,6 +159,7 @@ export default ({ avatarSrc, userOnlineStatus, elementId, canvasWidth }) => {
                     };
 
                     baseImage.src = src;
+
                 }
             }
 

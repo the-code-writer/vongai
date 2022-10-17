@@ -295,6 +295,17 @@ const K = {
 				imMyStories: 'imMyStories',
 			},
 			callScreen: {
+				currentStatus: {
+					SUCCESS: 'Success',
+					LINE_BUSY: 'Line Busy',
+					NETWORK_ERROR: 'Network Error',
+					DEFAULT: 'Call Failed'
+				},
+				currentStatusIcons: {
+					LINE_BUSY: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'},
+					NETWORK_ERROR: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'},
+					DEFAULT: {ios:'phone_down_fill',aurora:'phone_down_fill',md:'phone_disabled'}
+				},
 				states: {
 					MEDIA_TYPE_VIDEO: 'video',
 					MEDIA_TYPE_AUDIO: 'audio',

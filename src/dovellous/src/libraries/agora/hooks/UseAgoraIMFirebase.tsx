@@ -67,7 +67,9 @@ export default function useAgoraIMFirebase(firebaseConfig: any)
         
         console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseCreateData :::", path, data);
 
-        data = false;
+        data.status = "INSUFFICIENT_CREDIT";
+        data.status = "INSUFFICIENT_CREDIT";
+        data.status = "INSUFFICIENT_CREDIT";
 
         callbackFunction(data);
 
