@@ -153,6 +153,7 @@ const K = {
 		Modules: {
 			Firebase: {
 				FirebaseLibEvent: {
+					NAME: "ModulesFirebaseApp",
 					MODULE_LOADED: "ModulesFirebaseLoaded"
 				},
 				Auth: {

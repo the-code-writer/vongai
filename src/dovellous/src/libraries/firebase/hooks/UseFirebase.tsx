@@ -7,10 +7,10 @@ import { child, get, getDatabase, onChildAdded, onChildChanged, onChildRemoved, 
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-import { f7 } from 'framework7-react';
+ 
 import K from '../../app/konstants';
 
-export default function useAgoraIMFirebase(firebaseConfig: any)
+export default function useFirebase(firebaseConfig: any)
   : {
     firebaseAppReady: boolean,
     firebaseFirestoreReady:boolean,

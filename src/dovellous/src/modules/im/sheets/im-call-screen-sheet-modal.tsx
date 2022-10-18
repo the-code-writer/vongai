@@ -1,7 +1,7 @@
 import { Block, BlockTitle, Button, f7, Fab, FabButton, FabButtons, Icon, List, ListItem, PageContent, Preloader, Sheet } from "framework7-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import Speech from 'speak-tts';
+//import Speech from 'speak-tts';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import * as IMCallTypeInterfaces from "../../../libraries/agora/apps/voice/IMCallTypeInterfaces";
 
@@ -1408,6 +1408,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     }
 
     const speak = (payload: any) => {
+        /*
         speechAPI?.speak({
             text: payload.value,
         }).then(() => {
@@ -1415,6 +1416,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         }).catch(e => {
             console.error("An error occurred :", e)
         })
+        */
     }
 
     useEffect(() => {
@@ -1442,6 +1444,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     );
 
     useEffect(() => {
+
+        /*
 
         const speechAPI: any = new Speech();
 
@@ -1477,6 +1481,8 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
             })
         }
+
+        */
 
     }, []);
 

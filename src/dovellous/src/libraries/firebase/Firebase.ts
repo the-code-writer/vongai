@@ -1,279 +1,144 @@
-import Framework7 from 'framework7/lite-bundle';
+import { K, ModuleBaseClasses } from "../app/helpers";
+import * as FirebaseTypeInterfaces from "./lib/FirebaseTypeInterfaces";
+import { FirebaseConfig } from './lib/FirebaseConfig';
+import { f7 } from "framework7-react";
 
-import { initializeApp, FirebaseApp } from "firebase/app";
+type FirebaseOptions = {
+	config: FirebaseConfig
+} & ModuleBaseClasses.DovellousModuleOptions;
 
-import {K, ModuleBaseClasses} from "../app/helpers";
+class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
+	
+	manaLevel: number
+	declare options: FirebaseOptions; // <-- declare
+	declare modules: any;
+	declare events:  any;
 
-import { FirebaseRealtimeDatabase } from "./apps/realtimedatbase/FirebaseRealtimeDatabase";
-import { FirebaseAuth } from "./apps/auth/FirebaseAuth";
-import { FirebaseFirestore } from "./apps/firestore/FirebaseFirestore";
-import { FirebaseCloudMessaging } from "./apps/messaging/FirebaseCloudMessaging";
-import { FirebaseStorage } from "./apps/storage/FirebaseStorage";
+	constructor(
+		events: any,
+		apiKey: any,
+		authDomain?: string,
+		projectId?: string,
+		storageBucket?: string,
+		messagingSenderId?: string,
+		appId?: string,
+		measurementId?: string,
+	) {
 
-interface FirebaseInterface {
-  apiKey: any,
-  authDomain: any,
-  projectId:any,
-  storageBucket:any,
-  messagingSenderId: any,
-  appId: any,
-  measurementId: any
-}
-
-class FirebaseConfig implements FirebaseInterface{
-	apiKey: any;
-	authDomain: any;
-	projectId: any;
-	storageBucket: any;
-	messagingSenderId: any;
-	appId: any;
-	measurementId: any;
-    static events: any;
-
-  constructor(
-    apiKey: any,
-	authDomain: any,
-	projectId:any,
-	storageBucket:any,
-	messagingSenderId: any,
-	appId: any,
-	measurementId: any
-  ) {
-    this.apiKey = apiKey;
-	this.authDomain = authDomain;
-	this.projectId = projectId;
-	this.storageBucket = storageBucket;
-	this.messagingSenderId = messagingSenderId;
-	this.appId = appId;
-	this.measurementId = measurementId;
-  }
-
-}
-
-const FirebaseLibrary = ModuleBaseClasses.Class.extend({
-
-  init: function(
-    events: any, 
-	F7: Framework7,
-    apiKey: any | FirebaseConfig,
-	authDomain: any,
-	projectId:any,
-	storageBucket:any,
-	messagingSenderId: any,
-	appId: any,
-	measurementId: any
-  ) {
+		super();
 
 		let self = this;
+		
+		self.events = events;
 
-    let options: FirebaseAuth;
+		if(!apiKey || apiKey === null || apiKey === undefined || typeof apiKey === "undefined"){
 
-    if (apiKey instanceof FirebaseConfig) {
-      options = apiKey;
-    } else {
-      options = new FirebaseConfig(apiKey, authDomain, projectId, storageBucket, messagingSenderId, appId, measurementId);
-    }
+			const appConfig: any = f7.params.dovellous;
 
-		this.events = events;
+			if(appConfig.hasOwnProperty('firebase')){
 
-		this.modules.params = self;
+			}
+    
+			self.options.config = appConfig.firebase;		
 
-		this.modules.initModules(this, F7, options);
+		}else{
 
-	},
-	modules: (function() {
-		let parent = {
+			if (apiKey instanceof FirebaseConfig) {
 
-			isLoaded: false,
+				self.options.config = appId;
 
-			params: FirebaseConfig,
+			} else {
 
-      		F7: "",
+				self.options.config = new FirebaseConfig(
+					apiKey,
+					authDomain,
+					projectId,
+					storageBucket,
+					messagingSenderId,
+					appId,
+					measurementId,
+				);
 
-			FIREBASE_APP: <FirebaseApp> {},
+			}
 
-			initModules: async (app: any, F7: Framework7, options: { appId: string; primaryCertificate: string; agora: { channels: {}; }; channels: { [x: string]: string; }; tokens: { [x: string]: string; }; firebaseRealtimeDatabase: { moduleName: string; }; firebaseAuth: { moduleName: string; }; firebaseFirestore: { moduleName: string; }; firebaseCloudMessaging: { moduleName: string; }; firebaseStorage: { moduleName: string; }; }) => {
+		}
 
-        		parent.F7 = F7;
+		self.modules = (function () {
 
-        		await parent.initializeFirebaseApp(options);
+			const parent = {
 
-				await parent.firebaseRealtimeDatabase.init(app);
+				isLoaded: false,
 
-				await parent.firebaseAuth.init(app);
+				events: {},
 
-				await parent.firebaseFirestore.init(app);
+				firebaseLibrary: {},
 
-				await parent.firebaseCloudMessaging.init(app);
+				firebaseConfig: {},
 
-				await parent.firebaseStorage.init(app);
+				firebaseOptions: {},
 
-				parent.params.events[K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED]({
-					firebaseApp: app,
-					firebaseModule: parent,
-					firebaseInstance: parent.FIREBASE_APP
-				});
-					
-			},
+				initModules: async (
+					firebaseLibrary: any
+				) => {
 
-			initializeFirebaseApp: async (options: FirebaseConfig)=>{
-				
-				const firebaseConfig = {
-					apiKey: options.apiKey,
-					authDomain: options.authDomain,
-					projectId: options.projectId,
-					storageBucket: options.storageBucket,
-					messagingSenderId: options.messagingSenderId,
-					appId: options.appId,
-					measurementId: options.measurementId
-				};
+					parent.firebaseLibrary = firebaseLibrary;
 
-				// Initialize Firebase
-				parent.FIREBASE_APP = initializeApp(firebaseConfig);
+					parent.events = firebaseLibrary.events;
 
-				return parent.FIREBASE_APP;
+					parent.firebaseOptions = firebaseLibrary.options;
 
-			},
+					parent.firebaseConfig = firebaseLibrary.options.config;
 
-			firebaseRealtimeDatabase: {
+					await parent.realtimeDatabase.init();
 
-				isReady: false,
+					f7.emit(
+						K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED,
+						{
+							app: parent
+						}
+					);
 
-        	lib: {},
-
-				init: async (app: any) => { 
-					
-          			parent.firebaseRealtimeDatabase.lib = new FirebaseRealtimeDatabase(parent.params.events, parent.F7);
-          			parent.firebaseRealtimeDatabase.isReady = true;
-
-					const _app = {
-						Firebase: app,
-						FirebaseRealtimeDatabaseLib: parent.firebaseRealtimeDatabase.lib,
-						FirebaseRealtimeDatabaseApp: parent.firebaseRealtimeDatabase,
-						EventNames: K.Events.Modules.Firebase.RealtimeDatabase,
-						Events: parent.params.events
-					};
-          
-					parent.params.events[K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT](_app);
-
-          			return _app;
+					parent.isLoaded = true;
 
 				},
-			},
-			
-			firebaseAuth: {
 
-				isReady: false,
+				realtimeDatabase: {
 
-        		lib: {},
+					isReady: false,
 
-				params: {
-					moduleName: "FirebaseAuth",
-				},
+					lib: {},
 
-				init: async (app: any) => { 
-					
-					parent.firebaseAuth.params = parent.params;
+					init: async () => {
 
-          			parent.firebaseAuth.lib = new FirebaseAuth(parent.params.events, parent.F7, options);
-          			parent.firebaseAuth.isReady = true;
-          
-					parent.params.events[K.Events.Modules.Firebase.Auth.ON_APP_INIT]([
-						app,
-						options
-					]);
+						parent.realtimeDatabase.lib = new RealtimeDatabase(parent);
 
-          			return parent.firebaseAuth;
+						parent.realtimeDatabase.isReady = true;
 
-				},
-			},
-			
-			firebaseFirestore: {
+						f7.emit(
+							K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT,
+							{
+								firebaseApp:  parent,
+								realtimeDatabaseApp: parent.realtimeDatabase,
+							}
+						);
 
-				isReady: false,
+						return parent.realtimeDatabase;
 
-        		lib: {},
-
-				params: {
-					moduleName: "FirebaseFirestore",
-				},
-
-				init: async (app: any) => { 
-					
-					parent.firebaseFirestore.params = parent.params;
-
-          			parent.firebaseFirestore.lib = new FirebaseFirestore(parent.params.events, parent.F7, options);
-          			parent.firebaseFirestore.isReady = true;
-          
-					parent.params.events[K.Events.Modules.Firebase.Firestore.ON_APP_INIT]([
-						app,
-						options
-					]);
-
-          			return parent.firebaseFirestore;
+					},
 
 				},
-			},
-			
-			firebaseCloudMessaging: {
 
-				isReady: false,
+			};
 
-        		lib: {},
+			return parent;
 
-				params: {
-					moduleName: "FirebaseCloudMessaging",
-				},
+		})();
 
-				init: async (app: any) => { 
-					
-					parent.firebaseCloudMessaging.params = parent.params;
+		self.modules.initModules(self);
 
-          			parent.firebaseCloudMessaging.lib = new FirebaseCloudMessaging(parent.params.events, parent.F7, options);
-          			parent.firebaseCloudMessaging.isReady = true;
-          
-					parent.params.events[K.Events.Modules.Firebase.CloudMessaging.ON_APP_INIT]([
-						app,
-						options
-					]);
+	}
 
-          			return parent.firebaseCloudMessaging;
-
-				},
-			},
-			
-			firebaseStorage: {
-				
-				isReady: false,
-
-        		lib: {},
-
-				params: {
-					moduleName: "FirebaseStorage",
-				},
-
-				init: async (app: any) => { 
-					
-					parent.firebaseStorage.params = parent.params;
-
-          			parent.firebaseStorage.lib = new FirebaseStorage(parent.params.events, parent.F7, options);
-          			parent.firebaseStorage.isReady = true;
-          
-					parent.params.events[K.Events.Modules.Firebase.Storage.ON_APP_INIT]([
-						app,
-						options
-					]);
-
-          			return parent.firebaseStorage;
-
-				},
-        
-			},
-			
-		};
-		return parent;
-	})(),
-});
+}
 
 // Firebase Module Here
 
@@ -283,14 +148,14 @@ ModuleBaseClasses.DovellousEventDispatcher(K.Events.Modules.Firebase);
  *
  * @type {ModuleBaseClasses.DovellousLibraryEvent}
  */
-const agoraLibEvent: ModuleBaseClasses.DovellousLibraryEvent = new ModuleBaseClasses.DovellousLibraryEvent(K.Events.Modules.Firebase.LibEvent.NAME);
+const FirebaseLibEvent: ModuleBaseClasses.DovellousLibraryEvent = new ModuleBaseClasses.DovellousLibraryEvent(K.Events.Modules.Firebase.FirebaseLibEvent.NAME);
 
-const Firebase = (F7: Framework7, options: FirebaseAuth) => {
+const Firebase = (Framework7:any ) => {
 	/**
 	 * @type {ModuleBaseClasses.DovellousLibrary}
 	 */
-	return new FirebaseLibrary(agoraLibEvent, F7, options);
+	return new FirebaseLibrary(FirebaseLibEvent);
 
 };
 
-export {Firebase, FirebaseAuth};
+export { Firebase, FirebaseConfig, FirebaseLibEvent };
