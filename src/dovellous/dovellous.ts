@@ -1,7 +1,9 @@
 //import { f7 } from 'framework7-react';
 import { K, Snippets } from './src/libraries/app/helpers';
 import { Agora, AgoraConfig } from './src/libraries/agora/Agora';
-
+import * as AgoraTypeInterfaces from "./src/libraries/agora/lib/AgoraTypeInterfaces";
+import { Firebase, FirebaseConfig } from './src/libraries/firebase/Firebase';
+import * as FirebaseTypeInterfaces from "./src/libraries/firebase/lib/FirebaseTypeInterfaces";
 // import {CapacitorStorage} from './src/libraries/storage/capacitor-js-storage/CapacitorStorage';
 // import {JSONDatabaseService} from './src/libraries/storage/json-db-service/JSONDatabaseService';
 // import {Config as JSONDatabaseServiceConfig} from './src/libraries/storage/json-db-service/lib/JSONDatabaseServiceConfig';
@@ -34,6 +36,8 @@ class Dovellous{
 
     Agora: null,
 
+    Firebase: null,
+
     Settings: null,
 
   }
@@ -48,6 +52,8 @@ class Dovellous{
 
     f7.on(K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED, (agoraInstance: any) => {
 
+      console.warn("::: AgoraLibEvent MODULE_LOADED agoraInstance :::", agoraInstance);
+
       self.Libraries.Agora = agoraInstance;
     
       f7.emit(K.Events.Modules.Agora.AgoraLibEvent.MODULE_READY, agoraInstance);
@@ -55,12 +61,71 @@ class Dovellous{
     });
     
     if(f7.params.dovellous.hasOwnProperty('agora')){
+
+      console.warn("::: f7.params.dovellous.agora instanceof AgoraConfig :::", f7.params.dovellous.agora);
     
-      f7.params.dovellous.agora instanceof AgoraConfig ? this.initAgora() : null;
+      if(f7.params.dovellous.agora instanceof AgoraConfig){
+
+        this.initAgora(f7.params.dovellous.agora);
+
+      }else{
+
+        const agoraConfig:AgoraTypeInterfaces.AgoraConfigInterface = new AgoraConfig(
+          f7.params.dovellous.agora.appId,
+          f7.params.dovellous.agora.primaryCertificate,
+          f7.params.dovellous.agora.clientCodec,
+          f7.params.dovellous.agora.clientMode,
+          f7.params.dovellous.agora.imCallConfig,
+        )
+
+        this.initAgora(agoraConfig);
+
+      }
     
     }
 
     /* End Agora Library Init */
+
+    /* Begin Firebase Library Init */
+
+    f7.on(K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED, (firebaseInstance: any) => {
+
+      console.warn("::: FirebaseLibEvent MODULE_LOADED firebaseInstance :::", firebaseInstance);
+
+      self.Libraries.Firebase = firebaseInstance;
+    
+      f7.emit(K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY, firebaseInstance);
+    
+    });
+    
+    if(f7.params.dovellous.hasOwnProperty('firebase')){
+
+      console.warn("::: f7.params.dovellous.firebase instanceof FirebaseConfig :::", f7.params.dovellous.firebase);
+    
+      if(f7.params.dovellous.firebase instanceof FirebaseConfig){
+
+        this.initFirebase(f7.params.dovellous.firebase);
+
+      }else{
+
+        const firebaseConfig:FirebaseTypeInterfaces.FirebaseConfigInterface = new FirebaseConfig(
+          f7.params.dovellous.firebase.apiKey,
+					f7.params.dovellous.firebase.authDomain,
+					f7.params.dovellous.firebase.projectId,
+					f7.params.dovellous.firebase.storageBucket,
+					f7.params.dovellous.firebase.messagingSenderId,
+					f7.params.dovellous.firebase.appId,
+					f7.params.dovellous.firebase.measurementId,
+					f7.params.dovellous.firebase.realtimeDatabaseConfig,
+        )
+
+        this.initFirebase(firebaseConfig);
+
+      }
+    
+    }
+
+    /* End Firebase Library Init */
 
   }
 
@@ -70,9 +135,21 @@ class Dovellous{
 	 * param agoraConfig AgoraConfig - A config file for all agora modules. This follows the correct Agora Config Interface
 	 * return null
 	 */
-  initAgora () {
+  initAgora (agoraConfig:AgoraTypeInterfaces.AgoraConfigInterface) {
 
-    Agora(this.Frameworks.Framework7);
+    Agora(this.Frameworks.Framework7, agoraConfig);
+    
+  }
+
+  /**
+	 * Initializes the Firebase Library:
+   * May require these params appId, primaryCertificate, channels, tokens, imCall, videoCall, instantMessaging, liveStreaming, whiteBoard
+	 * param agoraConfig AgoraConfig - A config file for all agora modules. This follows the correct Agora Config Interface
+	 * return null
+	 */
+  initFirebase (firebaseConfig: FirebaseTypeInterfaces.FirebaseConfigInterface ) {
+
+    Firebase(firebaseConfig);
     
   }
 

@@ -25,8 +25,8 @@
   <link rel="manifest" href="./assets/manifest.33953b26.json">
   
   <!-- built styles file will be auto injected -->
-  <script type="module" crossorigin src="./assets/index.77100a5d.js"></script>
-  <link rel="stylesheet" href="./assets/index.c368dfc6.css">
+  <script type="module" crossorigin src="./assets/index.5f4cd207.js"></script>
+  <link rel="stylesheet" href="./assets/index.61c23690.css">
 </head>
 <body>
   <div id="app"></div>
@@ -37,17 +37,16 @@
     //DEV
 
     function incall(){
-      F7React.dovellousEventsEmit(
-        F7React.dovellous.konstants.ModuleComponentsLibs.im.callScreen.INCOMING,
-        {isIncomingCall: true, isVideoCall: true, userData: 
-        {
-              username: 'Rumbidzai L. Maposa',
-              phoneNumber: '+263 (77) 212 8622',
-              displayName: 'Jane Marry',
-              displayStatus: 'Hi there im using Vong.ai',
-              displayPhoto: 'http://cdn.dovellous.com/img/people/39.png',
-              emailAddress: 'jane.marry@vong.ai',
-            }}
+      F7React.emit(
+        F7React.dovellous.konstants.ModuleComponentsLibs.im.callScreen.states.INCOMING,
+        {isIncomingCall: true, isVideoCall: false, userData: {          
+            displayPhoto: "http://localhost/dev/img/people/23.png",
+            username: "Tichaona C. Mahwite",
+            callToken: "CH0100",
+            displayName: "Tichaona C. Mahwite",
+            phoneNumber: "+263 772 128 622",
+            displayStatus: "nobis ipsam rerum sint hic labore et",
+          }}
         );
     }
 

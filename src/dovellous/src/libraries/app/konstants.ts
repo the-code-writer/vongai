@@ -29,7 +29,7 @@ const K = {
 		FIREBASE_STORAGE_BUCKET: import.meta.env.VNG_GOOGLE_FIREBASE_STORAGE_BUCKET,
 		FIREBASE_MESSAGING_SENDER_ID: import.meta.env.VNG_GOOGLE_FIREBASE_MESSAGING_SENDER_ID,
 		FIREBASE_APP_ID: import.meta.env.VNG_GOOGLE_FIREBASE_APP_ID,
-		FIREBASE_MEAUSUREMENT_ID: import.meta.env.VNG_GOOGLE_FIREBASE_MESUREMENT_ID,
+		FIREBASE_MEASUREMENT_ID: import.meta.env.VNG_GOOGLE_FIREBASE_MESUREMENT_ID,
 	},
 	Api: {
 		Version: 1,
@@ -153,8 +153,9 @@ const K = {
 		Modules: {
 			Firebase: {
 				FirebaseLibEvent: {
-					NAME: "ModulesFirebaseApp",
-					MODULE_LOADED: "ModulesFirebaseLoaded"
+					NAME: "ModulesFirebaseLibEvent",
+					MODULE_LOADED: "ModulesFirebaseLoaded",
+					MODULE_READY: "ModulesFirebaseReady"
 				},
 				Auth: {
 					ON_APP_INIT: "ModulesFirebaseAuthOnAppInit",

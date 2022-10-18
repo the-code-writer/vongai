@@ -99,7 +99,16 @@ const Framework7DovellousPlugin = {
               bitrateMax: parseInt(K.Env.AGORA_VIDEO_SETTINGS_ENCODING_BIT_MAX),
           }
         }
-      }
+      },
+      firebase : {
+				apiKey: K.Env.FIREBASE_API_KEY,
+				authDomain: K.Env.FIREBASE_AUTH_DOMAIN,
+				projectId: K.Env.FIREBASE_PROJECT_ID,
+				storageBucket: K.Env.FIREBASE_STORAGE_BUCKET,
+				messagingSenderId: K.Env.FIREBASE_MESSAGING_SENDER_ID,
+				appId: K.Env.FIREBASE_APP_ID,
+				measurementId: K.Env.FIREBASE_MEASUREMENT_ID
+			},
     },
   },
   /* Initialized instance Props & Methods */

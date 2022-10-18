@@ -1,8 +1,8 @@
 import { K, ModuleBaseClasses } from "../app/helpers";
-import AgoraRTC, { IAgoraRTCClient } from "agora-rtc-sdk-ng" 
+import AgoraRTC from "agora-rtc-sdk-ng" 
 import * as AgoraTypeInterfaces from "./lib/AgoraTypeInterfaces";
 import { AgoraConfig } from './lib/AgoraConfig';
-import { IMCallConfig, IMCall } from "./apps/voice/IMCall";
+import { IMCall } from "./apps/voice/IMCall";
 
 type AgoraOptions = {
 	config: AgoraConfig
@@ -20,6 +20,8 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 		events: any,
 		appId?: any | AgoraTypeInterfaces.AgoraConfigInterface,
 		primaryCertificate?: any,
+		clientCodec?: string,
+		clientMode?: string,
 		imCallConfig?: AgoraTypeInterfaces.IMCallConfigInterface
 	) {
 
@@ -29,29 +31,31 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 		
 		self.events = events;
 
-		if(!appId || appId === null || typeof appId === "undefined"){
-
-			const appConfig: any = f7.params.dovellous;
-
-			if(appConfig.hasOwnProperty('agora')){
-
-			}
-    
-			self.options.config = appConfig.agora;		
-
-		}else{
+		if(f7.params.dovellous.hasOwnProperty('agora')){ 
 
 			if (appId instanceof AgoraConfig) {
 
 				self.options.config = appId;
 
+			}else if(typeof appId === "string"){
+
+				self.options.config = new AgoraConfig(
+					appId,
+					primaryCertificate,
+					clientCodec,
+					clientMode,
+					imCallConfig,
+				  );
+
 			} else {
 
 				self.options.config = new AgoraConfig(
-					appId, 
-					primaryCertificate,
-					imCallConfig
-				);
+					f7.params.dovellous.agora.appId,
+					f7.params.dovellous.agora.primaryCertificate,
+					f7.params.dovellous.agora.clientCodec,
+					f7.params.dovellous.agora.clientMode,
+					f7.params.dovellous.agora.imCallConfig,
+				  );
 
 			}
 
@@ -83,10 +87,12 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 					parent.agoraConfig = agoraLibrary.options.config;
 
+					console.warn("::: AgoraLibrary : self.options.config :::", parent);
+
 					await parent.imCall.init(f7);
 
 					f7.emit(
-						K.Events.Modules.Agora.App.ON_APP_INIT,
+						K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED,
 						{
 							app: parent,
 							f7: f7
@@ -133,20 +139,6 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 	}
 
-	getDevices(eventCallBackFunction: any){
-		
-        // Get all audio and video devices.
-		AgoraRTC.getDevices().then(devices => {
-			const audioDevices = devices.filter(function(device){
-				return device.kind === "audioinput";
-			});
-			const videoDevices = devices.filter(function(device){
-				return device.kind === "videoinput";
-			});
-			eventCallBackFunction(audioDevices, videoDevices);
-		});
-	}
-
 }
 
 // Agora Module Here
@@ -159,11 +151,11 @@ ModuleBaseClasses.DovellousEventDispatcher(K.Events.Modules.Agora);
  */
 const AgoraLibEvent: ModuleBaseClasses.DovellousLibraryEvent = new ModuleBaseClasses.DovellousLibraryEvent(K.Events.Modules.Agora.AgoraLibEvent.NAME);
 
-const Agora = (Framework7:any ) => {
+const Agora = (Framework7:any, agoraConfig:AgoraTypeInterfaces.AgoraConfigInterface ) => {
 	/**
 	 * @type {ModuleBaseClasses.DovellousLibrary}
 	 */
-	return new AgoraLibrary(Framework7, AgoraLibEvent);
+	return new AgoraLibrary(Framework7, AgoraLibEvent, agoraConfig);
 
 };
 

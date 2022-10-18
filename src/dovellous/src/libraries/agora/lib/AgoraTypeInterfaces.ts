@@ -42,6 +42,8 @@ interface IMCallConfigInterface {
 interface AgoraConfigInterface {
   appId: any;
 	primaryCertificate?: any;
+  clientCodec?: string;
+  clientMode?: string;
 	imCallConfig?: IMCallConfigInterface; 
 }
 

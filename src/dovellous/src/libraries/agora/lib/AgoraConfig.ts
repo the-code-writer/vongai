@@ -4,21 +4,21 @@ class AgoraConfig implements AgoraTypeInterfaces.AgoraConfigInterface {
 
 	appId: any;
 	primaryCertificate?: any;
-	channels?: any;
-	defaultChannel?: any;
+	clientCodec?: string;
+	clientMode?: string;
 	imCallConfig?: AgoraTypeInterfaces.IMCallConfigInterface;
 
 	constructor(
 		_appId: any,
 		_primaryCertificate?: any,
-		_channels?: any,
-		_defaultChannel?: any,
+		_clientCodec?: string,
+		_clientMode?: string,
 		_imCallConfig?: AgoraTypeInterfaces.IMCallConfigInterface
 	) {
 		this.appId = _appId;
 		this.primaryCertificate = _primaryCertificate;
-		this.channels = _channels;
-		this.defaultChannel = _defaultChannel;
+		this.clientCodec  = _clientCodec;
+		this.clientMode   = _clientMode;
 		this.imCallConfig = _imCallConfig;
 	}
 

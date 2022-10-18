@@ -10,7 +10,7 @@ import { child, get, getDatabase, onChildAdded, onChildChanged, onChildRemoved, 
  
 import K from '../../app/konstants';
 
-export default function useFirebase(firebaseConfig: any)
+export default function useFirebase()
   : {
     firebaseAppReady: boolean,
     firebaseFirestoreReady:boolean,
@@ -79,105 +79,32 @@ export default function useFirebase(firebaseConfig: any)
         
         console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseCreateData :::", path, data);
 
-        const db = getDatabase();
-
-        const dataObject: any = {
-            startedTimestamp: data.startedTimestamp,
-            endedTimestamp: data.endedTimestamp,
-            origin: data.origin,
-            destination: data.destination,
-            isVideoCall: data.isVideoCall,
-            isGroupCall: data.isGroupCall,
-            isIncoming:  data.isIncoming,
-            isEncrypted: data.isEncrypted,
-            groupId: data.groupId,
-            channel: data.channel,
-            session: data.session,
-            acknowledged: 0,
-        };
-
-
-        set(ref(db, path), dataObject).then((result: any) => {
-
-            console.warn("::: FIREBASE ::: result :::", result);
-
-                callbackFunction(
-                    {
-                        status: "SUCCESS",
-                        result: result,                    
-                    }
-                );
-
-            }).catch((error) => {
-
-                callbackFunction(
-                    {
-                        status: "ERROR",
-                        error: error,                    
-                    }
-                );
-
-            });
+        callbackFunction();
 
     } 
     
     const firebaseRealtimeDatabaseReadData:Function = (path:string, callbackFunction:Function) : any => {
-        const db = getDatabase();
-        const dbRef = ref(db, path);
-        onValue(dbRef, (snapshot) => {
-            const data = snapshot.val();
-            callbackFunction(data);
-        });
+        
+        callbackFunction();
+
     }
     
     const firebaseRealtimeDatabaseReadDataOnce:Function = (path:string, callbackFunction:Function) : any => {
-        const dbRef = ref(getDatabase());
-        get(child(dbRef, path)).then((snapshot: any) => {
-        if (snapshot.exists()) {
-            callbackFunction(
-                {
-                    status: "SUCCESS",
-                    data: snapshot.val(),                    
-                }
-            );
-        } else {
-            callbackFunction(
-                {
-                    status: "NOT_FOUND",                   
-                }
-            );
-        }
-        }).catch((error) => {
-            callbackFunction(
-                {
-                    status: "ERROR",
-                    error: error,                    
-                }
-            );
-        });
+        
+        callbackFunction();
+
     }
     
     const firebaseRealtimeDatabaseUpdateData:Function = (path: string, data: any, callbackFunction: Function) : any => {
-        const db = getDatabase();
-        set(ref(db, path), data).then((result: any) => {
-            callbackFunction(
-                {
-                    status: "SUCCESS",
-                    result: result,                    
-                }
-            );
-        }).catch((error) => {
-            callbackFunction(
-                {
-                    status: "ERROR",
-                    error: error,                    
-                }
-            );
-        });
+        
+        callbackFunction();
+
     }
     
     const firebaseRealtimeDatabaseDeleteData:Function = (path:string, callbackFunction: Function) : any => {
-        firebaseRealtimeDatabaseUpdateData(path, null, callbackFunction);
+        
+        callbackFunction();
+
     }
         
     const firebaseFirestoreCreateCollection:Function = () : any => {
@@ -212,53 +139,15 @@ export default function useFirebase(firebaseConfig: any)
         
     }
     
-    const addEventListeners:Function = () : any => {
-        const db = getDatabase();
-        const commentsRef = ref(db, 'post-comments/' + postId);
-        onChildAdded(commentsRef, (data) => {
-            addCommentElement(postElement, data.key, data.val());
-        });
+    const addEventListeners:Function = (callbackFunction: Function) : any => {
+        
+        callbackFunction();
 
-        onChildChanged(commentsRef, (data) => {
-            setCommentValues(postElement, data.key, data.val().text, data.val().author);
-        });
-
-        onChildRemoved(commentsRef, (data) => {
-            deleteComment(postElement, data.key);
-        });                                                                                                                                                                            
     }
     
     useEffect(() => {
 
-        firebaseInit(firebaseConfig, ()=>{
-
-            // Initialize Firebase
-            const app = initializeApp(K.ModuleComponentsLibs.firebase.config);
-
-            setFirebaseApp(app);
-
-            setFirebaseAppReady(true);
-
-            addEventListeners();
-
-            firebaseRealtimeDatabaseInit(()=>{
-
-                // Initialize Realtime Database and get a reference to the service
-                const database = getDatabase(app);
-
-                setFirebaseRealtimeDatabaseApp(database);
-
-                setFirebaseRealtimeDatabaseReady(true);
-
-            })
-
-            firebaseFirestoreInit(()=>{
-
-                setFirebaseFirestoreReady(true);
-
-            })
-
-        })
+        // Get firebase app reference from class
         
     }, [])
 

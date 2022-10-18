@@ -2,6 +2,8 @@ import { K, ModuleBaseClasses } from "../app/helpers";
 import * as FirebaseTypeInterfaces from "./lib/FirebaseTypeInterfaces";
 import { FirebaseConfig } from './lib/FirebaseConfig';
 import { f7 } from "framework7-react";
+import { RealtimeDatabase } from "./apps/realtimeDatabase/RealtimeDatabase";
+import { initializeApp } from "firebase/app";
 
 type FirebaseOptions = {
 	config: FirebaseConfig
@@ -16,13 +18,14 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 
 	constructor(
 		events: any,
-		apiKey: any,
+		apiKey?: any | FirebaseTypeInterfaces.FirebaseConfigInterface,
 		authDomain?: string,
 		projectId?: string,
 		storageBucket?: string,
 		messagingSenderId?: string,
 		appId?: string,
 		measurementId?: string,
+		realtimeDatabaseConfig?: FirebaseTypeInterfaces.RealtimeDatabaseConfigInterface
 	) {
 
 		super();
@@ -31,23 +34,13 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 		
 		self.events = events;
 
-		if(!apiKey || apiKey === null || apiKey === undefined || typeof apiKey === "undefined"){
-
-			const appConfig: any = f7.params.dovellous;
-
-			if(appConfig.hasOwnProperty('firebase')){
-
-			}
-    
-			self.options.config = appConfig.firebase;		
-
-		}else{
+		if(f7.params.dovellous.hasOwnProperty('firebase')){ 
 
 			if (apiKey instanceof FirebaseConfig) {
 
-				self.options.config = appId;
+				self.options.config = apiKey;
 
-			} else {
+			}else if(typeof apiKey === "string"){
 
 				self.options.config = new FirebaseConfig(
 					apiKey,
@@ -57,7 +50,21 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 					messagingSenderId,
 					appId,
 					measurementId,
-				);
+					realtimeDatabaseConfig,
+				  );
+
+			} else {
+
+				self.options.config = new FirebaseConfig(
+					f7.params.dovellous.firebase.apiKey,
+					f7.params.dovellous.firebase.authDomain,
+					f7.params.dovellous.firebase.projectId,
+					f7.params.dovellous.firebase.storageBucket,
+					f7.params.dovellous.firebase.messagingSenderId,
+					f7.params.dovellous.firebase.appId,
+					f7.params.dovellous.firebase.measurementId,
+					f7.params.dovellous.firebase.realtimeDatabaseConfig,
+				  );
 
 			}
 
@@ -77,6 +84,8 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 
 				firebaseOptions: {},
 
+				firebaseApp: {},
+
 				initModules: async (
 					firebaseLibrary: any
 				) => {
@@ -89,7 +98,15 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 
 					parent.firebaseConfig = firebaseLibrary.options.config;
 
-					await parent.realtimeDatabase.init();
+					parent.firebaseApp = initializeApp({
+						apiKey: firebaseLibrary.options.config.apiKey,
+						authDomain: firebaseLibrary.options.config.authDomain,
+						projectId: firebaseLibrary.options.config.projectId,
+						storageBucket: firebaseLibrary.options.config.storageBucket,
+						messagingSenderId: firebaseLibrary.options.config.messagingSenderId,
+						appId: firebaseLibrary.options.config.appId,
+						measurementId: firebaseLibrary.options.config.measurementId,
+					})
 
 					f7.emit(
 						K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED,
@@ -97,6 +114,8 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 							app: parent
 						}
 					);
+
+					await parent.realtimeDatabase.init(parent.firebaseApp);
 
 					parent.isLoaded = true;
 
@@ -108,9 +127,9 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 
 					lib: {},
 
-					init: async () => {
+					init: async (firebaseApp: any) => {
 
-						parent.realtimeDatabase.lib = new RealtimeDatabase(parent);
+						parent.realtimeDatabase.lib = new RealtimeDatabase(firebaseApp);
 
 						parent.realtimeDatabase.isReady = true;
 
@@ -150,11 +169,11 @@ ModuleBaseClasses.DovellousEventDispatcher(K.Events.Modules.Firebase);
  */
 const FirebaseLibEvent: ModuleBaseClasses.DovellousLibraryEvent = new ModuleBaseClasses.DovellousLibraryEvent(K.Events.Modules.Firebase.FirebaseLibEvent.NAME);
 
-const Firebase = (Framework7:any ) => {
+const Firebase = (firebaseConfig: FirebaseTypeInterfaces.FirebaseConfigInterface) => {
 	/**
 	 * @type {ModuleBaseClasses.DovellousLibrary}
 	 */
-	return new FirebaseLibrary(FirebaseLibEvent);
+	return new FirebaseLibrary(FirebaseLibEvent, firebaseConfig);
 
 };
 

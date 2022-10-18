@@ -17,10 +17,11 @@ import { StorageIM, useStorageIM } from "../store/im-store";
 import Snippets from "../../../libraries/app/snippets";
 import useAgoraMediaService from "../../../libraries/agora/hooks/UseAgoraMediaService";
 import useAgoraIMCallDuration from "../../../libraries/agora/hooks/UseAgoraIMCallDuration";
-import useAgoraIMFirebase from "../../../libraries/agora/hooks/UseAgoraIMFirebase";
+import useFirebase from '../../../libraries/firebase/hooks/UseFirebase';
 import MediaPlayer from "../../../libraries/agora/components/MediaPlayer";
-
+ 
 import AgoraRTC, { IAgoraRTCRemoteUser, UID } from 'agora-rtc-sdk-ng';
+
 
 export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     onMute,
@@ -154,7 +155,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         firebaseFirestoreUpdateDocument,
         firebaseFirestoreDeleteDocument,
         firebaseFirestoreDeleteCollection,
-    } = useAgoraIMFirebase([7]);
+    } = useFirebase();
 
     const {
         agoraIMCallDurationStartTimer,

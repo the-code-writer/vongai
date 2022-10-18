@@ -9,15 +9,17 @@ class FirebaseConfig implements FirebaseTypeInterfaces.FirebaseConfigInterface {
 	messagingSenderId: string;
 	appId: string;
 	measurementId: string;
+	realtimeDatabaseConfig: FirebaseTypeInterfaces.RealtimeDatabaseConfigInterface | undefined;
 
 	constructor(
 		_apiKey: any,
-		_authDomain: string,
-		_projectId: string,
-		_storageBucket: string,
-		_messagingSenderId: string,
-		_appId: string,
-		_measurementId: string,
+		_authDomain?: string,
+		_projectId?: string,
+		_storageBucket?: string,
+		_messagingSenderId?: string,
+		_appId?: string,
+		_measurementId?: string,
+		_realtimeDatabaseConfig?: FirebaseTypeInterfaces.RealtimeDatabaseConfigInterface,
 	) {
 		this.apiKey = _apiKey;
 		this.authDomain = _authDomain;
@@ -26,6 +28,7 @@ class FirebaseConfig implements FirebaseTypeInterfaces.FirebaseConfigInterface {
 		this.messagingSenderId = _messagingSenderId;
 		this.appId = _appId;
 		this.measurementId = _measurementId;
+		this.realtimeDatabaseConfig = _realtimeDatabaseConfig;
 	}
 
 }
