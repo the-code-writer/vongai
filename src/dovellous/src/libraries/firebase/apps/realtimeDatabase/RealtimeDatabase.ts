@@ -36,13 +36,15 @@ class RealtimeDatabase {
 
   isReady:boolean;
 
-  constructor(Firebase: any) {
+  constructor(Framework7: any, FirebaseApp: any) {
 
     const self = this;
 
-    this.FirebaseInstance = Firebase;
+    this.Framework7Instance = Framework7;
 
-    this.realtimeDatabaseEvents = Firebase.events;
+    this.FirebaseInstance = FirebaseApp;
+
+    this.realtimeDatabaseEvents = FirebaseApp.events;
 
     this.realtimeDatabaseError = RealtimeDatabaseError;
 

@@ -17,6 +17,7 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 	declare events:  any;
 
 	constructor(
+		f7: any,
 		events: any,
 		apiKey?: any | FirebaseTypeInterfaces.FirebaseConfigInterface,
 		authDomain?: string,
@@ -111,11 +112,12 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 					f7.emit(
 						K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED,
 						{
-							app: parent
+							app: parent,
+							f7: f7
 						}
 					);
 
-					await parent.realtimeDatabase.init(parent.firebaseApp);
+					await parent.realtimeDatabase.init(f7, parent.firebaseApp);
 
 					parent.isLoaded = true;
 
@@ -127,9 +129,9 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 
 					lib: {},
 
-					init: async (firebaseApp: any) => {
+					init: async (f7:any, firebaseApp: any) => {
 
-						parent.realtimeDatabase.lib = new RealtimeDatabase(firebaseApp);
+						parent.realtimeDatabase.lib = new RealtimeDatabase(f7, firebaseApp);
 
 						parent.realtimeDatabase.isReady = true;
 
@@ -169,11 +171,11 @@ ModuleBaseClasses.DovellousEventDispatcher(K.Events.Modules.Firebase);
  */
 const FirebaseLibEvent: ModuleBaseClasses.DovellousLibraryEvent = new ModuleBaseClasses.DovellousLibraryEvent(K.Events.Modules.Firebase.FirebaseLibEvent.NAME);
 
-const Firebase = (firebaseConfig: FirebaseTypeInterfaces.FirebaseConfigInterface) => {
+const Firebase = (Framework7:any, firebaseConfig: FirebaseTypeInterfaces.FirebaseConfigInterface) => {
 	/**
 	 * @type {ModuleBaseClasses.DovellousLibrary}
 	 */
-	return new FirebaseLibrary(FirebaseLibEvent, firebaseConfig);
+	return new FirebaseLibrary(Framework7, FirebaseLibEvent, firebaseConfig);
 
 };
 

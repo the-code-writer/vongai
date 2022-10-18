@@ -149,7 +149,7 @@ class Dovellous{
 	 */
   initFirebase (firebaseConfig: FirebaseTypeInterfaces.FirebaseConfigInterface ) {
 
-    Firebase(firebaseConfig);
+    Firebase(this.Frameworks.Framework7, firebaseConfig);
     
   }
 
