@@ -131,7 +131,7 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 
 					init: async (f7:any, firebaseApp: any) => {
 
-						parent.realtimeDatabase.lib = new RealtimeDatabase(f7, firebaseApp);
+						parent.realtimeDatabase.lib = new RealtimeDatabase(f7, parent, firebaseApp);
 
 						parent.realtimeDatabase.isReady = true;
 

@@ -87,8 +87,6 @@ class AgoraLibrary extends ModuleBaseClasses.DovellousModule {
 
 					parent.agoraConfig = agoraLibrary.options.config;
 
-					console.warn("::: AgoraLibrary : self.options.config :::", parent);
-
 					await parent.imCall.init(f7);
 
 					f7.emit(

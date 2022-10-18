@@ -52,8 +52,6 @@ class Dovellous{
 
     f7.on(K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED, (agoraInstance: any) => {
 
-      console.warn("::: AgoraLibEvent MODULE_LOADED agoraInstance :::", agoraInstance);
-
       self.Libraries.Agora = agoraInstance;
     
       f7.emit(K.Events.Modules.Agora.AgoraLibEvent.MODULE_READY, agoraInstance);
@@ -61,8 +59,6 @@ class Dovellous{
     });
     
     if(f7.params.dovellous.hasOwnProperty('agora')){
-
-      console.warn("::: f7.params.dovellous.agora instanceof AgoraConfig :::", f7.params.dovellous.agora);
     
       if(f7.params.dovellous.agora instanceof AgoraConfig){
 
@@ -90,8 +86,6 @@ class Dovellous{
 
     f7.on(K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED, (firebaseInstance: any) => {
 
-      console.warn("::: FirebaseLibEvent MODULE_LOADED firebaseInstance :::", firebaseInstance);
-
       self.Libraries.Firebase = firebaseInstance;
     
       f7.emit(K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY, firebaseInstance);
@@ -99,8 +93,6 @@ class Dovellous{
     });
     
     if(f7.params.dovellous.hasOwnProperty('firebase')){
-
-      console.warn("::: f7.params.dovellous.firebase instanceof FirebaseConfig :::", f7.params.dovellous.firebase);
     
       if(f7.params.dovellous.firebase instanceof FirebaseConfig){
 

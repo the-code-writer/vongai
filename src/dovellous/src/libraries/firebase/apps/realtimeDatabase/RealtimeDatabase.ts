@@ -26,23 +26,27 @@ class RealtimeDatabase {
 
   FirebaseInstance: any;
 
+  FirebaseApp: any;
+
+  FirebaseRealtimeDatabaseApp: any;
+
   realtimeDatabaseEvents: ModuleBaseClasses.DovellousLibraryEvent;
 
   realtimeDatabaseError: FirebaseTypeInterfaces.RealtimeDatabaseErrorInterface;
 
   realtimeDatabaseconfig: FirebaseTypeInterfaces.RealtimeDatabaseConfigInterface;
 
-  database: any;
-
   isReady:boolean;
 
-  constructor(Framework7: any, FirebaseApp: any) {
+  constructor(Framework7: any, FirebaseInstance: any, FirebaseApp: any) {
 
     const self = this;
 
     this.Framework7Instance = Framework7;
 
-    this.FirebaseInstance = FirebaseApp;
+    this.FirebaseInstance = FirebaseInstance;
+
+    this.FirebaseApp = FirebaseApp;
 
     this.realtimeDatabaseEvents = FirebaseApp.events;
 
@@ -52,14 +56,13 @@ class RealtimeDatabase {
 
     if (
       this.FirebaseInstance.firebaseConfig.hasOwnProperty('realtimeDatabaseConfig') &&
+      typeof this.FirebaseInstance.firebaseConfig.realtimeDatabaseConfig === "object" &&
       Object.keys(this.FirebaseInstance.firebaseConfig.realtimeDatabaseConfig).length > 0
     ) {
 
       this.firebaseRealtimeDatabaseInit({},(database: any)=>{
 
-        self.isReady = true;
-
-        database;
+        self.isReady = true; 
 
       });
 
@@ -71,9 +74,9 @@ class RealtimeDatabase {
 
     console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseInit :::");
 
-    this.database = getDatabase(app);
+    this.FirebaseRealtimeDatabaseApp = getDatabase(this.FirebaseApp);
 
-    callbackFunction(this.database);
+    callbackFunction(this.FirebaseRealtimeDatabaseApp);
 
   }
 
@@ -98,7 +101,7 @@ class RealtimeDatabase {
     console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseCreateData :::", path, data);
 
     const db = getDatabase();
-
+/*
     const dataObject: any = {
       startedTimestamp: data.startedTimestamp,
       endedTimestamp: data.endedTimestamp,
@@ -113,8 +116,8 @@ class RealtimeDatabase {
       session: data.session,
       acknowledged: 0,
     };
-
-    set(ref(db, path), dataObject).then((result: any) => {
+*/
+    set(ref(db, path), data).then((result: any) => {
 
       console.warn("::: FIREBASE ::: result :::", result);
 
