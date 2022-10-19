@@ -177,7 +177,6 @@ export default () => {
         userData={imUserData}
         onChat={onChatHandler}
         onIMCall={onIMCallHandler}
-        onVideoCall={onVideoCallHandler}
         onContactInfo={onContactInfoHandler}
         /> 
 

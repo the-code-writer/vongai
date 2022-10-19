@@ -115,7 +115,12 @@ export default ({callDataObject}) => {
     
     }, [callDataObject])
     
-   
+    useEffect(() => {
+      
+        userProfileData
+    
+    }, [userProfileData])
+    
     // End IM Call Actions
 
     return (
@@ -128,6 +133,7 @@ export default ({callDataObject}) => {
                 isVideoCall={callData.isVideoCall} 
                 isIncoming={callData.isIncomingCall}
                 userDefinedData={callData.userData}
+                userProfileData={userProfileData}
                 onMute={onMuteHandler}
                 onUnMute={onUnMuteHandler}
                 onCameraOn={onCameraOnHandler}

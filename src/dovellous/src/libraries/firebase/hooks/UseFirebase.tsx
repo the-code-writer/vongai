@@ -11,7 +11,10 @@ import { child, get, getDatabase, onChildAdded, onChildChanged, onChildRemoved, 
 import K from '../../app/konstants';
 import { f7, f7ready } from 'framework7-react';
 
-export default function useFirebase()
+export default function useFirebase(
+    onUserIncomingCallHandler: Function,
+    uid: string
+)
   : {
     firebaseAppReady: boolean,
     firebaseRealtimeDatabaseReady: boolean,
@@ -31,6 +34,10 @@ export default function useFirebase()
     const [firebaseRealtimeDatabaseReady, setFirebaseRealtimeDatabaseReady] = useState<boolean>(false);
 
     const [firebaseRealtimeDatabaseApp, setFirebaseRealtimeDatabaseApp] = useState<any>();
+
+    const [firebaseAuthReady, setFirebaseAuthReady] = useState<boolean>(false);
+
+    const [firebaseAuthApp, setFirebaseAuthApp] = useState<any>();
 
     const firebaseRealtimeDatabaseCreateData:Function = (path: string, data: any, callbackFunction: Function) : any => {
         
@@ -102,9 +109,15 @@ export default function useFirebase()
         
     }
     
-    const addEventListeners:Function = (callbackFunction: Function) : any => {
+    const addEventListenersIncomingCall:Function = (uid:string) : any => {
+
+        let path: string = String(`/accounts/users/${uid}/calls/incoming/`);
         
-        callbackFunction();
+        firebaseRealtimeDatabaseApp.addEventListenersIncomingCall(path, (data: any)=>{
+
+            onUserIncomingCallHandler(data);
+
+        });
 
     }
 
@@ -134,6 +147,8 @@ export default function useFirebase()
 
         if(DovellousInstance.Libraries.hasOwnProperty("Firebase")){
 
+            addEventListenersIncomingCall(uid);
+
             f7.on(
                 K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY,
                 (firebaseAppInstance: any)=>{
@@ -148,12 +163,23 @@ export default function useFirebase()
             f7.on(
                 K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT,
                 (realtimeDatabaseAppInstance?: any)=>{
-                    onFirebaseRealtimeDatabaseModuleReady(DovellousInstance.Libraries.Firebase.app.realtimeDatabase.lib);
+                    onFirebaseRealtimeDatabaseModuleReady(realtimeDatabaseAppInstance);
                 }
             );
 
             if(DovellousInstance.Libraries.Firebase.app.realtimeDatabase.isReady){
                 onFirebaseRealtimeDatabaseModuleReady(DovellousInstance.Libraries.Firebase.app.realtimeDatabase.lib);
+            }
+
+            f7.on(
+                K.Events.Modules.Firebase.Auth.ON_APP_INIT,
+                (authAppInstance?: any)=>{
+                    onFirebaseRealtimeDatabaseModuleReady(authAppInstance);
+                }
+            );
+
+            if(DovellousInstance.Libraries.Firebase.app.auth.isReady){
+                onFirebaseRealtimeDatabaseModuleReady(DovellousInstance.Libraries.Firebase.app.auth.lib);
             }
 
         }

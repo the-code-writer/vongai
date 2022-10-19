@@ -23,7 +23,7 @@ import MediaPlayer from "../../../libraries/agora/components/MediaPlayer";
 import AgoraRTC, { IAgoraRTCRemoteUser, UID } from 'agora-rtc-sdk-ng';
 
 
-export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
+export default ({ id, className, isVideoCall, isIncoming, userDefinedData, userProfileData,
     onMute,
     onUnMute,
     onCameraOn,
@@ -140,24 +140,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     }
 
     const {
-        firebaseAppReady,
-        firebaseFirestoreReady,
-        firebaseRealtimeDatabaseReady,
-        firebaseRealtimeDatabaseCreateData,
-        firebaseRealtimeDatabaseReadData,
-        firebaseRealtimeDatabaseUpdateData,
-        firebaseRealtimeDatabaseDeleteData,
-        firebaseFirestoreCreateCollection,
-        firebaseFirestoreCreateDocument,
-        firebaseFirestoreReadCollection,
-        firebaseFirestoreReadDocument,
-        firebaseFirestoreUpdateCollection,
-        firebaseFirestoreUpdateDocument,
-        firebaseFirestoreDeleteDocument,
-        firebaseFirestoreDeleteCollection,
-    } = useFirebase();
-
-    const {
         agoraIMCallDurationStartTimer,
         agoraIMCallDurationStopTimer,
         agoraIMCallDurationText
@@ -228,10 +210,33 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     const onMissedCallHandler = () => {
 
         console.warn(":::: === AGORA EVENT [onMissedCallHandler] === :::",);
-
+ 
         onCallConnectionFailed(K.ModuleComponentsLibs.im.callScreen.currentStatus.MISSED_CALL, "Missed Call (1)", K.ModuleComponentsLibs.im.callScreen.currentStatusIcons.MISSED_CALL);
 
     }
+
+    const onUserIncomingCallHandler = (isVideoCall: boolean, userData: any) => {
+
+        console.warn(":::: === AGORA EVENT [onFireIncomingCallHandler] === :::",);
+
+        f7.emit(
+            K.ModuleComponentsLibs.im.callScreen.states.INCOMING,
+            {isIncomingCall: true, isVideoCall: isVideoCall, userData: userData}
+            );
+
+    }
+    
+    const {
+        firebaseAppReady,
+        firebaseRealtimeDatabaseReady,
+        firebaseRealtimeDatabaseCreateData,
+        firebaseRealtimeDatabaseReadData,
+        firebaseRealtimeDatabaseUpdateData,
+        firebaseRealtimeDatabaseDeleteData,
+    } = useFirebase(        
+        onUserIncomingCallHandler,
+        uid,
+    );
 
     const {
         client,
@@ -980,9 +985,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         //Set up call participants
 
-        const originPhoneNumber: String = "00263772123456";
+        const originPhoneNumber: String = userProfileData.phoneNumber;
 
-        const originDisplayName: String = "William Kansepa";
+        const originDisplayName: String = userProfileData.displayName;
 
         const _origin: IMCallTypeInterfaces.CallOriginObject = { displayName: originDisplayName, phoneNumber: originPhoneNumber };
 
@@ -1438,13 +1443,21 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
         */
     }
 
-    useEffect(() => {
+    const changeUserData = (user: any) => {
+
+        userDefinedData = user;
+
+        setUpUserData(user);
+
+    };
+
+    const setUpUserData = (user: any) => {
 
         resetState();
 
         addEventListeners();
 
-        if (userDefinedData.hasOwnProperty('phoneNumber') && userDefinedData.phoneNumber !== undefined) {
+        if (user.hasOwnProperty('phoneNumber') && user.phoneNumber !== undefined) {
 
             setCurrentCallModeIsCameraTurnedON(isVideoCall);
 
@@ -1455,6 +1468,12 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
             init(isIncoming, isVideoCall);
 
         }
+
+    };
+
+    useEffect(() => {
+
+        setUpUserData(userDefinedData);
 
         return resetState;
 

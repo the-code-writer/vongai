@@ -36,8 +36,6 @@ class RealtimeDatabase {
 
   realtimeDatabaseconfig: FirebaseTypeInterfaces.RealtimeDatabaseConfigInterface;
 
-  isReady:boolean;
-
   constructor(Framework7: any, FirebaseInstance: any, FirebaseApp: any) {
 
     const self = this;
@@ -52,19 +50,17 @@ class RealtimeDatabase {
 
     this.realtimeDatabaseError = RealtimeDatabaseError;
 
-    self.isReady = false;
-
     if (
       this.FirebaseInstance.firebaseConfig.hasOwnProperty('realtimeDatabaseConfig') //&&
       //typeof this.FirebaseInstance.firebaseConfig.realtimeDatabaseConfig === "object" &&
       //Object.keys(this.FirebaseInstance.firebaseConfig.realtimeDatabaseConfig).length > 0
     ) {
 
-      this.init((realtimeDatabase: any)=>{
+      this.init(()=>{
 
         this.Framework7Instance.emit(
           K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT,
-          realtimeDatabase
+          this
 				);
 
       });
@@ -77,7 +73,7 @@ class RealtimeDatabase {
 
     this.FirebaseRealtimeDatabaseApp = getDatabase(this.FirebaseApp);
 
-    callbackFunction(this.FirebaseRealtimeDatabaseApp);
+    callbackFunction();
 
   }
 
@@ -86,25 +82,8 @@ class RealtimeDatabase {
     console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseCreateData :::", path, data);
 
     const db = getDatabase();
-/*
-    const dataObject: any = {
-      startedTimestamp: data.startedTimestamp,
-      endedTimestamp: data.endedTimestamp,
-      origin: data.origin,
-      destination: data.destination,
-      isVideoCall: data.isVideoCall,
-      isGroupCall: data.isGroupCall,
-      isIncoming: data.isIncoming,
-      isEncrypted: data.isEncrypted,
-      groupId: data.groupId,
-      channel: data.channel,
-      session: data.session,
-      acknowledged: 0,
-    };
-*/
+    
     set(ref(db, path), data).then((result: any) => {
-
-      console.warn("::: FIREBASE ::: result :::", result);
 
       callbackFunction(
         {
@@ -217,7 +196,7 @@ class RealtimeDatabase {
 
   }
 
-  addEventListeners() {
+  addEventListenersIncomingCall(uid: string) {
 
     const userPath: string = "";
 
@@ -225,15 +204,15 @@ class RealtimeDatabase {
     const userIncomingCallRef = ref(db, userPath);
 
     onChildAdded(userIncomingCallRef, (data) => {
-      f7.emit("USER_INCOMING_CALL_LISTENER_CHILD_CREATED", { key: data.key, value: data.val() });
+      this.Framework7Instance.emit(K.ModuleComponentsLibs.im.callScreen.states.INCOMING, { key: data.key, value: data.val() });
     });
 
     onChildChanged(userIncomingCallRef, (data) => {
-      f7.emit("USER_INCOMING_CALL_LISTENER_CHILD_UPDATED", { key: data.key, value: data.val() });
+      this.Framework7Instance.emit(K.ModuleComponentsLibs.im.callScreen.states.INCOMING, { key: data.key, value: data.val() });
     });
 
     onChildRemoved(userIncomingCallRef, (data) => {
-      f7.emit("USER_INCOMING_CALL_LISTENER_CHILD_DELETED", { key: data.key, value: data.val() });
+      this.Framework7Instance.emit(K.ModuleComponentsLibs.im.callScreen.states.INCOMING, { key: data.key, value: data.val() });
     });
 
   }

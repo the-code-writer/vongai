@@ -1,0 +1,1 @@
+(function(_ds){var window=this;try{window.customElements.define("devsite-video",_ds.FJ)}catch(a){console.warn("devsite.app.customElement.DevsiteVideo",a)};})(_ds_www);
