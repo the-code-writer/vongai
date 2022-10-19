@@ -68,6 +68,7 @@ interface CallItem {
     groupId?:string;
     channel: string;
     session: string;
+    uid: string | number;
 }
 
 interface CallParticipantsSession {

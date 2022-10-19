@@ -1150,7 +1150,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 let isGroupCall: boolean = false;
 
-                const uid:any = `${Snippets.encryption.sha1(data.destination.phoneNumber)}`;
+                const uid:any = data.uid ?? `${Snippets.encryption.sha1(data.destination.phoneNumber)}`;
 
                 let path: string = String(`/accounts/users/${uid}/calls/incoming/`);
 
