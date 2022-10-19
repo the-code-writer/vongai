@@ -112,14 +112,24 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 					f7.emit(
 						K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED,
 						{
-							app: parent,
-							f7: f7
+							app: parent
 						}
 					);
+
+					console.warn("::: K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED, :::", K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED);
 
 					await parent.realtimeDatabase.init(f7, parent.firebaseApp);
 
 					parent.isLoaded = true;
+
+					f7.emit(
+						K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY,
+						{
+							app: parent
+						}
+					);
+
+					console.warn("::: K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY, :::", K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY);
 
 				},
 
@@ -134,11 +144,6 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 						parent.realtimeDatabase.lib = new RealtimeDatabase(f7, parent, firebaseApp);
 
 						parent.realtimeDatabase.isReady = true;
-
-						f7.emit(
-							K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT,
-							parent.realtimeDatabase.lib
-						);
 
 						return parent.realtimeDatabase;
 

@@ -55,14 +55,17 @@ class RealtimeDatabase {
     self.isReady = false;
 
     if (
-      this.FirebaseInstance.firebaseConfig.hasOwnProperty('realtimeDatabaseConfig') &&
-      typeof this.FirebaseInstance.firebaseConfig.realtimeDatabaseConfig === "object" &&
-      Object.keys(this.FirebaseInstance.firebaseConfig.realtimeDatabaseConfig).length > 0
+      this.FirebaseInstance.firebaseConfig.hasOwnProperty('realtimeDatabaseConfig') //&&
+      //typeof this.FirebaseInstance.firebaseConfig.realtimeDatabaseConfig === "object" &&
+      //Object.keys(this.FirebaseInstance.firebaseConfig.realtimeDatabaseConfig).length > 0
     ) {
 
-      this.firebaseRealtimeDatabaseInit({},(database: any)=>{
+      this.init((realtimeDatabase: any)=>{
 
-        self.isReady = true; 
+        this.Framework7Instance.emit(
+          K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT,
+          realtimeDatabase
+				);
 
       });
 
@@ -70,29 +73,11 @@ class RealtimeDatabase {
 
   }  
 
-  firebaseRealtimeDatabaseInit(app:any, callbackFunction: Function) {
-
-    console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseInit :::");
+  init(callbackFunction: Function) {
 
     this.FirebaseRealtimeDatabaseApp = getDatabase(this.FirebaseApp);
 
     callbackFunction(this.FirebaseRealtimeDatabaseApp);
-
-  }
-
-  firebaseRealtimeDatabaseKill() {
-
-  }
-
-  firebaseFirestoreInit(callbackFunction: Function) {
-
-    console.warn("::: FIREBASE ::: firebaseFirestoreInit :::");
-
-    callbackFunction();
-
-  }
-
-  firebaseFirestoreKill() {
 
   }
 

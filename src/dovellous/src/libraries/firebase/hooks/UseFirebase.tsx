@@ -9,25 +9,17 @@ import { child, get, getDatabase, onChildAdded, onChildChanged, onChildRemoved, 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
  
 import K from '../../app/konstants';
-import { f7ready } from 'framework7-react';
+import { f7, f7ready } from 'framework7-react';
 
 export default function useFirebase()
   : {
     firebaseAppReady: boolean,
-    firebaseFirestoreReady:boolean,
     firebaseRealtimeDatabaseReady: boolean,
     firebaseRealtimeDatabaseCreateData: Function,
     firebaseRealtimeDatabaseReadData:   Function,
+    firebaseRealtimeDatabaseSetData: Function,
     firebaseRealtimeDatabaseUpdateData: Function,
     firebaseRealtimeDatabaseDeleteData: Function,
-    firebaseFirestoreCreateCollection:Function;
-    firebaseFirestoreCreateDocument:Function;
-    firebaseFirestoreReadCollection:Function;
-    firebaseFirestoreReadDocument:Function;
-    firebaseFirestoreUpdateCollection:Function;
-    firebaseFirestoreUpdateDocument:Function;
-    firebaseFirestoreDeleteDocument:Function;
-    firebaseFirestoreDeleteCollection:Function;
   } {
 
     const [framework7Instance, setFramework7Instance] = useState<any>();
@@ -40,44 +32,6 @@ export default function useFirebase()
 
     const [firebaseRealtimeDatabaseApp, setFirebaseRealtimeDatabaseApp] = useState<any>();
 
-    const [firebaseFirestoreReady, setFirebaseFirestoreReady] = useState<boolean>(false);
-
-    const firebaseInit:Function = (firebaseConfig: any, callbackFunction: Function) : any => {
-        
-        console.warn("::: FIREBASE ::: firebaseInit :::");
-
-        callbackFunction();
-
-    }
-    
-    const firebaseKill:Function = () : any => {
-        
-    }
-    
-    const firebaseRealtimeDatabaseInit:Function = (callbackFunction: Function) : any => {
-        
-        console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseInit :::");
-
-        callbackFunction();
-
-    }
-    
-    const firebaseRealtimeDatabaseKill:Function = () : any => {
-        
-    }
-    
-    const firebaseFirestoreInit:Function = (callbackFunction: Function) : any => {
-        
-        console.warn("::: FIREBASE ::: firebaseFirestoreInit :::");
-
-        callbackFunction();
-
-    }
-    
-    const firebaseFirestoreKill:Function = () : any => {
-        
-    }
-    
     const firebaseRealtimeDatabaseCreateData:Function = (path: string, data: any, callbackFunction: Function) : any => {
         
         console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseCreateData :::", path, data);
@@ -93,6 +47,12 @@ export default function useFirebase()
     }
     
     const firebaseRealtimeDatabaseReadDataOnce:Function = (path:string, callbackFunction:Function) : any => {
+        
+        callbackFunction();
+
+    }
+    
+    const firebaseRealtimeDatabaseSetData:Function = (path: string, data: any, callbackFunction: Function) : any => {
         
         callbackFunction();
 
@@ -155,32 +115,48 @@ export default function useFirebase()
         framework7Instance.off( K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT );
 
     }
+
+    const onFirebaseModuleReady = (firebaseAppInstance: any) => {
+        setFirebaseAppReady(true);
+        setFirebaseApp(firebaseAppInstance);
+    }
+    
+    const onFirebaseRealtimeDatabaseModuleReady = (realtimeDatabaseAppInstance: any) => {
+        setFirebaseRealtimeDatabaseReady(true);
+        setFirebaseRealtimeDatabaseApp(realtimeDatabaseAppInstance);
+    }
     
     useEffect(() => {
 
-        // Get firebase app reference from class
+        setFramework7Instance(f7);
 
-        f7ready((Framework7Instance) => {
+        const DovellousInstance: any = f7.dovellous.instance;
 
-            setFramework7Instance(Framework7Instance);
+        if(DovellousInstance.Libraries.hasOwnProperty("Firebase")){
 
-            Framework7Instance.on(
-                K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED,
-                ()=>{
-                    setFirebaseAppReady(true);
-                    //setFirebaseApp()
+            f7.on(
+                K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY,
+                (firebaseAppInstance: any)=>{
+                    onFirebaseModuleReady(firebaseAppInstance);
                 }
             );
 
-            Framework7Instance.on(
+            if(DovellousInstance.Libraries.Firebase.app.realtimeDatabase.isReady){
+                onFirebaseModuleReady(DovellousInstance.Libraries.Firebase.app.firebaseApp);
+            }
+
+            f7.on(
                 K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT,
-                (realtimeDatabaseApp: any)=>{
-                    setFirebaseRealtimeDatabaseReady(true);
-                    setFirebaseRealtimeDatabaseApp(realtimeDatabaseApp);
+                (realtimeDatabaseAppInstance?: any)=>{
+                    onFirebaseRealtimeDatabaseModuleReady(DovellousInstance.Libraries.Firebase.app.realtimeDatabase.lib);
                 }
             );
 
-        });
+            if(DovellousInstance.Libraries.Firebase.app.realtimeDatabase.isReady){
+                onFirebaseRealtimeDatabaseModuleReady(DovellousInstance.Libraries.Firebase.app.realtimeDatabase.lib);
+            }
+
+        }
 
         return () => {
             
@@ -192,20 +168,12 @@ export default function useFirebase()
 
     return {
         firebaseAppReady,
-        firebaseFirestoreReady,
         firebaseRealtimeDatabaseReady,
         firebaseRealtimeDatabaseCreateData,
         firebaseRealtimeDatabaseReadData,
+        firebaseRealtimeDatabaseSetData,
         firebaseRealtimeDatabaseUpdateData,
         firebaseRealtimeDatabaseDeleteData,
-        firebaseFirestoreCreateCollection,
-        firebaseFirestoreCreateDocument,
-        firebaseFirestoreReadCollection,
-        firebaseFirestoreReadDocument,
-        firebaseFirestoreUpdateCollection,
-        firebaseFirestoreUpdateDocument,
-        firebaseFirestoreDeleteDocument,
-        firebaseFirestoreDeleteCollection,
     };
 
 }

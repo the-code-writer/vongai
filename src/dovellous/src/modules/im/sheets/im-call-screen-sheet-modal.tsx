@@ -1142,13 +1142,15 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
         if (isAgoraModuleReady) {
 
+            console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseReady :::", firebaseRealtimeDatabaseReady);
+
             if (firebaseRealtimeDatabaseReady) {
 
                 const data: IMCallTypeInterfaces.CallItem = generateOutgoingCallPayload(callPayload);
 
                 let isGroupCall: boolean = false;
 
-                const uid:any = `u${Snippets.encryption.sha1(data.destination.phoneNumber)}`;
+                const uid:any = `${Snippets.encryption.sha1(data.destination.phoneNumber)}`;
 
                 let path: string = String(`/accounts/users/${uid}/calls/incoming/`);
 
@@ -1162,6 +1164,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
                 const outgoingCallPayload: any = {
                     startedTimestamp: data.startedTimestamp,
+                    answeredTimestamp: 0,
                     endedTimestamp: data.endedTimestamp,
                     origin: data.origin,
                     destination: data.destination,
@@ -1172,7 +1175,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
                     groupId: data.groupId,
                     channel: data.channel,
                     session: data.session,
-                    acknowledged: 0,
+                    acknowledgedTimestamp: 0,
                   };
 
                 LocalNotifications.schedule({
@@ -1364,7 +1367,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const addEventListeners = () => {
 
-        f7.on(K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED, (module: any) => {
+        f7.on(K.Events.Modules.Agora.AgoraLibEvent.MODULE_READY, (module: any) => {
 
             setIsAgoraModuleReady(true);
 
@@ -1406,8 +1409,6 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
     }
 
     const removeEventListeners = () => {
-
-        f7.off(K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED);
 
         f7.off(K.Events.Modules.Agora.AgoraLibEvent.MODULE_READY);
 
