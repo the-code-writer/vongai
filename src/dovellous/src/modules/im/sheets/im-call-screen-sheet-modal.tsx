@@ -1144,21 +1144,36 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
             if (firebaseRealtimeDatabaseReady) {
 
-                const outgoingCallPayload: IMCallTypeInterfaces.CallItem = generateOutgoingCallPayload(callPayload);
+                const data: IMCallTypeInterfaces.CallItem = generateOutgoingCallPayload(callPayload);
 
                 let isGroupCall: boolean = false;
 
-                const uid:any = `u${Snippets.encryption.sha1(outgoingCallPayload.destination.phoneNumber)}`;
+                const uid:any = `u${Snippets.encryption.sha1(data.destination.phoneNumber)}`;
 
                 let path: string = String(`/accounts/users/${uid}/calls/incoming/`);
 
-                if (outgoingCallPayload.isGroupCall) {
+                if (data.isGroupCall) {
 
                     isGroupCall = true;
 
-                    path = String(`/groups/${outgoingCallPayload.groupId}/calls/incoming/`);
+                    path = String(`/groups/${data.groupId}/calls/incoming/`);
 
                 }
+
+                const outgoingCallPayload: any = {
+                    startedTimestamp: data.startedTimestamp,
+                    endedTimestamp: data.endedTimestamp,
+                    origin: data.origin,
+                    destination: data.destination,
+                    isVideoCall: data.isVideoCall,
+                    isGroupCall: data.isGroupCall,
+                    isIncoming: data.isIncoming,
+                    isEncrypted: data.isEncrypted,
+                    groupId: data.groupId,
+                    channel: data.channel,
+                    session: data.session,
+                    acknowledged: 0,
+                  };
 
                 LocalNotifications.schedule({
                     notifications: [
@@ -1349,7 +1364,7 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const addEventListeners = () => {
 
-        f7.on(K.Events.Modules.Agora.App.ON_APP_INIT, (module: any) => {
+        f7.on(K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED, (module: any) => {
 
             setIsAgoraModuleReady(true);
 
@@ -1392,7 +1407,9 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData,
 
     const removeEventListeners = () => {
 
-        f7.off(K.Events.Modules.Agora.App.ON_APP_INIT);
+        f7.off(K.Events.Modules.Agora.AgoraLibEvent.MODULE_LOADED);
+
+        f7.off(K.Events.Modules.Agora.AgoraLibEvent.MODULE_READY);
 
         f7.off(K.ModuleComponentsLibs.im.callScreen.states.CONNECTING);
 

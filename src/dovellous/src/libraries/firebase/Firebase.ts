@@ -137,10 +137,7 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 
 						f7.emit(
 							K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT,
-							{
-								firebaseApp:  parent,
-								realtimeDatabaseApp: parent.realtimeDatabase,
-							}
+							parent.realtimeDatabase.lib
 						);
 
 						return parent.realtimeDatabase;

@@ -96,7 +96,7 @@ class RealtimeDatabase {
 
   }
 
-  firebaseRealtimeDatabaseCreateData(path: string, data: any, callbackFunction: Function) {
+  createData(path: string, data: any, callbackFunction: Function) {
 
     console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseCreateData :::", path, data);
 

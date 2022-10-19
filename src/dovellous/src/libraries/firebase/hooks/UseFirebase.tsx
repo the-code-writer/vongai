@@ -9,6 +9,7 @@ import { child, get, getDatabase, onChildAdded, onChildChanged, onChildRemoved, 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
  
 import K from '../../app/konstants';
+import { f7ready } from 'framework7-react';
 
 export default function useFirebase()
   : {
@@ -28,6 +29,8 @@ export default function useFirebase()
     firebaseFirestoreDeleteDocument:Function;
     firebaseFirestoreDeleteCollection:Function;
   } {
+
+    const [framework7Instance, setFramework7Instance] = useState<any>();
 
     const [firebaseApp, setFirebaseApp] = useState<any>();
 
@@ -79,7 +82,7 @@ export default function useFirebase()
         
         console.warn("::: FIREBASE ::: firebaseRealtimeDatabaseCreateData :::", path, data);
 
-        callbackFunction();
+        firebaseRealtimeDatabaseApp.createData(path, data, callbackFunction);
 
     } 
     
@@ -144,10 +147,46 @@ export default function useFirebase()
         callbackFunction();
 
     }
+
+    const resetState = () => {
+
+        framework7Instance.off( K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED );
+
+        framework7Instance.off( K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT );
+
+    }
     
     useEffect(() => {
 
         // Get firebase app reference from class
+
+        f7ready((Framework7Instance) => {
+
+            setFramework7Instance(Framework7Instance);
+
+            Framework7Instance.on(
+                K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED,
+                ()=>{
+                    setFirebaseAppReady(true);
+                    //setFirebaseApp()
+                }
+            );
+
+            Framework7Instance.on(
+                K.Events.Modules.Firebase.RealtimeDatabase.ON_APP_INIT,
+                (realtimeDatabaseApp: any)=>{
+                    setFirebaseRealtimeDatabaseReady(true);
+                    setFirebaseRealtimeDatabaseApp(realtimeDatabaseApp);
+                }
+            );
+
+        });
+
+        return () => {
+            
+            resetState();
+
+        }
         
     }, [])
 
