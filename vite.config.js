@@ -17,7 +17,7 @@ Object.keys(process.env).forEach((key) => {
   }
 });
 
-console.warn("::: VITE ENV :::", viteEnv);
+//console.warn("::: VITE ENV :::", viteEnv);
 
 export default {
   //define: viteEnv,

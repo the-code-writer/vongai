@@ -808,7 +808,7 @@ class Auth {
       return new Promise((callBackSuccessResolve, callBackErrorReject)=>{
         
         getAuth()
-          .deleteUser(uid: string)
+          .deleteUser(uid)
           .then(() => {
             callBackSuccessResolve(null);
           })
