@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
+import K from "../../../libraries/app/konstants";
 
 import IMCall from "../sheets/im-call-screen-sheet-modal";
 
 export default ({callDataObject}) => {
-
+ 
     const [callData, setCallData] = useState(callDataObject);
 
     const onMuteHandler = (userData: any)=>{
@@ -114,12 +115,6 @@ export default ({callDataObject}) => {
         }
     
     }, [callDataObject])
-    
-    useEffect(() => {
-      
-        userProfileData
-    
-    }, [userProfileData])
     
     // End IM Call Actions
 

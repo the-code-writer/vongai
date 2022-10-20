@@ -12,10 +12,12 @@ import { getAuth } from "firebase/auth";
  
 import K from '../../app/konstants';
 import { f7, f7ready } from 'framework7-react';
+import { useAuthIM } from '../../../modules/auth/store/auth-store';
+
+//import { AuthIM, useAuthIM } from "../../auth/store/auth-store";
 
 export default function useFirebase(
-    onUserIncomingCallHandler: Function,
-    uid: string
+    onUserIncomingCallHandler: Function
 )
   : {
     firebaseAppReady: boolean,
@@ -40,6 +42,34 @@ export default function useFirebase(
     const [firebaseAuthReady, setFirebaseAuthReady] = useState<boolean>(false);
 
     const [firebaseAuthApp, setFirebaseAuthApp] = useState<any>();
+
+    const [firstName, setFirstName ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.firstName, {});
+
+    const [lastName, setLastName ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.lastName, {});
+
+    const [displayName, setDisplayName ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.displayName, {});
+
+    const [phoneNumber, setPhoneNumber ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.phoneNumber, {});
+
+    const [photoURL, setPhotoURL ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.photoURL, {});
+
+    const [displayPhoto, setDisplayPhoto ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.displayPhoto, {});
+
+    const [emailVerified, setEmailVerified ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.emailVerified, {});
+
+    const [accountDisabled, setAccountDisabled ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.accountDisabled, {});
+
+    const [uid, setUid ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.uid, {});
+
+    const [authProviders, setAuthProviders ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.authProviders, {});
+
+    const [firebaseUser, setFirebaseUser ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.firebaseUser, {});
+
+    const [webUser, setWebUser ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.webUser, {});
+
+    const [isLoggedIn, setIsLoggedIn ] = useAuthIM(K.ModuleComponentsLibs.auth.dataStores.isLoggedIn, {});
+
+    const [userProfileData, setUserProfileData] = useState<any>({});
 
     const firebaseRealtimeDatabaseCreateData:Function = (path: string, data: any, callbackFunction: Function) : any => {
         
@@ -196,8 +226,50 @@ export default function useFirebase(
 
         }
         
-    }, [])
+    }, []);
 
+    useEffect(() => {
+      
+        const user: any = {
+            firstName: firstName,
+            lastName: lastName,
+            displayName: displayName,
+            phoneNumber: phoneNumber,
+            photoURL: photoURL,
+            displayPhoto: displayPhoto,
+            emailVerified: emailVerified,
+            accountDisabled: accountDisabled,
+            authProviders: authProviders,
+            firebaseUser: firebaseUser,
+            webUser: webUser,
+            isLoggedIn: isLoggedIn,
+            uid: uid,
+        }
+
+        setUserProfileData(user);
+    
+    }, [
+        firstName,
+        lastName,
+        displayName,
+        phoneNumber,
+        photoURL,
+        displayPhoto,
+        emailVerified,
+        accountDisabled,
+        uid,
+    ]);
+
+    useEffect(()=>{
+
+        firebaseAuthApp.onAuthStateChanged((userMeta: any)=>{
+
+            console.warn("::::: USER ::::", user)
+
+        });
+
+    },[]);
+    
     return {
         firebaseAppReady,
         firebaseRealtimeDatabaseReady,

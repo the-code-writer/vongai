@@ -219,7 +219,14 @@ class Auth {
           if (user) {
             // User is signed in, see docs for a list of available properties
             // https://firebase.google.com/docs/reference/js/firebase.User
-            callBackSignedIn(user);
+
+            const userMeta:any = {
+              userRaw: user,
+              user: this.getUserProfile(),
+              userProviders: this.getUserProfileFromProviders()
+            }
+
+            callBackSignedIn(userMeta);
             // ...
           } else {
             // User is signed out

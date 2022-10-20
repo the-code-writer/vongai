@@ -299,6 +299,23 @@ const K = {
 				measurementId: import.meta.env.VNG_GOOGLE_FIREBASE_MESUREMENT_ID
 			},
 		},
+		auth: {
+			dataStores: {
+				firstName: "firstName",
+				lastName: "lastName",
+				displayName: "displayName",
+				phoneNumber: "phoneNumber",
+				photoURL: "photoURL",
+				displayPhoto: "displayPhoto",
+				emailVerified: "emailVerified",
+				accountDisabled: "accountDisabled",
+				uid: "uid",
+				authProviders: "authProviders",
+				firebaseUser: "firebaseUser",
+				webUser: "webUser",
+				isLoggedIn: "isLoggedIn",
+			},
+		},
 		im: {
 			dataStores: {
 				imChatsLoading: 'imChatsLoading',
