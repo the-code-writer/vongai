@@ -1,26 +1,10 @@
 import { K, Snippets } from "../../../app/helpers";
-
-import Dom7 from 'dom7';
-
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
-
 import * as FirebaseTypeInterfaces from "../../lib/FirebaseTypeInterfaces";
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
-
 import { AuthConfig } from "./AuthConfig";
-
 import { AuthError } from "./AuthErrors";
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-import { getAuth } from 'firebase-admin/auth';
-import { createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, updatePhoneNumber, updateProfile } from "firebase/auth";
-// Parent constructor
+import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, updatePhoneNumber, updateProfile } from "firebase/auth";
 
 class Auth {
 

@@ -1,25 +1,12 @@
 import { K, Snippets } from "../../../app/helpers";
-
-import Dom7 from 'dom7';
-
 import * as ModuleBaseClasses from "../../../app/module-base-classes";
-
 import * as FirebaseTypeInterfaces from "../../lib/FirebaseTypeInterfaces";
 
 import { RealtimeDatabaseConfig } from "./RealtimeDatabaseConfig";
-
 import { RealtimeDatabaseError } from "./RealtimeDatabaseErrors";
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
 import { child, get, getDatabase, onChildAdded, onChildChanged, onChildRemoved, onValue, ref, set } from "firebase/database";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
- 
-// Parent constructor
 class RealtimeDatabase {
 
   Framework7Instance: any;
