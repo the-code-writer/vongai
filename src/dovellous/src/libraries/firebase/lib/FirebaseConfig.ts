@@ -3,13 +3,14 @@ import * as FirebaseTypeInterfaces from "./FirebaseTypeInterfaces";
 class FirebaseConfig implements FirebaseTypeInterfaces.FirebaseConfigInterface {
 
 	apiKey: any;
-	authDomain: string;
-	projectId: string;
-	storageBucket: string;
-	messagingSenderId: string;
-	appId: string;
-	measurementId: string;
+	authDomain: string | undefined;
+	projectId: string | undefined;
+	storageBucket: string | undefined;
+	messagingSenderId: string | undefined;
+	appId: string | undefined;
+	measurementId: string | undefined;
 	realtimeDatabaseConfig: FirebaseTypeInterfaces.RealtimeDatabaseConfigInterface | undefined;
+	authConfig: FirebaseTypeInterfaces.AuthConfigInterface | undefined;
 
 	constructor(
 		_apiKey: any,
@@ -20,6 +21,7 @@ class FirebaseConfig implements FirebaseTypeInterfaces.FirebaseConfigInterface {
 		_appId?: string,
 		_measurementId?: string,
 		_realtimeDatabaseConfig?: FirebaseTypeInterfaces.RealtimeDatabaseConfigInterface,
+		_authConfig?: FirebaseTypeInterfaces.AuthConfigInterface,
 	) {
 		this.apiKey = _apiKey;
 		this.authDomain = _authDomain;
@@ -29,6 +31,7 @@ class FirebaseConfig implements FirebaseTypeInterfaces.FirebaseConfigInterface {
 		this.appId = _appId;
 		this.measurementId = _measurementId;
 		this.realtimeDatabaseConfig = _realtimeDatabaseConfig;
+		this.authConfig = _authConfig;
 	}
 
 }

@@ -196,23 +196,46 @@ class RealtimeDatabase {
 
   }
 
-  addEventListenersIncomingCall(uid: string) {
-
-    const userPath: string = "";
+  addEventListenersIncomingCallDuo(uid: string, callInitiated: Function, callDataUpdated: Function, callEnded: Function) {
 
     const db = getDatabase();
+
+    const userPath: string = Snippets.strings.format(K.ModuleComponentsLibs.im.callScreen.paths.duo.INCOMING, uid);
+
     const userIncomingCallRef = ref(db, userPath);
 
     onChildAdded(userIncomingCallRef, (data) => {
-      this.Framework7Instance.emit(K.ModuleComponentsLibs.im.callScreen.states.INCOMING, { key: data.key, value: data.val() });
+      callInitiated({ key: data.key, value: data.val(), isGroup: false });
     });
 
     onChildChanged(userIncomingCallRef, (data) => {
-      this.Framework7Instance.emit(K.ModuleComponentsLibs.im.callScreen.states.INCOMING, { key: data.key, value: data.val() });
+      callDataUpdated({ key: data.key, value: data.val(), isGroup: false });
     });
 
     onChildRemoved(userIncomingCallRef, (data) => {
-      this.Framework7Instance.emit(K.ModuleComponentsLibs.im.callScreen.states.INCOMING, { key: data.key, value: data.val() });
+      callEnded({ key: data.key, value: data.val(), isGroup: false });
+    });
+
+  }
+
+  addEventListenersIncomingCallGroup(groupId: string, callInitiated: Function, callDataUpdated: Function, callEnded: Function) {
+
+    const db = getDatabase();
+    
+    const groupPath: string = Snippets.strings.format(K.ModuleComponentsLibs.im.callScreen.paths.group.INCOMING, groupId);
+
+    const groupIncomingCallRef = ref(db, groupPath);
+
+    onChildAdded(groupIncomingCallRef, (data) => {
+      callInitiated({ key: data.key, value: data.val(), isGroup: true });
+    });
+
+    onChildChanged(groupIncomingCallRef, (data) => {
+      callDataUpdated({ key: data.key, value: data.val(), isGroup: true });
+    });
+
+    onChildRemoved(groupIncomingCallRef, (data) => {
+      callEnded({ key: data.key, value: data.val(), isGroup: true });
     });
 
   }

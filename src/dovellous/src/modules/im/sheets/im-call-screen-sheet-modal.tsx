@@ -1157,13 +1157,13 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData, userP
 
                 const uid:any = data.uid ?? `${Snippets.encryption.sha1(data.destination.phoneNumber)}`;
 
-                let path: string = String(`/accounts/users/${uid}/calls/incoming/`);
+                let path: string = Snippets.strings.format(K.ModuleComponentsLibs.im.callScreen.paths.duo.INCOMING, uid);
 
                 if (data.isGroupCall) {
 
                     isGroupCall = true;
 
-                    path = String(`/groups/${data.groupId}/calls/incoming/`);
+                    path = Snippets.strings.format(K.ModuleComponentsLibs.im.callScreen.paths.group.INCOMING, data.groupId);
 
                 }
 

@@ -310,6 +310,14 @@ const K = {
 				imMyStories: 'imMyStories',
 			},
 			callScreen: {
+				paths: {
+					duo: {
+						INCOMING: '/accounts/users/{0}/calls/incoming/'
+					},
+					group: {
+						INCOMING: '/accounts/groups/{0}/calls/incoming/'
+					}					
+				},
 				currentStatus: {
 					SUCCESS: 'Success',
 					MISSED_CALL: 'Missed Call',

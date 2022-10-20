@@ -44,14 +44,14 @@ interface UserEmailPasswordInterface {
 
 interface FirebaseConfigInterface {
 	apiKey: any;
-	authDomain: string;
-	projectId: string;
-	storageBucket: string;
-	messagingSenderId: string;
-	appId: string;
-	measurementId: string;
-	realtimeDatabaseConfig: RealtimeDatabaseConfigInterface | undefined;
-	authConfig: AuthConfigInterface | undefined;
+	authDomain?: string;
+	projectId?: string;
+	storageBucket?: string;
+	messagingSenderId?: string;
+	appId?: string;
+	measurementId?: string;
+	realtimeDatabaseConfig?: RealtimeDatabaseConfigInterface | undefined;
+	authConfig?: AuthConfigInterface | undefined;
 }
 
 interface FirebaseErrorInterface {

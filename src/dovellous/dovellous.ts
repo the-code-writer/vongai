@@ -109,6 +109,7 @@ class Dovellous{
 					f7.params.dovellous.firebase.appId,
 					f7.params.dovellous.firebase.measurementId,
 					f7.params.dovellous.firebase.realtimeDatabaseConfig,
+					f7.params.dovellous.firebase.authConfig,
         )
 
         this.initFirebase(firebaseConfig);

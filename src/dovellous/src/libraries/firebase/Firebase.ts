@@ -3,6 +3,7 @@ import * as FirebaseTypeInterfaces from "./lib/FirebaseTypeInterfaces";
 import { FirebaseConfig } from './lib/FirebaseConfig';
 import { f7 } from "framework7-react";
 import { RealtimeDatabase } from "./apps/realtimeDatabase/RealtimeDatabase";
+import { Auth } from "./apps/auth/Auth";
 import { initializeApp } from "firebase/app";
 
 type FirebaseOptions = {
@@ -26,7 +27,8 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 		messagingSenderId?: string,
 		appId?: string,
 		measurementId?: string,
-		realtimeDatabaseConfig?: FirebaseTypeInterfaces.RealtimeDatabaseConfigInterface
+		realtimeDatabaseConfig?: FirebaseTypeInterfaces.RealtimeDatabaseConfigInterface,
+		authConfig?: FirebaseTypeInterfaces.AuthConfigInterface
 	) {
 
 		super();
@@ -52,6 +54,7 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 					appId,
 					measurementId,
 					realtimeDatabaseConfig,
+					authConfig,
 				  );
 
 			} else {
@@ -65,6 +68,7 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 					f7.params.dovellous.firebase.appId,
 					f7.params.dovellous.firebase.measurementId,
 					f7.params.dovellous.firebase.realtimeDatabaseConfig,
+					f7.params.dovellous.firebase.authConfig,
 				  );
 
 			}
@@ -116,11 +120,9 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 						}
 					);
 
-					console.warn("::: K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED, :::", K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_LOADED);
+					// Start RealtimeDatabase
 
 					await parent.realtimeDatabase.init(f7, parent.firebaseApp);
-
-					parent.isLoaded = true;
 
 					f7.emit(
 						K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY,
@@ -128,6 +130,19 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 							app: parent
 						}
 					);
+
+					// Start Auth
+
+					await parent.auth.init(f7, parent.firebaseApp);
+
+					f7.emit(
+						K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY,
+						{
+							app: parent
+						}
+					);
+
+					parent.isLoaded = true;
 
 					console.warn("::: K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY, :::", K.Events.Modules.Firebase.FirebaseLibEvent.MODULE_READY);
 
@@ -146,6 +161,24 @@ class FirebaseLibrary extends ModuleBaseClasses.DovellousModule {
 						parent.realtimeDatabase.isReady = true;
 
 						return parent.realtimeDatabase;
+
+					},
+
+				},
+
+				auth: {
+
+					isReady: false,
+
+					lib: {},
+
+					init: async (f7:any, firebaseApp: any) => {
+
+						parent.auth.lib = new Auth(f7, parent, firebaseApp);
+
+						parent.auth.isReady = true;
+
+						return parent.auth;
 
 					},
 
