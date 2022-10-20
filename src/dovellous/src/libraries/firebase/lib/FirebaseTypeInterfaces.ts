@@ -12,6 +12,36 @@ interface RealtimeDatabaseErrorInterface {
 	error: Error
 }
 
+interface AuthConfigInterface {
+
+}
+
+interface AuthErrorInterface {
+	composeError: Function;
+	throwError: Function;
+	status: number;
+	message: string;
+	messageDescription: string;
+	error: Error
+}
+
+interface UserDataInterface {
+	email: any,
+	emailVerified: boolean,
+	password?: any,
+	displayName: any,
+	disabled?: boolean,
+	phoneNumber?: any,
+	photoURL?: any
+	uid?: string;
+	providerId?: any;
+  };
+
+interface UserEmailPasswordInterface {
+	email: any,
+	password: any
+  };
+
 interface FirebaseConfigInterface {
 	apiKey: any;
 	authDomain: string;
@@ -21,6 +51,7 @@ interface FirebaseConfigInterface {
 	appId: string;
 	measurementId: string;
 	realtimeDatabaseConfig: RealtimeDatabaseConfigInterface | undefined;
+	authConfig: AuthConfigInterface | undefined;
 }
 
 interface FirebaseErrorInterface {
@@ -36,5 +67,9 @@ export {
 	FirebaseConfigInterface,
 	FirebaseErrorInterface,
 	RealtimeDatabaseConfigInterface,
-	RealtimeDatabaseErrorInterface
+	RealtimeDatabaseErrorInterface,
+	AuthConfigInterface,
+	AuthErrorInterface,
+	UserDataInterface,
+	UserEmailPasswordInterface,
 } 

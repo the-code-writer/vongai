@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { child, get, getDatabase, onChildAdded, onChildChanged, onChildRemoved, onValue, ref, set } from "firebase/database";
+import { getAuth } from "firebase/auth";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -106,6 +108,10 @@ export default function useFirebase(
     }
     
     const firebaseFirestoreDeleteCollection:Function = () : any => {
+        
+    }
+    
+    const firebaseAuthSignInWithEmail:Function = () : any => {
         
     }
     
