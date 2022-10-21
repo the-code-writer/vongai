@@ -25,6 +25,7 @@ interface CallDestinationObject {
 interface CallOriginObject {
     phoneNumber: any;
     displayName: any;
+    uid?: any;
 }
 
 interface CallDataObject {

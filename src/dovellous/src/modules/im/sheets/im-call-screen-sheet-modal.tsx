@@ -233,9 +233,14 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData, userP
         firebaseRealtimeDatabaseReadData,
         firebaseRealtimeDatabaseUpdateData,
         firebaseRealtimeDatabaseDeleteData,
+        displayName,
+        email,
+        emailVerified,
+        phoneNumber,
+        displayPhoto,
+        uid
     } = useFirebase(        
-        onUserIncomingCallHandler,
-        uid,
+        onUserIncomingCallHandler
     );
 
     const {
@@ -985,11 +990,13 @@ export default ({ id, className, isVideoCall, isIncoming, userDefinedData, userP
 
         //Set up call participants
 
-        const originPhoneNumber: String = userProfileData.phoneNumber;
+        const originPhoneNumber: String = phoneNumber;
 
-        const originDisplayName: String = userProfileData.displayName;
+        const originDisplayName: String = displayName;
 
-        const _origin: IMCallTypeInterfaces.CallOriginObject = { displayName: originDisplayName, phoneNumber: originPhoneNumber };
+        const originUID: String = uid;
+
+        const _origin: IMCallTypeInterfaces.CallOriginObject = { displayName: originDisplayName, phoneNumber: originPhoneNumber, uid: originUID };
 
         setCurrentCallUserOrigin(_origin);
 
