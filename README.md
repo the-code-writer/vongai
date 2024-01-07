@@ -1,5 +1,9 @@
 # Vongai
 
+Vongai is an AI app that allows users to create and explore various types of content using Generative AI. Users can choose from different categories, such as stories, poems, songs, code, and art, and generate content based on their preferences and inputs. Users can also customize the appearance, voice, and personality of their AI assistant, who can guide them through the creative process and provide feedback and suggestions. Vongai aims to inspire users to unleash their creativity and imagination, and to discover new possibilities with AI.
+
+Vongai is currently in development and has not been officially launched yet. However, users can sign up for early access and updates on their official website. Vongai is also active on social media platforms, such as Twitter, Instagram, and TikTok, where they share samples of their generated content and interact with their followers. Vongai claims to use cutting-edge AI technologies, such as natural language processing, computer vision, and deep learning, to produce high-quality and diverse content that can appeal to various audiences and purposes.
+
 ## Framework7 CLI Options
 
 Framework7 app created with following options:
