@@ -14,6 +14,7 @@ pids
 
 # Dependency directories
 node_modules/
+web-app/node_modules/
 
 # Optional npm cache directory
 .npm
@@ -53,3 +54,5 @@ resources/windows/splash
 www/
 !www/index.html
 *.rar
+*.zip
+*.7z
